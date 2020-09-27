@@ -1,0 +1,65 @@
+* As Powerful as Possible
+
+** About
+This directory contains English translation of the book
+
+[[https://monoskop.org/images/c/cb/Majorinc_Kazimir_Mocan_koliko_je_god_moguce.pdf][Moćan koliko je god moguće]] by [[http://kazimirmajorinc.com/][Kazimir Majorinc]]
+
+The book itself is about origins and first few years of development of 
+Lisp, the programming language.
+
+The translation is done by me as a hobby for my own reading pleasure and to
+practice my language skills.
+
+Since I am not a native English speaker, there might be (are) some errors.
+
+** How to read
+
+Currently the only avaialable format is plain text, in form of Emacs org-mode
+file. It should be relatively easy to export into pdf/html or some other format.
+However, the file is not yet "prepared" for export, so the result might not be
+the most optimal, yet.
+
+To obtain a copy of this book you may simply clone this repository
+
+#+BEGIN_SRC shell
+git clone   https://github.com/amno1/as-pwerful-as-possible
+#+END_SRC
+
+You can then open file 'translation-by-chapter.org' with your [[https://www.gnu.org/software/emacs/][Emacs]] or any other
+text editor. Alternativly you may [[https://github.com/amno1/as-pwerful-as-possible/translation-by-chapter.org][read it directly]] in your browser.
+
+If you are reding it in the Emacs, you might wish to configure org mode with
+following settings:
+
+#+begin_src emacs-lisp
+(setq org-image-actual-width    nil
+      org-hide-leading-stars    t
+      org-hide-emphasis-markers t)
+#+end_src
+
+Currently only available layout is per chapter.
+
+** How to contribute
+
+I apreciate any language; grammatic, idiomatic or other corrections. Please make
+a pull request or open an issue.
+
+If you find error in the book considering content itself, i.e. a misstake in
+code or facts, you may open an issue so I can contact the author or you may
+contact the author yourself.
+
+** Todo
+
+I have ambition to link-in mentioned references in the footnotes, at least for
+major papers and books, at level as it is feasible.
+
+Layout and typograpfy of the original book is not preserved due to org-mode
+limitations. A goal is to re-write the translation from org-mode into Latex
+(whish-list). 
+
+** Licence
+This book is licensed under the [[https://creativecommons.org/licenses/by-nd/4.0/legalcode][Creative Commons Attribution-NoDerivatives 4.0
+International licence]]. I have obtained written permission by the author of this
+work to publish this translation for non-commercial use under the same licence.
+
