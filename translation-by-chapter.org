@@ -209,14 +209,13 @@ written permission by the author of the work.
 "In developing LISP our first goal is to describe a language which is as
 powerfull as possible from the point of view of the programmer."^1
 
-Most of programmers meet Lisp for the first time through some of numerous
-citates and aforisms which, sometimes exaggerated, emphasize beauty, elegance
-and power of the language. Thus, for example, understanding of Lisp is called
-enlightenment; it is claimed that experience with Lisp programming makes a
-programmer better programmer, even if one will never use Lisp in the entire
-life. The language is, as a joke of course, prescribed mystycal attributes; god
-(or gods) have written the universe in Lisp, and Lisp community is described as
-a cult.
+Most programmers meet Lisp for the first time through numerous citations and
+aphorisms which, sometimes exaggerated, emphasize beauty, elegance and power of
+the language. Thus, for example, understanding of Lisp is called enlightenment;
+it is claimed that experience with Lisp programming makes a programmer a better
+programmer, even if one will never use Lisp in their entire life. The language is,
+as a joke of course, prescribed mystycal attributes; God (or gods) have written
+the universe in Lisp, and the Lisp community is described as a cult.
 
 If a programmer decides to study Lisp, he will probably conclude that Lisp is
 surprisingly powerful, but also equally surprisingly simple programming
