@@ -23,7 +23,7 @@ the most optimal, yet. The file is formatted to be read in Emacs primarily :-).
 To obtain a copy of this book you may simply clone this repository
 
 #+BEGIN_SRC shell
-git clone   https://github.com/amno1/as-pwerful-as-possible
+git clone   https://github.com/amno1/as-powerful-as-possible
 #+END_SRC
 
 You can then open file 'translation-by-chapter.org' with your [[https://www.gnu.org/software/emacs/][Emacs]] or any other
