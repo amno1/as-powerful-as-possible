@@ -40,7 +40,7 @@ This book is licensed under:
 
 licence.
 
-Translated from Croation into English by A. Müller and published online with
+Translated from Croatian into English by A. Müller and published online with
 written permission by the author of the work.
 
 * As Powerful as possible -  Major ideas of Lisp in McCarthy's period

@@ -18,7 +18,7 @@ Since I am not a native English speaker, there might be (are) some errors.
 Currently the only avaialable format is plain text, in form of Emacs org-mode
 file. It should be relatively easy to export into pdf/html or some other format.
 However, the file is not yet "prepared" for export, so the result might not be
-the most optimal, yet.
+the most optimal, yet. The file is formatted to be read in Emacs primarily :-).
 
 To obtain a copy of this book you may simply clone this repository
 
@@ -27,7 +27,8 @@ git clone   https://github.com/amno1/as-pwerful-as-possible
 #+END_SRC
 
 You can then open file 'translation-by-chapter.org' with your [[https://www.gnu.org/software/emacs/][Emacs]] or any other
-text editor. Alternativly you may [[https://github.com/amno1/as-pwerful-as-possible/translation-by-chapter.org][read it directly]] in your browser.
+text editor. Alternativly you may [[https://github.com/amno1/as-pwerful-as-possible/translation-by-chapter.org][read it directly]] in your browser, though it is
+not recommended (org formatting is not exported very nicely per automatic by Github).
 
 If you are reding it in the Emacs, you might wish to configure org mode with
 following settings:
