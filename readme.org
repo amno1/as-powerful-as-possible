@@ -30,8 +30,9 @@ You can then open file 'translation-by-chapter.org' with your [[https://www.gnu.
 text editor. Alternativly you may [[https://github.com/amno1/as-pwerful-as-possible/translation-by-chapter.org][read it directly]] in your browser, though it is
 not recommended (org formatting is not exported very nicely per automatic by Github).
 
-If you are reding it in the Emacs, you might wish to configure org mode with
+If you are using Emacs for reading, you might wish to configure org mode with
 following settings:
+
 
 #+begin_src emacs-lisp
 (setq org-image-actual-width    nil
