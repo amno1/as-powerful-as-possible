@@ -4648,6 +4648,7 @@ meta-expressions, but they can also be seen in translation from meta-expressions
 into symbolic expressions.
 
 | meta-exression      | translation into symbolic expression |
+|------------------------------------------------------------|
 | cset[X; (A B C D)]  | (CSET (QUOTE X) (QUOTE (A B C D))).  |
 | csetq[X; (A B C D)] | (CSETQ X (QUOTE (A B C D))).         |
 
