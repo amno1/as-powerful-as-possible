@@ -49,11 +49,11 @@ written permission by the author of the work.
 1.    Introduction -> 10 
 2.    Early influences on McCarthy -> 13
 2.1   Technical enthusiasm -> 14
-2.2   Final automata and explicit facts representation -> 14
+2.2   Finite automata and explicit facts representation -> 14
 2.3   Digital computers as intelligent machines -> 16
       
-3.    Dahrmounth project -> 17
-3.1   Language of intelligent computers -> 18
+3.    The Dartmouth project -> 17
+3.1   The Language of intelligent computers -> 18
 3.2   Between IPL and Fortran -> 19
       
 4.    FLPL -> 20
@@ -63,19 +63,21 @@ written permission by the author of the work.
       
 5.    Compiler suggestion -> 26
 5.1   Programming language as a coordinate system -> 27
-5.2   Programmers freedom -> 28
+5.2   Programmer's freedom -> 28
 5.3   Logic values and functions -> 28
 5.4   Function if -> 29
+# General question: markup? e.g. Function =if=
 5.5   Syntax -> 29
 5.6   Lists -> 30
 5.7   Multivalued functions and function composition -> 30
       
 6.    Suggestion for programming language -> 32
 6.1   Conditional command -> 33 (Mozda bolje conditional expression?)
+# 'expression' seems better, also below:
 6.2   Go to command -> 33
 6.3   Macro command -> 34
 6.4   Higher order functions -> 35
-6.5   Lambda-expressions -> 36
+6.5   Lambda expressions -> 36
       
 7.    Imperative Lisp -> 37
 7.1   Imperative and algebraic language -> 40
@@ -85,13 +87,13 @@ written permission by the author of the work.
 7.5   Attribute lists -> 45
 7.6   Lists and representation of symbolic expressions -> 45
 7.7   Functions for analys and synthesis of words and refferencing -> 48
-7.8   Free-memory manipulation -> 49
+7.8   Free memory manipulation -> 49
 7.9   Basic operations on whole lists -> 50
 7.10  Function maplist
 
 8.    Elements of functional programming -> 53
 8.1   New function maplist -> 54
-8.2   McCarthy's lambda-expressions -> 55
+8.2   McCarthy's lambda expressions -> 55
 8.3   Language simplification -> 58
 8.4   Recursive function implementation -> 60
 8.5   Functional and Imperative style -> 60
@@ -107,39 +109,41 @@ written permission by the author of the work.
 9.    Pure Lisp -> 68
 9.1   Mathematical expressions -> 72
 9.2   Conditional expressions -> 72
-9.3   Recursive and simultaneously recursive defined functions -> 73
+9.3   Recursive and mutually recursive defined functions -> 73
 9.4   Lambda-expressions -> 74
-9.5   Label-expressions -> 75
+9.5   Label expressions -> 75
 9.6   Free and bound variables -> 76
-9.7   Remark on simultaneously recursive functions -> 77
+9.7   Remark on mutually recursive functions -> 77
 9.8   Definition of symbolic expressions -> 77
-9.9   Divergence from previous definitions -> 78
+9.9   Differences with earlier definitions -> 78
 9.10  Meta-expressions -> 80
 9.11  S-functions -> 80
 9.12  Elementary S-functions -> 81
-9.13  Remarks with McCarthy's definition of S-functions -> 83
+9.13  Remarks on McCarthy's definition of S-functions -> 83
 9.14  Examples of non-elementary S-functions -> 85
-9.15  Acronyms and function list -> 89
+9.15  Abbreviation and function list -> 89
+# sounds a bit funny: had to look at the text
 9.16  Functions as arguments to functions -> 89
 9.17  Remark on elimination (mozda removal) of acronyms 
       and non-elementary S-functions -> 90
 9.18  Translation of M-expressions into S-expressions -> 92
 9.19  Remark on M-expressions translation -> 95
 9.20  Mathematical definition of S-function eval -> 97
-9.21  S-function eval -> 101
+9.21  The S-function eval -> 101
 9.22  Remarks for definition of eval function -> 103
-9.23  Universal S-function apply -> 105
-9.24  Interpreter for Lisp -> 106
+9.23  The Universal S-function apply -> 105
+9.24  An Interpreter for Lisp -> 106
 9.25  S-functions and computability theory -> 107
 9.26  Simulation of Turing machines with S-function -> 108
-9.27  Questions about S-functions non-decidable with S-function -> 114
+9.27  Questions about S-functions not decidable with S-function -> 114
+# not completely happy yet
 9.28  Programs as S-functions -> 116
-9.29  Expressing symbolic expressions in computer memory -> 117
-9.30  Differences symbolic expressions and list pucture -> 118
+9.29  Representing symbolic expressions in computer memory -> 117
+9.30  Differences between symbolic expressions and list structure -> 118
 9.31  Garbage collection -> 119
       
 10    Linear Lisp -> 121
-10.1  L-izrazi -> 122
+10.1  L-Expressions -> 122
 10.2  Elementary functions -> 123
 10.3  Factorization of subexpressions -> 124
       
@@ -149,13 +153,14 @@ written permission by the author of the work.
       
 13.   Symbolic expressions as a language syntax -> 129
       
-14.   Fortran-like commands, function program, power of
+14.   Fortran-like commands, the function /program/, the power of
       multiparadigmatism of Lisp -> 132
 14.1  Coding of machine state and fortran-like commands -> 133
-14.2  S-function program -> 134
+14.2  The S-function /program/ -> 134
+# Markup? // or ==?
 14.3  Simultaneous execution of fortran-like commands and
       symbol ordering -> 135
-14.5  Power of the language from programmers perspective -> 137
+14.5  The power of the language from programmer's perspective -> 137
       
 15.   Woodward-Jenkins arithmetics -> 139
       
@@ -164,10 +169,10 @@ written permission by the author of the work.
 16.2  Using property lists -> 147
 16.3  Pseudo-functions -> 149
 16.4  Special forms -> 151
-16.5  Fexprovs (??????) -> 151
+16.5  Fexprs -> 151
 16.6  Programs in Lisp -> 153
 16.7  Functional arguments -> 155
-16.8  Special operator prog -> 158
+16.8  Special operator /prog/ -> 158
 16.9  Gensym and oblist -> 159
 16.10 Symbols T, ** T ** and NIL -> 161
 16.11 Arithmetics -> 162
@@ -183,13 +188,13 @@ written permission by the author of the work.
 17.6  Multivalued functions -> 172
 17.7  Recursive definition for sets of symbolic expressions -> 172
 17.8  Recursive induction -> 173
-17.9  Abpact syntax of programming languages -> 174
+17.9  Abstract syntax of programming languages -> 174
 17.10 Semantics -> 176
 
 18.   Gilmor's lisp-like language -> 178
 18.1  Conditional expressions -> 179
 18.2  Quote and label -> 179
-18.3  Abpact machine -> 180
+18.3  Abstract machine -> 180
 
 19.   Memoization -> 182
 
@@ -198,7 +203,7 @@ written permission by the author of the work.
 20.2  New eval -> 188
 20.3  Anonymous lambda and label -> 189
 
-21.   Firs implementations of Lisp -> 190
+21.   First implementations of Lisp -> 190
 
       Images -> 195
 
@@ -209,64 +214,64 @@ written permission by the author of the work.
 "In developing LISP our first goal is to describe a language which is as
 powerful as possible from the point of view of the programmer."^1
 
-Most programmers meet Lisp for the first time through numerous citations and
-aphorisms which, sometimes exaggerated, emphasize beauty, elegance, and power of
-the language. Thus, for example, understanding of Lisp is called enlightenment;
-it is claimed that experience with Lisp programming makes a programmer a better
-programmer, even if one will never use Lisp in their career. The language is, as
-a joke of course, prescribed mystical attributes; god (or gods) have written the
-universe in Lisp, and the Lisp community is described as a cult.
+Most programmers meet Lisp for the first time through some of the many quotes
+and aphorisms which, sometimes exaggerated, emphasize beauty, elegance and power
+of the language. Thus, for example, understanding of Lisp is called
+enlightenment; it is claimed that experience with Lisp programming makes a
+programmer a better programmer, even if one will never use Lisp in their entire
+life. The language is, as a joke of course, prescribed mystycal attributes; god
+(or gods) have written the universe in Lisp, and the Lisp community is described
+as a cult.
 
-If a programmer decides to study Lisp, they will probably conclude that Lisp is
-not only surprisingly powerful, but also an equally surprisingly simple
-programming language. Power is less questionable; if a language designer wishes
-to create a powerful language and invest enough time and effort, it is hard not
-to succeed. Simplicity is strange; it leaves an impression that Lisp is
-/discovered/ and not created. A similar impression was left on members of the
-ARTIFICIAL INTELLIGENCE project at MIT who developed Lisp. They aspired for a
-powerful language, but practical and robust qualities emerged. To the contrary
-of what might be expected, Lisp was becoming simpler and simpler during the
-development. When the main designer, John McCarthy, wrote an article which
-introduced Lisp to the public, there was mention of project engineers
-recognizing Lisp as "the subject of beauty" and worth studying for its own sake.
+If a programmer decides to study Lisp, he will probably conclude that Lisp is
+a surprisingly powerful, but also equally a surprisingly simple programming
+language. Power is less questionable; if a language designer wishes to create a
+powerful language and invests enough time and effort, it is hard not to succeed.
+Simplicity is strange; it leaves the impression that Lisp is /discovered/, and not
+created. A similar impression was left on members of the ARTIFICAL INTELLIGENCE
+project at U.S. MIT, who developed Lisp, imaginged as powerful, but practical
+and very complex language. To the contrary on what could be expected, Lisp was
+becoming simpler and simpler during its development. It was when its main
+designer, John McCarthy, wrote an article which introduced Lisp to the public
+that the project members recognized Lisp as "the subject of beaty" and worth
+studying for its own sake.
 
-In the coming decades, some members of the Lisp community tried to make the
-language more general, more powerful, and simpler by aligning with common
-programming paradigms. Other numerous attempts of advancement were driven by the
-desire to make the language more efficient, practical, popular, and even
-profitable. When compromises were made, designers tried to identify, keep, and
-improve important qualities of the language. Lisp influenced other programming
-languages, and to a lesser degree, other programming languages had influenced
-Lisp. Different motives, priorities, and solutions led to dissolution and
-fragmentation of the community. Development of numerous, and quite different,
-dialects ensued resulting in communities gathering around their diverging
-dialects.
+In the following decades, some members of the Lisp community have tried to make
+the language more general, more powerful, and simpler by a more accurate
+description of the ways in which programmers think. Many other attempts at
+advancements were driven by the desire to make the language more effecient,
+practical, popular, and even profitable. Even when compromises were made,
+designers have tried to identify, keep and perhaps also improve important
+qualities of the language. Lisp influenced other programming languages. To a
+lesser degree, other programming languages had influence on Lisp. Different
+motives, priorities and solutions have led to dissolution and framgentation of
+the community and to the development of numerous, quite different dialects and
+communities gathered around those dialects. 
 
-Regarding the fragmented communities and the existence of numerous
-interpretations of the core principles, if one wishes to understand Lisp, it is
-hard to avoid a historical approach by studying the ideas in the form they had
-when they evolved. As a rule, the most interesting period is the earliest one.
-This book tries to expose the evolution and development of the main ideas in
-Lisp during the first few years in which John McCarthy led the development of
-the language.
+In the context of a fragmented community and the existence of numerous
+interpretations of main ideas, if one wishes to understand Lisp, it is hard to
+avoid a historical approach, familiarizing with the ideas in the form they had
+when they evolved. The most interesting period is generally the earliest one.
+This book tries to expose the evolution and development of Lisp's main ideas
+during the first few years in which John McCarthy has led the language's
+development.
 
-There has already been efforts to systematically present the main ideas held
-during the early period of Lisp. John McCarthy himself has given several
-presentations and has written several articles on the subject. Early Lisp
-history is more thoroughly explored by Herbert Stoyan. Beside Stoyan's book
-/Lisp, Anwendungsgebiete, Grundbegriffe, Gechichte/ from 1980, published in
-German with limited copies circulating, all works about Lisp history are written
-in a form that assumes prior familiarity with Lisp. This book is written to be
-understood by all programmers regardless of their background or experience
-level.
+There were already efforts to systematically present main ideas in early period
+of Lisp. John McCarthy himself has given several presentations and wrote several
+articles on the subject. Early Lisp history is more thoroghly explored by
+Herbert Stoyan. Beside Stoyans book /Lisp, Anwendungsgebiete, Grundbegriffe,
+Gechichte/ from 1980, published only in German language and today hardly
+avaialable, all works about Lisp history are written in form that assumes good
+Lisp familiarity. This book is written to be understandable to any programmer
+with little experience in any specific programming language.
 
 During the writing of the manuscript for this book, the author has held several
-presentations in Hacklab Mama in Zagreb. Discussions with Hacklab members had
-lots of influence on content and form of the book.
+presentations in Hacklab Mama in Zagreb. Discussions with the Hacklab members had
+lots of influence on content and form of this book.
 
 In original documents, the name Lisp was usually written in capitalized letters:
-LISP. This book uses the more common and practical style found in current
-publications: Lisp. The original way of writing is kept only in citations.
+LISP. In this book, the currently usual and more practical form, Lisp is used.
+The original way of writing is kept only in quotes.
 
 1 McCarthy, /Programs in Lisp/, AIM-012, 1959, p. 4
 
@@ -4651,6 +4656,7 @@ meta-expressions, but they can also be seen in translation from meta-expressions
 into symbolic expressions.
 
 | meta-exression      | translation into symbolic expression |
+|------------------------------------------------------------|
 | cset[X; (A B C D)]  | (CSET (QUOTE X) (QUOTE (A B C D))).  |
 | csetq[X; (A B C D)] | (CSETQ X (QUOTE (A B C D))).         |
 
