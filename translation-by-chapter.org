@@ -49,11 +49,11 @@ written permission by the author of the work.
 1.    Introduction -> 10 
 2.    Early influences on McCarthy -> 13
 2.1   Technical enthusiasm -> 14
-2.2   Final automata and explicit facts representation -> 14
+2.2   Finite automata and explicit facts representation -> 14
 2.3   Digital computers as intelligent machines -> 16
       
-3.    Dahrmounth project -> 17
-3.1   Language of intelligent computers -> 18
+3.    The Dartmouth project -> 17
+3.1   The Language of intelligent computers -> 18
 3.2   Between IPL and Fortran -> 19
       
 4.    FLPL -> 20
@@ -63,19 +63,21 @@ written permission by the author of the work.
       
 5.    Compiler suggestion -> 26
 5.1   Programming language as a coordinate system -> 27
-5.2   Programmers freedom -> 28
+5.2   Programmer's freedom -> 28
 5.3   Logic values and functions -> 28
 5.4   Function if -> 29
+# General question: markup? e.g. Function =if=
 5.5   Syntax -> 29
 5.6   Lists -> 30
 5.7   Multivalued functions and function composition -> 30
       
 6.    Suggestion for programming language -> 32
 6.1   Conditional command -> 33 (Mozda bolje conditional expression?)
+# 'expression' seems better, also below:
 6.2   Go to command -> 33
 6.3   Macro command -> 34
 6.4   Higher order functions -> 35
-6.5   Lambda-expressions -> 36
+6.5   Lambda expressions -> 36
       
 7.    Imperative Lisp -> 37
 7.1   Imperative and algebraic language -> 40
@@ -85,13 +87,13 @@ written permission by the author of the work.
 7.5   Attribute lists -> 45
 7.6   Lists and representation of symbolic expressions -> 45
 7.7   Functions for analys and synthesis of words and refferencing -> 48
-7.8   Free-memory manipulation -> 49
+7.8   Free memory manipulation -> 49
 7.9   Basic operations on whole lists -> 50
 7.10  Function maplist
 
 8.    Elements of functional programming -> 53
 8.1   New function maplist -> 54
-8.2   McCarthy's lambda-expressions -> 55
+8.2   McCarthy's lambda expressions -> 55
 8.3   Language simplification -> 58
 8.4   Recursive function implementation -> 60
 8.5   Functional and Imperative style -> 60
@@ -107,39 +109,41 @@ written permission by the author of the work.
 9.    Pure Lisp -> 68
 9.1   Mathematical expressions -> 72
 9.2   Conditional expressions -> 72
-9.3   Recursive and simultaneously recursive defined functions -> 73
+9.3   Recursive and mutually recursive defined functions -> 73
 9.4   Lambda-expressions -> 74
-9.5   Label-expressions -> 75
+9.5   Label expressions -> 75
 9.6   Free and bound variables -> 76
-9.7   Remark on simultaneously recursive functions -> 77
+9.7   Remark on mutually recursive functions -> 77
 9.8   Definition of symbolic expressions -> 77
-9.9   Divergence from previous definitions -> 78
+9.9   Differences with earlier definitions -> 78
 9.10  Meta-expressions -> 80
 9.11  S-functions -> 80
 9.12  Elementary S-functions -> 81
-9.13  Remarks with McCarthy's definition of S-functions -> 83
+9.13  Remarks on McCarthy's definition of S-functions -> 83
 9.14  Examples of non-elementary S-functions -> 85
-9.15  Acronyms and function list -> 89
+9.15  Abbreviation and function list -> 89
+# sounds a bit funny: had to look at the text
 9.16  Functions as arguments to functions -> 89
 9.17  Remark on elimination (mozda removal) of acronyms 
       and non-elementary S-functions -> 90
 9.18  Translation of M-expressions into S-expressions -> 92
 9.19  Remark on M-expressions translation -> 95
 9.20  Mathematical definition of S-function eval -> 97
-9.21  S-function eval -> 101
+9.21  The S-function eval -> 101
 9.22  Remarks for definition of eval function -> 103
-9.23  Universal S-function apply -> 105
-9.24  Interpreter for Lisp -> 106
+9.23  The Universal S-function apply -> 105
+9.24  An Interpreter for Lisp -> 106
 9.25  S-functions and computability theory -> 107
 9.26  Simulation of Turing machines with S-function -> 108
-9.27  Questions about S-functions non-decidable with S-function -> 114
+9.27  Questions about S-functions not decidable with S-function -> 114
+# not completely happy yet
 9.28  Programs as S-functions -> 116
-9.29  Expressing symbolic expressions in computer memory -> 117
-9.30  Differences symbolic expressions and list pucture -> 118
+9.29  Representing symbolic expressions in computer memory -> 117
+9.30  Differences between symbolic expressions and list structure -> 118
 9.31  Garbage collection -> 119
       
 10    Linear Lisp -> 121
-10.1  L-izrazi -> 122
+10.1  L-Expressions -> 122
 10.2  Elementary functions -> 123
 10.3  Factorization of subexpressions -> 124
       
@@ -149,13 +153,14 @@ written permission by the author of the work.
       
 13.   Symbolic expressions as a language syntax -> 129
       
-14.   Fortran-like commands, function program, power of
+14.   Fortran-like commands, the function /program/, the power of
       multiparadigmatism of Lisp -> 132
 14.1  Coding of machine state and fortran-like commands -> 133
-14.2  S-function program -> 134
+14.2  The S-function /program/ -> 134
+# Markup? // or ==?
 14.3  Simultaneous execution of fortran-like commands and
       symbol ordering -> 135
-14.5  Power of the language from programmers perspective -> 137
+14.5  The power of the language from programmer's perspective -> 137
       
 15.   Woodward-Jenkins arithmetics -> 139
       
@@ -164,10 +169,10 @@ written permission by the author of the work.
 16.2  Using property lists -> 147
 16.3  Pseudo-functions -> 149
 16.4  Special forms -> 151
-16.5  Fexprovs (??????) -> 151
+16.5  Fexprs -> 151
 16.6  Programs in Lisp -> 153
 16.7  Functional arguments -> 155
-16.8  Special operator prog -> 158
+16.8  Special operator /prog/ -> 158
 16.9  Gensym and oblist -> 159
 16.10 Symbols T, ** T ** and NIL -> 161
 16.11 Arithmetics -> 162
@@ -183,13 +188,13 @@ written permission by the author of the work.
 17.6  Multivalued functions -> 172
 17.7  Recursive definition for sets of symbolic expressions -> 172
 17.8  Recursive induction -> 173
-17.9  Abpact syntax of programming languages -> 174
+17.9  Abstract syntax of programming languages -> 174
 17.10 Semantics -> 176
 
 18.   Gilmor's lisp-like language -> 178
 18.1  Conditional expressions -> 179
 18.2  Quote and label -> 179
-18.3  Abpact machine -> 180
+18.3  Abstract machine -> 180
 
 19.   Memoization -> 182
 
@@ -198,7 +203,7 @@ written permission by the author of the work.
 20.2  New eval -> 188
 20.3  Anonymous lambda and label -> 189
 
-21.   Firs implementations of Lisp -> 190
+21.   First implementations of Lisp -> 190
 
       Images -> 195
 

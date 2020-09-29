@@ -1,21 +1,21 @@
 * As Powerful as Possible
 
 ** About
-This directory contains English translation of the book
+This directory contains the English translation of the book
 
 [[https://monoskop.org/images/c/cb/Majorinc_Kazimir_Mocan_koliko_je_god_moguce.pdf][Moćan koliko je god moguće]] by [[http://kazimirmajorinc.com/][Kazimir Majorinc]]
 
-The book itself is about origins and first few years of development of 
+The book itself is about the origins and the first few years of development of 
 Lisp, the programming language.
 
-The translation is done by me as a hobby for my own reading pleasure and to
+The translation is done by me, as a hobby for my own reading pleasure and to
 practice my language skills.
 
 Since I am not a native English speaker, there might be (are) some errors.
 
 ** How to read
 
-Currently the only avaialable format is plain text, in form of Emacs org-mode
+Currently the only avaialable format is plain text, in form of an Emacs org-mode
 file. It should be relatively easy to export into pdf/html or some other format.
 However, the file is not yet "prepared" for export, so the result might not be
 the most optimal, yet. The file is formatted to be read in Emacs primarily :-).
@@ -26,9 +26,9 @@ To obtain a copy of this book you may simply clone this repository
 git clone   https://github.com/amno1/as-powerful-as-possible
 #+END_SRC
 
-You can then open file 'translation-by-chapter.org' with your [[https://www.gnu.org/software/emacs/][Emacs]] or any other
-text editor. Alternativly you may [[https://github.com/amno1/as-powerful-as-possible/blob/master/translation-by-chapter.org][read it directly]] in your browser, though it is
-not recommended (org formatting is not exported very nicely per automatic by Github).
+You can then open the file 'translation-by-chapter.org' with your [[https://www.gnu.org/software/emacs/][Emacs]] or any other
+text editor. Alternatively you may [[https://github.com/amno1/as-powerful-as-possible/blob/master/translation-by-chapter.org][read it directly]] in your browser, though it is
+not recommended (org formatting is not exported very nicely by Github).
 
 If you are using Emacs for reading, you might wish to configure org mode with
 following settings:
@@ -40,23 +40,23 @@ following settings:
       org-hide-emphasis-markers t)
 #+end_src
 
-Currently only available layout is per chapter.
+Currently the only available layout is per chapter.
 
 ** How to contribute
 
 I apreciate any language; grammatic, idiomatic or other corrections. Please make
 a pull request or open an issue.
 
-If you find error in the book considering content itself, i.e. a misstake in
+If you find a factual error in the book, i.e. a mistake in
 code or facts, you may open an issue so I can contact the author or you may
 contact the author yourself.
 
 ** Todo
 
-I have ambition to link-in mentioned references in the footnotes, at least for
-major papers and books, at level as it is feasible.
+I have the ambition to link-in mentioned references in the footnotes, at least for
+major papers and books, as far as possible.
 
-Layout and typograpfy of the original book is not preserved due to org-mode
+Layout and typograpphy of the original book is not preserved due to org-mode
 limitations. A goal is to re-write the translation from org-mode into Latex
 (whish-list). 
 
