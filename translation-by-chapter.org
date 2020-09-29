@@ -207,63 +207,66 @@ written permission by the author of the work.
 ** 1. Introduction
 
 "In developing LISP our first goal is to describe a language which is as
-powerfull as possible from the point of view of the programmer."^1
+powerful as possible from the point of view of the programmer."^1
 
 Most programmers meet Lisp for the first time through numerous citations and
-aphorisms which, sometimes exaggerated, emphasize beauty, elegance and power of
+aphorisms which, sometimes exaggerated, emphasize beauty, elegance, and power of
 the language. Thus, for example, understanding of Lisp is called enlightenment;
 it is claimed that experience with Lisp programming makes a programmer a better
-programmer, even if one will never use Lisp in their entire life. The language
-is, as a joke of course, prescribed mystycal attributes; god (or gods) have
-written the universe in Lisp, and the Lisp community is described as a cult.
+programmer, even if one will never use Lisp in their career. The language is, as
+a joke of course, prescribed mystical attributes; god (or gods) have written the
+universe in Lisp, and the Lisp community is described as a cult.
 
-If a programmer decides to study Lisp, he will probably conclude that Lisp is
-surprisingly powerful, but also equally surprisingly simple programming
-language. Power is less questionable; if a language designer wish to create a
-powerful language and invest enough time and effort, it is hard not to succeed.
-Simplicity is strange; it leaves impression that Lisp is /discovered/, and not
-created. Similar impression was left on members of ARTIFICAL INTELLIGENCE
-project at U.S. MIT, who developed Lisp, imaginged as powerful, but practical
-and very complex language. To the contrary on what could be expected, Lisp was
-becoming simpler and simpler during the development. First when main designer,
-John McCarthy, wrote an article which introduced Lisp to public, have members of
-the project recognized Lisp as "the subject of beaty" and worth studying for its
-own sake.
+If a programmer decides to study Lisp, they will probably conclude that Lisp is
+not only surprisingly powerful, but also an equally surprisingly simple
+programming language. Power is less questionable; if a language designer wishes
+to create a powerful language and invest enough time and effort, it is hard not
+to succeed. Simplicity is strange; it leaves an impression that Lisp is
+/discovered/ and not created. A similar impression was left on members of the
+ARTIFICIAL INTELLIGENCE project at MIT who developed Lisp. They aspired for a
+powerful language, but practical and robust qualities emerged. To the contrary
+of what might be expected, Lisp was becoming simpler and simpler during the
+development. When the main designer, John McCarthy, wrote an article which
+introduced Lisp to the public, there was mention of project engineers
+recognizing Lisp as "the subject of beauty" and worth studying for its own sake.
 
-In comming decades, some members of Lisp community have tried to make the
-language more general, more powerful, and simpler by more correct description
-of ways in which programmers think. Other, numerous attempts of advancements are
-drived by desire to make the language more effecient, practical, popular, and
-even profitable. Even when compromisses are made, designers have tried to
-identify, keep and perhaps also improve important qualities of the language.
-Lisp influenced other programming languages. In lesser degree, other programming
-languages had influence on Lisp. Different motives, priorities and solutions
-have led to dissolution and framgentation of the community and development of
-numerous, quite different dialects and communities gathered around the dialects.
+In the coming decades, some members of the Lisp community tried to make the
+language more general, more powerful, and simpler by aligning with common
+programming paradigms. Other numerous attempts of advancement were driven by the
+desire to make the language more efficient, practical, popular, and even
+profitable. When compromises were made, designers tried to identify, keep, and
+improve important qualities of the language. Lisp influenced other programming
+languages, and to a lesser degree, other programming languages had influenced
+Lisp. Different motives, priorities, and solutions led to dissolution and
+fragmentation of the community. Development of numerous, and quite different,
+dialects ensued resulting in communities gathering around their diverging
+dialects.
 
-In conditions of fragmented community and existence of numerous interpretations
-of main ideas, if one wish to understand Lisp, it is hard to avoid a historical
-approach; familiarizing with ideas in the form they had when they evolved. The
-most interesting period, as a rule, is the earliest one. This book tries to
-expose evolution and development of main ideas in Lisp during the first few
-years in which John McCarthy has led the development of the language.
+Regarding the fragmented communities and the existence of numerous
+interpretations of the core principles, if one wishes to understand Lisp, it is
+hard to avoid a historical approach by studying the ideas in the form they had
+when they evolved. As a rule, the most interesting period is the earliest one.
+This book tries to expose the evolution and development of the main ideas in
+Lisp during the first few years in which John McCarthy led the development of
+the language.
 
-There were already efforts to systematically present main ideas in early period
-of Lisp. John McCarthy himself has given several presentations and wrote several
-articles on the subject. Early Lisp history is more thoroghly explored by
-Herbert Stoyan. Beside Stoyans book /Lisp, Anwendungsgebiete, Grundbegriffe,
-Gechichte/ from 1980, published only in German language and today hardly
-avaialable, all works about Lisp history are written in form that assumes good
-Lisp familiarity. This book is written to be understandable to any programmer
-with little experience in any programming language.
+There has already been efforts to systematically present the main ideas held
+during the early period of Lisp. John McCarthy himself has given several
+presentations and has written several articles on the subject. Early Lisp
+history is more thoroughly explored by Herbert Stoyan. Beside Stoyan's book
+/Lisp, Anwendungsgebiete, Grundbegriffe, Gechichte/ from 1980, published in
+German with limited copies circulating, all works about Lisp history are written
+in a form that assumes prior familiarity with Lisp. This book is written to be
+understood by all programmers regardless of their background or experience
+level.
 
-During the writing of manuscript for this book, author has held several
+During the writing of the manuscript for this book, the author has held several
 presentations in Hacklab Mama in Zagreb. Discussions with Hacklab members had
 lots of influence on content and form of the book.
 
-In original documents, name Lisp was usually written in capitalized letters:
-LISP. In the book is used, today common and more practical way of writing: Lisp.
-The original way of writing is kept only in citates.
+In original documents, the name Lisp was usually written in capitalized letters:
+LISP. This book uses the more common and practical style found in current
+publications: Lisp. The original way of writing is kept only in citations.
 
 1 McCarthy, /Programs in Lisp/, AIM-012, 1959, p. 4
 
@@ -6541,3 +6544,5 @@ Woodward, P. M., & Jenkins, D. P. (1961). Atoms and lists. The
     Computer Journal, 4(1), 47-53.
 
 
+
+#  LocalWords:  Stoyan's Gechichte
