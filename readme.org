@@ -13,6 +13,10 @@ practice my language skills.
 
 Since I am not a native English speaker, there might be (are) some errors.
 
+**  Thanks 
+
+Thanks to Tomas and Tim for the patches. Your help is appreciated and invaluable!
+
 ** How to read
 
 Currently the only avaialable format is plain text, in form of an Emacs org-mode
@@ -33,12 +37,14 @@ not recommended (org formatting is not exported very nicely by Github).
 If you are using Emacs for reading, you might wish to configure org mode with
 following settings:
 
-
 #+begin_src emacs-lisp
 (setq org-image-actual-width    nil
       org-hide-leading-stars    t
       org-hide-emphasis-markers t)
 #+end_src
+
+If you have [[https://github.com/Fuco1/org-pretty-table][org-pretty-table]] library you may also enable org-pretty-table-mode
+to have prettier rendering of tables.
 
 Currently the only available layout is per chapter.
 
@@ -50,6 +56,10 @@ a pull request or open an issue.
 If you find a factual error in the book, i.e. a mistake in
 code or facts, you may open an issue so I can contact the author or you may
 contact the author yourself.
+
+** Contributors:
+
+[[https://github.com/tim8west?tab=overview&from=2020-08-01&to=2020-08-31][Tim West]]
 
 ** Todo
 
