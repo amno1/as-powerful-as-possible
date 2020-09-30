@@ -214,133 +214,134 @@ written permission by the author of the work.
 "In developing LISP our first goal is to describe a language which is as
 powerful as possible from the point of view of the programmer."^1
 
-Most programmers meet Lisp for the first time through some of the many quotes
-and aphorisms which, sometimes exaggerated, emphasize beauty, elegance and power
-of the language. Thus, for example, understanding of Lisp is called
-enlightenment; it is claimed that experience with Lisp programming makes a
-programmer a better programmer, even if one will never use Lisp in their entire
-life. The language is, as a joke of course, prescribed mystycal attributes; god
-(or gods) have written the universe in Lisp, and the Lisp community is described
-as a cult.
+Most programmers meet Lisp for the first time through numerous citations and
+aphorisms which, sometimes exaggerated, emphasize beauty, elegance, and power of
+the language. Thus, for example, understanding of Lisp is called enlightenment;
+it is claimed that experience with Lisp programming makes a programmer a better
+programmer, even if one will never use Lisp in their career. The language is, as
+a joke of course, prescribed mystical attributes; god (or gods) have written the
+universe in Lisp, and the Lisp community is described as a cult.
 
-If a programmer decides to study Lisp, he will probably conclude that Lisp is
-a surprisingly powerful, but also an equally surprisingly simple programming
-language. Power is less questionable; if a language designer wishes to create a
-powerful language and invests enough time and effort, it is hard not to succeed.
-Simplicity is strange; it leaves the impression that Lisp is /discovered/ and not
-created. A similar impression was left on members of the ARTIFICAL INTELLIGENCE
-project at U.S. MIT, who developed Lisp, imaginged as powerful, but practical
-and very complex language. To the contrary on what might be expected, Lisp was
-becoming simpler and simpler during the development. It was when the main
-designer, John McCarthy, wrote an article which introduced Lisp to the public
-that the project members recognized Lisp as "the subject of beauty" and worth
-studying for its own sake.
+If a programmer decides to study Lisp, they will probably conclude that Lisp is
+not only surprisingly powerful, but also an equally surprisingly simple
+programming language. Power is less questionable; if a language designer wishes
+to create a powerful language and invest enough time and effort, it is hard not
+to succeed. Simplicity is strange; it leaves an impression that Lisp is
+/discovered/ and not created. A similar impression was left on members of the
+ARTIFICIAL INTELLIGENCE project at MIT who developed Lisp. They aspired for a
+powerful language, but practical and robust qualities emerged. To the contrary
+of what might be expected, Lisp was becoming simpler and simpler during the
+development. When the main designer, John McCarthy, wrote an article which
+introduced Lisp to the public, there was mention of project engineers
+recognizing Lisp as "the subject of beauty" and worth studying for its own sake.
 
-In the following decades, some members of the Lisp community have tried to make
-the language more general, more powerful, and simpler by a more accurate
-description of the ways in which programmers think. Other numerous attempts at
-advancements were driven by the desire to make the language more efficient,
-practical, popular, and even profitable. Even when compromises were made,
-designers have tried to identify, keep and perhaps also improve important
-qualities of the language. Lisp influenced other programming languages. To a
-lesser degree, other programming languages had influence on Lisp. Different
-motives, priorities and solutions have led to dissolution and framgentation of
-the community and to the development of numerous, quite different dialects, and
-communities gathered around those dialects. 
+In the coming decades, some members of the Lisp community tried to make the
+language more general, more powerful, and simpler by aligning with common
+programming paradigms. Other numerous attempts of advancement were driven by the
+desire to make the language more efficient, practical, popular, and even
+profitable. When compromises were made, designers tried to identify, keep, and
+improve important qualities of the language. Lisp influenced other programming
+languages, and to a lesser degree, other programming languages had influenced
+Lisp. Different motives, priorities, and solutions led to dissolution and
+fragmentation of the community. Development of numerous, and quite different,
+dialects ensued resulting in communities gathering around their diverging
+dialects.
 
-In the context of a fragmented community and the existence of numerous
-interpretations of main ideas, if one wishes to understand Lisp, it is hard to
-avoid a historical approach, by the studying the ideas in the form they had
+Regarding the fragmented communities and the existence of numerous
+interpretations of the core principles, if one wishes to understand Lisp, it is
+hard to avoid a historical approach by studying the ideas in the form they had
 when they evolved. As a rule, the most interesting period is the earliest one.
-This book tries to expose the evolution and development of Lisp's main ideas
-during the first few years in which John McCarthy has led the language's
-development.
+This book tries to expose the evolution and development of the main ideas in
+Lisp during the first few years in which John McCarthy led the development of
+the language.
 
-There has already been efforts to systematically present main ideas in early
-period of Lisp. John McCarthy himself has given several presentations and has
-written several articles on the subject. Early Lisp history is more thoroghly
-explored by Herbert Stoyan. Beside Stoyans book /Lisp, Anwendungsgebiete,
-Grundbegriffe, Gechichte/ from 1980, published only in German language and today
-hardly avaialable, all works about Lisp history are written in a form that
-assumes good Lisp familiarity. This book is written to be understandable by any
-programmer with little experience in any specific programming language.
+There has already been efforts to systematically present the main ideas held
+during the early period of Lisp. John McCarthy himself has given several
+presentations and has written several articles on the subject. Early Lisp
+history is more thoroughly explored by Herbert Stoyan. Beside Stoyan's book
+/Lisp, Anwendungsgebiete, Grundbegriffe, Gechichte/ from 1980, published in
+German with limited copies circulating, all works about Lisp history are written
+in a form that assumes prior familiarity with Lisp. This book is written to be
+understood by all programmers regardless of their background or experience
+level.
 
 During the writing of the manuscript for this book, the author has held several
-presentations in Hacklab Mama in Zagreb. Discussions with the Hacklab members
-had lots of influence on content and form of this book.
+presentations in Hacklab Mama in Zagreb. Discussions with Hacklab members had
+lots of influence on content and form of the book.
 
 In original documents, the name Lisp was usually written in capitalized letters:
-LISP. In this book, the currently common and more practical form, Lisp is used.
-The original way of writing is kept only in quotes.
+LISP. This book uses the more common and practical style found in current
+publications: Lisp. The original way of writing is kept only in citations.
 
 1 McCarthy, /Programs in Lisp/, AIM-012, 1959, p. 4
 
 ** 2 Early influences on McCarthy
 
-Hundreds of people have participated in development of Lisp. Yet, for the author
-of the language is unqestionably considered an American, John McCarthy
+Hundreds of people have participated in the development of Lisp. The author of
+the language is unquestionably considered an American, John McCarthy
 (1927-2011), a researcher of artificial intelligence. Lisp, the programming
-language suitable for solving problems in field of artificial intelligence, is
-one McCarthy's first projects.
+language suitable for solving problems in the field of artificial intelligence,
+is one of McCarthy's first projects.
 
 2.1 TECHNOLOGICAL ENTHUSIASM
 
 McCarthy is often considered a visionary^2, a man whose work looks toward the
-future. Amongs many projects, he also wrote and maintened web pages with
-futuristic themes.^3 
+future. Amongst many projects, he also wrote and maintained web pages with
+futuristic themes.^3
 
-His scientific and life interests, McCarthy considered as consequences of the
-fostering. Mother Ida and father Jack were communist activists who back then had
-strong belief in the science, technology and unstoppable progress of humankind.
-The children red popular scientific literature from the /soviet/ and McCarthy
-especially liked a book by Mikhail Ilina, /100 000 Whys/.^4 Political views, as
-well as the confidence in the science, the parents managed to successfully
-transfer over to John. McCarthy also noticed similar interests amongst other
+His scientific and life interests were considered by McCarthy to be influenced
+by his upbringing. His mother, Ida, and father, Jack, were communist activists
+who had a strong belief in science, technology, and the unstoppable progress of
+humankind. The children read popular scientific literature from the /soviet/ and
+McCarthy especially liked a book by Mikhail Ilina, /100 000 Whys/.^4 Political
+views, as well as confidence in science, were successfully transferred over to
+John by his parents. McCarthy also noticed similar interests amongst other
 children fostered in communist families. McCarthy considered himself a "radical
 optimist:" he believed that outcome will be successful even if people don't
-listen to his advices.^5
+listen to his advice.^5
 
 2.2 FINITE AUTOMATA AND EXPLICIT FACT REPRESENTATIONS
 
-McCarthy was an exceptionally good student. Hi went out high school two years
-earlier then expected. He started mathematical studies 1944 by entering the
-third year courses, but he was expelled from the university because of him
-skipping the physical education classes. After shorter break he was anyway
-allowed to continue the studies.^6
+McCarthy was an exceptionally good student. He graduated from high school two
+years earlier than expected. He started mathematical studies in 1944 by entering
+the third year courses but was expelled from the university because of his
+skipping the physical education classes. After a short break, he was allowed to
+continue his studies.^6
 
-Conference /Hixon Symposium for Cerebral Mechanisms in Behaviour/ in Pasadena,
-1948., especially presentation by John von Neumann about automatons that
-could replicate, mutate and evolve, intrigued McCarthy about artificial
+A Conference /Hixon Symposium for Cerebral Mechanisms in Behaviour/ in Pasadena,
+1948., especially a presentation by John von Neumann about automatons that could
+replicate, mutate, and evolve, intrigued McCarthy about artificial
 intelligence.^8,9
 
-McCarthy's first important idea is representation of /an intelligent actor and/
-/its environment/ with finite automata. Despite von Neumanns recommendation to
-publish his ideas, McCarthy refuses because of impossibility to represent facts
-about the environment in finite automata.^10 Until the end of his studies he
-researched partial differential equations. Between 1951 and 1958 he changed
-several different jobs, mainly in higher education institutions.
+McCarthy's first important idea is the representation of /an intelligent actor
+and/ /its environment/ with finite automata. Despite von Neumann's
+recommendation to publish his ideas, McCarthy refused because of the
+impossibility to represent facts about the environment in finite automata.^10
+Until the end of his studies, he researched partial differential equations.
+Between 1951 and 1958, he changed jobs several times, mainly in higher education
+institutions.
 
-The second important idea, McCarthy developed 1952. Problems are, he presumed,
-decided by a function that tests problems solution. Then we can find solution
-for a problem by applying inverse of that function.^11 McCarthy published a paper,
-but he faced same problems as with the previous idea.^12 Shortly and for the last
-time he returns to differential equations.
+McCarthy developed his second important idea in 1952. Problems are, he presumed,
+decided by a function that tests a problem's solution. Then we can find the
+solution for a problem by applying the inverse of that function.^11 McCarthy
+published a paper, but he faced the same problems as with the previous idea.^12
+Shortly, and for the last time, he returned to differential equations.
 
-First failures ascertained McCarthy that intelligent automata must process
-explicit representations of facts.^13 That insight is basic for later
-McCarthy's work, "the logic of artificial intelligence" and clear inspiration
-for the development of Lisp.
+First failures revealed to McCarthy that intelligent automata must process
+explicit representations of facts.^13 That insight is basic for McCarthy's later
+work, "the logic of artificial intelligence", and a clear inspiration for the
+development of Lisp.
 
 2.3 DIGITAL COMPUTERS AS INTELLIGENT AUTOMATON
 
-Digital computers can imitate all automatons with finite number of states. If
-intelligent machines are even possible, it will certainly be digital computers
-equipped with appropriate programs. This idea today seems like an unnecessary
-trivialitet, but for the very first researchers it wasn't selfevident. Alan
-Turing started to represent that idea 1947.,^14 but he published it
-first 1950.^15 McCarthy came to same conclusion summer 1955., while working in
-IBM's center in Poughkeepsie under leadership by Nathaniel Rochester, the
-constructor of the personal computer.
+Digital computers can imitate all automatons with a finite number of states. If
+intelligent machines are even possible, it will certainly be achieved with
+digital computers equipped with appropriate programs. This idea today seems like
+an unnecessary trivia, but for the very first researchers it wasn't self
+evident. Alan Turing started to represent that idea in 1947.,^14 but he
+published it first in 1950.^15 McCarthy came to the same conclusion in the
+summer of 1955., while working in IBM's center in Poughkeepsie under leadership
+from Nathaniel Rochester, the constructor of the personal computer.
 
 2 Lord, /John McCarthy has passed, 2011/
 3 McCarthy, /Progress and its sustainability/, 1995
@@ -6550,3 +6551,5 @@ Woodward, P. M., & Jenkins, D. P. (1961). Atoms and lists. The
     Computer Journal, 4(1), 47-53.
 
 
+
+#  LocalWords:  Stoyan's Gechichte
