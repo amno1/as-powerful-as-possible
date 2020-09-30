@@ -334,14 +334,14 @@ development of Lisp.
 
 2.3 DIGITAL COMPUTERS AS INTELLIGENT AUTOMATON
 
-Digital computers can imitate all automatons with finite number of states. If
+Digital computers can imitate all automatons with a finite number of states. If
 intelligent machines are even possible, it will certainly be achieved with
 digital computers equipped with appropriate programs. This idea today seems like
 an unnecessary trivia, but for the very first researchers it wasn't self
 evident. Alan Turing started to represent that idea in 1947.,^14 but he
 published it first in 1950.^15 McCarthy came to the same conclusion in the
 summer of 1955., while working in IBM's center in Poughkeepsie under leadership
-of Nathaniel Rochester, the constructor of the personal computer.
+from Nathaniel Rochester, the constructor of the personal computer.
 
 2 Lord, /John McCarthy has passed, 2011/
 3 McCarthy, /Progress and its sustainability/, 1995
