@@ -61,6 +61,8 @@ contact the author yourself.
 
 [[https://github.com/tim8west?tab=overview&from=2020-08-01&to=2020-08-31][Tim West]]
 
+[[http://www.tuxteam.de][Tomás Zerolo]]
+
 ** Todo
 
 I have the ambition to link-in mentioned references in the footnotes, at least for
