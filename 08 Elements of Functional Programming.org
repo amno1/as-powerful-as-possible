@@ -1,0 +1,523 @@
+* 8. Elements of functional programming
+
+In period from September 1958. to March 1959. Lisp developed gradually and
+continuously, without some major redesign. Changes in that period led, mainly,
+toward what would later be called "pure Lisp" and which is described in
+McCarthy's first article about Lisp^99.
+
+8.1 NEW MAPLIST FUNCTION
+
+In second memo McCarthy criticizes first version of *maplist* function^100,101
+which was called by expression *maplist(/L/, /J/, /f(J)/)*. First, it would be better if
+in function call values /J/ were /elements of list L/ instead of address parts of
+list elements^102. If a list element is known, it's address part can be
+calculated. Reversal is not valid.
+
+A second, more important objection, is that a name of a variable can not be used
+"conclusively" as a function argument. For example, if a first version of
+*maplist* function is called by expression
+
+        *maplist(list(1,2,3),x,x*x)*        (*)
+
+subexpressions *x* and *x*x* will be calculated and results of calculations passed
+to *maplist* function. While evaluating *x*x* there will be error, because variable
+*x* does not have a defined value, and if such value is defined somewhere in the
+program, the result will not have the data needed for calculating the expression
+(*).
+
+Thus McCarthy defines new version of *maplist* function. The function is called by
+expression in form
+
+        *maplist(/L/, /f/)*,
+
+where /L/ is an expression whose value is a list, and /f/ is an expression whose
+value is a function. For example, the value of function call
+*maplist(list(1,2,3),car)* is a list constructed from values obtained by applying
+function *car* on all /list elements/ obtained by computing *list(1,2,3)*.
+
+#+ATTR_ORG: :width 800
+[[./images/10.png]]
+
+IMAGE 10. The result of computing *maplist(list(1,2,3),car)*.
+
+Defintion of *maplist* function resolves all ambiguities.
+
+        maplist(L,f) = (L = 0 → 0,
+                        1 → cons(f(L),
+                                  maplist(cdr(L),f))).^103
+
+Function cons^104 takes a word from the free storage list, in address part of
+the word writes address *f(L)* and in the decrement part address of
+*maplist(crd(L),f)*.
+
+8.2 MCCARTHY'S LAMBDA-EXPRESSIONS
+
+The second version of *maplist* function, in this form, is more limited than the
+previous version. For example, with second version it is not possible to write
+an equivalent of the expression
+
+        *maplist(list(1,2,3),x,x*x)*
+
+as in first version of *maplist* function. Therefore McCarthy returns to the idea
+from /Letter to Perlis and Turanski/. He defines "a functional abstraction" as an
+expression which gives rules for computing function appliction on arguments. An
+expression like *x*x+y* does not have such property. For example, if we try to
+calculate
+
+        *(x*x+y)(3,4)*
+
+it is not clear which values should be associated with parameters *x* and *y*.
+McCarthy's lambda-expressions^105, for example *λ(x,y,x*x+y)* inspired by
+Church's^106 satisfy that criteria. Value of expression
+
+        *λ(x,y,x*x+y)(3,4)*
+
+equals value 3*3+4. More generally, value  *λ(/J/, /E/)(/e/)* is a value of expression
+obtained by substitution of argument /e/ into /J/ and /E/. Similar holds for
+lambda-expressions with multiple variables. For example, call to second version
+of the function
+
+        *maplist(list(1,2,3),λ(J,car(J)))*
+
+is equivalent to call of the first version of function *maplist(list(1,2,3),J,J)*.
+
+Important McCarthy's example is definition of the function for derivation
+diff^107 which skillfully exploits the second version of the *maplist* fucntion
+and lambda-expressions.
+
+        diff(L,V)=
+          (L=V → C1,
+           car(L)=O → C0,
+           car(L)=plus → cons(plus,
+                              maplist(cdr(L),
+                                      λ(J,
+                                        diff(car(J),
+                                             V)))),
+           car(L)=times →
+             cons(plus,
+                  maplist(cdr(L),
+                     λ(J,
+                       cons(times,
+                            maplist(cdr(L),
+                                    λ(K,
+                                     (J≠K →
+                                        copy(car(K)),
+                                       1→diff(car(K),
+                                               V)))))))),
+           1 → error)
+
+*C0* and *C1* represent constants 0 and 1. It should be noted that 1 is the last
+condtion in previos definition, i.e. it is calculated in "all other cases". The
+program is unusually skillfully and elegantly written, especially for the time
+when McCarthy barely could have lots of experience in writing programs in Lisp.
+
+From the historical distance, it is not obvious that lambda-expressions are the
+best solution for the problem with *maplist* function. Lambda-expressions are a
+consequent development if the idea that functions can also be arguments for
+other functions. Nonetheless, the need to use non-evaluated symbols and
+expressions as arguments persisted and was alter solved more generally, by
+introducing the "special operator" *QUOTE*. Considering this, we could say that
+lambda-expressions are introduced in Lisp too early, or perhaps, even
+accidentally. Despite, almost all Lisp dialects continue to keep
+lambda-expressions^108.
+
+There are also opinions that differences between Lisp and lambda calculus are
+big^109,110 as well as that λ-calculus is a basis for Lisp^111,112,113. McCarthy
+himself refuted the later ones as "a myth".^114
+
+8.3 SIMPLIFICATION OF THE LANGUAGE
+
+McCarthy realized soon^115 that for all needed operations, it is enough to use
+just address and decrement part of the word. Among big number of functions for
+processing single words, left were only few. Some functions got new names.
+
+Functions^116 *add(/w/)* and *dec(/w/)* extracts address and decrement part of a word
+which is the value of expression /w/.
+
+Function *comb(/a/, /d/)* evaluates the value of a word that contains values /a/ and /d/ in
+address and decrement parts.
+
+Functions *cwr(/n/)*, *car(/n/)* and *cdr(/n/)* returns the value of a word n, respective of
+the address and the decrement part of the word at the address whose value is /n/.
+
+Function *consw(/w/)* writes value /w/ in a word taken from the free storage list and
+returns the address of that word.
+
+Function *cons(/a/, /d/)* writes values /a/ and /d/ in address and decrement part of a
+word taken from the free storage list and returns address of that word.
+
+Function *erase(/L/)* returns word at address /L/ to the free storage list, and as a
+result returns the previous value of the word /L/.
+
+Supported were also a few operations over whole lists. Call to function *copy(/L/)*
+copies entire list structure at address /L/, taking as needed words from the free
+storage list.
+
+        copy(L) = (L=0 → 0,
+                   car(L)=0 → L,
+                   1 → cons(copy(car(L)),
+                            copy(cdr(L))))
+
+Function *equal(/L1/, /L2/)* compares list structures at addresses /L1/ and /L2/ and
+returns 1 if they are equal, 0 otherwise.
+
+        equal(L1,L2) = (L1=L2 → 1,
+                        car(L1)=0 ∨ car(L2)=0 → 0,
+                        1 → equal(car(L1), car(L2)) ∧
+                            equal(cdr(L1), cdr(L2)) )
+
+The condition in second line is needed because the address part of the first
+element in property lists contains number 0. If *L1* and *L2* are at different
+addresses (which is guaranteed by condition *L1=L2*) and at least one of L1 and L2
+is a property list, then *equal(L1,L2)* has value 0.
+
+Subprogram *eralis(/L/)* erases entire /list structure/ at address /L/.
+
+        subroutine (eralis(L))
+        / L = 0 ∨ car(L) = 0 → return
+          M = erase(L)
+          eralis(add(M))
+          eralis(dec(M))
+        \ return
+
+Subprogram is considerably simpler than one in the previous chapter, but now it
+can not recognize if elements in a list to be erased are "borrowed".
+
+Defined is also a subprogram *print* and function *read* which as a result returns
+address of a list constructed on bases of a symbolic expression written on a
+punched card or other medium.
+
+Functions that modify values of list elements, *star* and *stdr* are removed from
+the language, but as it will be seen, temporary.
+
+8.4 RECURSIVE FUNCTION IMPLEMENTATION
+
+Functions *maplist*, *diff* and some others are recursive; they call themselves.
+Implementation of recursive functions was somewhat of a difficulty because
+different instances of same functions use same variables.
+
+The problem was solved by storing "protected temporary storage", that holds
+symbols and values that have to be preserved during a call to same function, on
+a "public stack", at the time called /public push down list/.^117 Called function
+first store contents of it's protected temporary memory on the stack, evalueates
+value that has to be returned, and then from the stack reconstructs "protected
+temporary storage". The solution is genuine, but not complex, and was already
+discovered by Turing^118.
+
+8.5 FUNCTIONAL AND IMPERATIVE STYLE
+
+Today it is widely assumed that programs written in functional style are more
+"elegant", but less effecient than programs written in imperative style. Despite
+that terminology like "functional" and "imperative style" were yet not used, those
+differences were very fast discovered. Beside the previous one, "functional
+definition" of the function *maplist*
+
+        maplist(L,f) = (L = 0 → 0,
+                        1 → cons(f(L),
+                                  maplist(cdr(L),f))).
+
+McCarthy defined in the fourth memo a second, imperative version.
+
+        maplist(L,f) = / L = 0 → return(0)
+                         maplist = cons(f(L),0)
+                         M = maplist
+                       a1 L = cdr (L)
+                         cdr(M) = cons(f(L),0)
+                         cdr(L) = 0 → return(maplist)
+                         M = cdr(M)
+                       \ go(a1)
+
+The imperative version was about four times faster. McCarthy, nevertheless, was
+not keen to recommend writing programs in less clear, imperative style^119. He
+speculated that compiler could translate programs from one style into another,
+but he didn't see how such compiler could be written. Instead, he pragmatically
+decided that few number of frequently used programs for which speed is important
+should be written in imperative, and all the others in functional style. Also,
+prominent is the difference in use of statement *return*.
+
+8.6 UNDEFINIABILITY OF FUNCTION LIST
+
+McCarthy widens discussion about already briefly described function *list*. The
+function can be described with equalities
+
+        list(i) = cons(i,0)
+        list(i_1, ..., i_n) = cons(i_1, list(i_2, ..., i_n)).
+
+McCarthy observes that *list* is defined recursively with number of arguments, and
+that such *list* can not be defined in Lisp, but has to be implemented in a Lisp
+compiler^20.
+
+8.7 SUBSTITUTIONAL FUNCTIONS AND FUNCTION APPLY
+
+McCarthy introduces somewhat enigmatic term of substituional functions which are
+"applied" on a list of arguments^121. Substituional functions are symbolic
+expressions, for example,
+
+        (subfun, (x,y), (times,x,y)).
+
+If the above substituional function is "applied" over a list of arguments
+
+        ((plus,a,b),(minus,a,b))
+
+the result is
+
+        (times,(plus,a,b),(minus,a,b)).
+
+Generally, the result of "applying" a substitutional function
+
+        (subfun, (x_1, ..., x_n), /e/)
+
+where x_1, ..., x_n are symbols, /e/ any expression, on a list of arguments
+
+        (e_1, ..., e_n)
+
+if a value of expression /e'/ which is obtained by simultaneous substitution of all
+free occurence of x_1, ..., x_n in /e/ with arguments e_1, ..., e_n in order.
+
+McCarthy didn't wrote exactly what it means that substitutional functions are
+"applied" on an argument list. Today is custom to say, for example, that
+expression *car(/e/)* denotes applying of function *car* on expression /e/. But, in
+about fifty pages of the memo that were written to date, McCarthy just once
+
+uses the word "apply" in that context, and that relatively informally too^122.
+Almost certainly, for "applying" substitutional functions, he ment evaluateing
+expressions if the form
+ 
+        apply(/l/, /f/)
+
+where /l/ is a list of arguments, /f/ a substituion function and /apply/ a Lisp
+function. For example, if
+
+        /f/ has value (subfun, (x,y),(times,x,y)) and 
+        /l/ has value ((plust,a,b),(minus,a,b))
+
+then
+
+        apply(/l/, /f/) has value (times,(plust,a,b)),(minus,a,b)).
+
+8.8 HELP FUNCTIONS AND IMPLEMENTATION OF APPLY
+
+Despite early form of *apply* not being particularly complex, for the
+implementation of *apply* are needed help functions, less important, but
+interesting *search*, *subst*, *sublis* and *error*.
+
+Function *search* finds data that satisfy given criterion in a list; if it finds
+it, it returns given function of that data; if it is not found, it returns given
+value. For example, call to function
+
+        *search(list(1,2,3), λ(x,x+x=2), λ(x,x*x*x), 0)*.
+
+has value 8. Arguments to function call are a list in which to search for data,
+a predicate that has to be satisfied, a function to apply on found data that
+satisfy the predicate and value that is returned if no data satisfies the
+predicate.
+
+         *search(L,p,f,u)=(L=O → u,*
+                          *p(L) → f(L),*
+                          *1 → search(cdr(L),p,f,u))*
+
+Function *subst* implements substitution. For example, if /l/ is an expression with
+value *(A,B)*, /v/ an expression with value *(X,Y)*, /m/ an expression with value
+((X,Y),C,(X,Y)). Then *subst(/l/, /v/, /m/)* has value *((A,B),C,(A,B))*. More generally,
+if /l/, /v/, and /m/ are expressions, the expression *subst(/l/, /v/, /m/)* has as it's value
+the result of substituting value /l/ for value /v/ in /m/.
+
+        subst(L,V,M)= (M=0 → 0,
+                       equal(M,V) → copy(L),
+                       car(M)=0 → M,
+                       l → cons(subst(L,V,car(M)),
+                                 subst(L,V,cdr(M))))
+
+The condtion *car(M)=0* means that value *M* is a symbol (property lists has value 0
+in address part of the first element).
+
+Function *sublis* implements multiple substituions, coordinated in list of form
+((/l1,v1/), ..., (/ln,vn/)), where /li/ is a symbolic expression to be substituted in and
+/vi/ symbolic expression to be substituted. For example, if
+
+        /p/ is an expression with value *((X,A),((Y,Z),(B,C)))*,
+        /e/ is an expression with value *((X,Y),X,Y,(Y,Z))*
+
+than call to function
+
+        *sublis(/p/, /e/)* has value *((A,Y),A,Y,(B,C))*.
+
+Definition of function *sublis* is quite sofisticated.
+
+        sublis(P,E) =
+          maplist(E,
+                  λ(J,search(P,
+                         λ(K,equal(car(J),
+                                   car(car(K)))),
+                         λ(K,copy(car(cdr(car(K))))),
+                         (car(car(J))=O → car(J),
+                          1 → subst(P,car(J)))))
+
+The definition contains two errors. In list line instead of *subs* should be
+*sublis*. The second, the program will not work if the expression in which
+substution is to be done, *E*, is trivial - a symbol. For example, if /p/ is an
+expression with value *((X,A),(A,B))*, /e/ an expression that has value *(X,A,X,A)*
+then call to function *sublis(/p,e/)* has value *(A,B,A,B)*.
+
+Function *pair* creates a list of pairs, needed for use in function *sublis*. If /l/
+and /v/ are expressions whose values are *(/l1, ..., ln/)*, *(/v1, ..., vn/)* then call to
+function *pair(/l,v/)* has value *((/l1,v1/),...,(/ln,vn/))*.
+
+        pair(Ll,L2)=( Ll=O ∧ L2=0 → 0,
+                      Ll=O ≠ L2=0 → error,
+                      l → cons(cons(copy(car(Ll)),
+                                    cons(copy(car(L2)),
+                                    0)),
+                                pair(cdr(Ll),
+                                     cdr(L2))))
+
+Function *error* is called in exceptional cases and writes messages about a
+misstake and information useful for the error analysis.
+
+After definition of all help function, the defintion of *apply* function is brief
+
+        apply(L,f) =
+          (car(f) = subfun → sublis(pair(car(cdr(f)),
+                                          L),
+                                    car(cdr(cdr(f)))),
+          1 → error)
+
+Substitutional functions are an important step in Lisp development. Because of
+them, a very general and important function *apply* is defined which later was
+understood as an "universal function".
+
+One could think that function *apply* is simpler then function *maplist* so that
+
+        apply(L,f) = car(maplist(list(L),f)).
+
+The previous expression, though, is valid only for functions of one variable,
+while *apply* can be used on functions with arbitrary number of variables.
+
+8.9 AUTOMATIC MEMORY MANAGEMENT
+
+Functions for erasing list elements and whole lists, *erase* and *eralis* as
+described in the first memo, are not used in next three memos. There is an
+indicative McCarthy's comment together with above *apply* function. He realizes
+that function *pair* constructs new list, and that this list is not assigned to
+any variable, and thus can not be erased with function *eralis*. Instead of using
+an assignement statement to solve that problem, McCarthy realized that, if we
+don't write a compiler that inserts instructions for erasing such, "help lists",
+they will always "steal the memory"^123,124,125.
+
+8.10 ROCHESTER'S LAMBDA EXPRESSIONS
+
+Rochester observed that McCarthy's lamda-expression does not allow for
+definition of recursive functions. As it will show later, it is still possible -
+but is not easy. For that reason he introduces other, more expressive
+lambda-expression (he calls them "function abstractions") in which the name of
+function is specified. For example, function that checks if there is a symbol *var*
+in a property list of a symbol is defined with lambda expression
+
+        λ(F(K),(K=0 → 0,
+                car(K) = var → 1,
+                1 → F(cdr(K)))).^126
+
+Variable *F* does not have value outside of the lambda-expression. Rochester's
+lambda-expressions will become slightly changed and re-named into
+/label-expressions/ in "pure Lisp".
+
+8.11 PROGRAM FORMATTING
+
+Rochester was the first to start formatting in today custom way, by indenting
+lines and also explicitly recommends such notation. For example, the above
+program is formatted almost identically to Rochester's original. Other members
+of the Lisp community didn't accept that idea for a quite long time. Identing
+lines is explicitly mentioned in Lisp 1.5 manual^127.
+
+8.12 COMPOSITION OF CAR AND CDR FUNCTIONS
+
+Rochester's contribution is also a shorter notation of compositions of *car* and
+*cdr*. For example, instead of *car(cdr(cdr(L)))* it could be written *caddr(L)*.^128
+However, this idea is not new; it was applied already in FLPL.
+
+Despite names like *caddr* being practical, and they are accepted in almost all
+Lisp dialects, to the author of this book the idea is not unquestionable.
+Symbols like *caddr* are not just names, but contain also information that human,
+the programmer, must decode. This data is then unavialable, or at least harder
+to obtain for processing by the program.
+
+8.13 FUNCTION COMPUTE
+
+In Memo 7. McCarthy describes, but does not define, subprogram *compute(L,C)*
+where *L* is an expression to be computed, and *C* is an address on which to store
+the result of computing *L*. The value of caling *compute(L,C)* is a program in
+assembler, in list form.^129 Implementation of functions that proces the
+language expressions in the language itself is a Lisp specialty.
+
+99  “The development of the LISP system went through several stages
+     of simplification in the course ot its development and was eventually seen
+     to be based on a scheme for representing the partial recursive functions of
+     a certain class of symbolic expressions.”
+    McCarthy, /Recursive functions .../, AIM-008, 1959., p. 1.
+100 McCarthy, /A revised version of MAPLIST/, AIM-002, 1958.
+    During the process of writing this book, only the first page of
+    AIM-002 was accesible to public. That page is identical to the start of
+    second chapter of AIM-004 so, maybe, the entire AIM-002 is contained in AIM-004.
+101 McCarthy, /Revisions of the language/, AIM-004, 1958.
+102 McCarthy, /Revisions of the language/, AIM-004, 1958., p. 4.
+103 That and many ohter functions in this book are formated by breaking and
+    indenting lines, as it is custome today, but not at the time when original
+    documents were written. Formatting helps a lot with readability.
+104 That function was in AIM-001 called consel.
+105 McCarthy didn't use term "McCarthy's lambda-expressions", but
+    "functions" wich today is not sufficiently precise. More suitable
+    term "lambda-expressions" come into use later, and attribute
+    "McCarthy's" is needed in order to differ from other lambda-expressions,
+    especially Church's and Rochester's.
+106 Church, /The calculi of λ-conversion/, 1941.
+107 McCarthy, /Revisions of the language/, AIM-004, 1958., p. 7.
+108 Important exception is PicoLisp by a German Alexandre Burger.
+    Burger, /The PicoLisp reference/.
+109 Cianalgini & Hindley, /Lambda calculus/, in Wiley Enc. of Comp. Sci., 2008.,
+    p. 5.
+110 Barendregt & Barensen, /Introduction to λ-calculus/, 2000., p. 30.
+111 Weizenbaum, /Review of “The LISP 2 programming language ...”/, 1967.,
+    p. 236.
+112 Moore & Mertens, /The nature of computation/, 2011., p. 295.
+113 Mac Lane, /Group extensions for 45 years/, 1988., p. 29.
+114 “That was fine for that recursive definition of applying a function
+     to everything on the list. No new ideas were required. But then,
+     how do you write these functions? And so, the way in which to do
+     that was to borrow from Church’s Lambda Calculus, to borrow the
+     lambda notation. Now, having borrowed this notation, one of the
+     myths concerning LISP that people think up or invent for themselves becomes
+     apparent, and that is that LISP is somehow a realization of the lambda
+     calculus, or that was the intention. The truth is that I didn’t understand
+     the lambda calculus, really. In particular, I didn’t understand that you
+     really could do conditional expressions in recursion in some sense in the
+     pure lambda calculus. So, it wasn’t an attempt to make lambda calculus
+     practical, although if someone had started out with that intention, he might
+     have ended up with something like LISP.”
+    McCarthy, /History of LISP/, 1981., p. 190.
+115 McCarthy, /Revisions of the language/, AIM-003, 1958., p. 1.
+116 More precise would be to write "function call", but for the simplicity it is
+    custom to write just "function." Same holds for the rest of this text.
+117 Russell, /Explanation of big “P”/, AIM-009, 1959., p. 2.
+118 Turing, /Proposed electronic calculator/, 1945., p. 12.
+119 “One is very reluctant to say that routines like maplist should be
+     described by programs like the above which is certainly much less
+     clear than the previous description.”
+    McCarthy, /Revisions of the language/, AIM-004, 1958., p. 8.
+120 McCarthy, /Revisions of the language/, AIM-004, 1958., p. 16.
+121 McCarthy, /Revisions of the language/, AIM-004, 1958., p. 19.
+122 McCarthy, /Revisions of the language/, AIM-003, 1958., p. 6.
+123 McCarthy, /Revisions of the language/, AIM-004, 1958., p. 20.
+124 “When I wrote this program for differentiation ... it was just much
+     too awkward to write Erasure, that is erasing things. ... So, I
+     thought very hard “Is there some way in which we can eliminate
+     having to have explicit erasure, in order to be able to write the
+     differentiation function in a way corresponds to the way that
+     mathematicians describe it?” They don't describe, they don't mention
+     erasing anything in the calculus textbook, so I worked hard on that
+     and came up with garbage collection.”
+    McCarthy, /Guy Steele interviews John McCarthy/, father of Lisp, 2009.
+125 McCarthy, /The logic and philosophy of AI/, 1988., p. 5.
+126 Rochester, AIM-005, 1958., p. 15.
+127 McCarthy et al., /LISP 1.5 programmer's manual/, 1962., p. 16.
+128 Rochester, AIM-005, 1958., p. 14.
+129 McCarthy, /Notes on the compiler/, AIM-007, 1958., p. 1.

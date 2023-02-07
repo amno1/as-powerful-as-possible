@@ -1,0 +1,810 @@
+* 16 Lisp 1.5
+
+Despite the beauty, "pure Lisp" was innefficient and practically almost
+unusable.^236 Experience from a number of small problems convinced McCarthy that
+support for symbolic expression alone is not enough and that Lisp must make it
+possible to compute with other types of data.^237 Thus, further development of
+the language was directed towards practical aspects of the language. That
+period, unfortunately, is not that well docummented^238 such as previous, and it
+is possible that some interesting ideas are lost forever.
+
+/LISP programmer's manual/ from March 1959. contains a list of functions and their
+definitions in LISP or IBM 904 Assembler. In that time, Lisp syntax was still
+similar to that from "imperative Lisp".^239
+
+Considerably more volymous /Lisp preliminary programmer's manual/ from January
+1960.^241 brings many changes. Amongs other, the syntax from "imperative Lisp" is
+finally removed.
+
+All important changes in Lisp I. found their place also in Lisp 1.5 which is
+mentioned in intern documents already in spring 1961.^242 /LISP 1.5 programmer's
+manual/ was published in August 1962. /The manual/ was, as it seems, left more
+influnce than the paper from 1960. For example, Kay, Meyer and Dijkstra, when
+discussing about /eval/, talk about the version from the /Manual/.
+
+The /Manual/ leaves an impression of a collection of independent articles rather
+then a coherent book. It was sharply critized by Edsger W. Dijkstra.^243 Best
+addition to the manual is an article by Robert A. Saunders.^244
+
+16.1 PURE LISP
+
+First chaper in /Manual/ brings a short resume of "pure Lisp", with some small
+changes. Among others, instead of term "S-function" is used simply "function".
+
+Beside commas, whitespaces can also be used for delimiting list elements. For
+example instead of *(CAR,X)* it could be written *(CAR X)*.
+
+As pair lists, which are in Lisp 1.5 called also association lists, are no
+longer used ordinary lists with two elements, but "dotted pairs". For example,
+instead of *((X (A B)) (Y C))* is used *((X . (A B)) (Y . C))*. That small change
+was introduced probably to save some memory. Also, some functions are redefined,
+and some new are introduced.
+
+Function /member/[x;y] is a predicate which is true if and only if a symbolic
+expression /x/ is element in a list /y/. For example,
+
+        /member/[X; (A X)] = T,
+        /member/[Y; (A X)] = F.
+
+Function definition is
+
+        /member/[x; y] = [null[y] → F;
+                        /equal/[x; car[y]] → T;
+                        T → /member/[x; cdr[y]]].
+
+Function /pairlis/[x;y;a] creates corresponding pair list from lists /x/ and /y/ and
+adds it to association list /a/. For example,
+
+pairlis[(A B C); (U V W); ((D.X) (E.Y))] = ((A.U) (B.V) (C.W) (D.X) (E.Y)).
+
+Definition of the function is
+
+       /pairlis/[x; y; a] = [null[x] → a;
+       T → cons[cons[car[x]; car[y]];
+        /pairlis/[cdr[x]; cdr[y]; a]]].
+
+Function /assoc/[x;a] searches for symbol pair /x/ in the association /a/. Function
+definition is
+
+        assoc[x; a] = [equal[caar[a]; x] → car[a];
+                       T → assoc[x; cdr[a]]].
+                       
+Function /sublis/[a;y] substitues values instead of variables into a symbolic pair
+/y/. For example,
+
+        sublis[((X.S) (Y.(T T)); (X WROTE Y)] =
+                   (S WROTE (T T)).
+
+Definition of the function is
+
+        /sublis/[a; y] = [atom[y] → sub2[a; y];
+                        T → cons[sublis[a; car[y]]
+                        /sublis/[a; cdr[y]]]].
+
+Help function /sub2/[a;z] solved a special case in which which /z/ is atom.
+Definition of the function is
+
+        /sub2/[a; z] = [null[a] → z;
+                      eq[caar[a]; z] → cdar[a];
+                      T → /sub2/[cdr[a]; z]].
+
+Because of the new format for association lists, definition for the function
+/sub2/ is simpler then before.
+
+Definitions of funtions /eval/ and /apply/ differ from those in documents from
+1959-60. Function /apply/ have additional third argument, a list of values which
+are substituted in place of free variables and thus has got a part of
+functionality that was previously done by /eval/.
+
+        apply[fn; x; a] =
+          [atom[fn]→ [eq[n; CAR] → caar[x];
+                      eq[fn; CDR] → cdar[x];
+                      eq[fn; CONS] → cons[car[x];cadr[x]];
+                      eq[fn; ATOM] → atom[car[x]];
+                      eq[fn; EQ] → eq[car[x];cadr[x]];
+                      T → apply[eval[fn; a]; x; a]];
+           eq[car[fn]; LAMBDA] → eval[caddr[fn];
+                                      pairlis[cadr[fn]; x; a]];
+                          eq[car[fn]; LABEL] → apply[caddr[fn];
+                                               x;
+                                               cons[cons[cadr[fn];
+                                                         caddr[fn]];
+                                                    a]]]
+                                                    
+        eval[e; a] = [atom[e] → cdr[assoc[e; a]];
+                      atom[car[e]]→ [eq[car[e]; QUOTE]→ card[e];
+                                  eq[car[e]; COND]→ evcon[cdr[e]; a];
+                                  T → apply[eval[fn; a]; x; a]];
+                      T → apply[car[e]; evlis[cdr[e]; a]]
+
+Help functions /evcon/ and /evlis/ are defined as in paper /Recursive functions .../
+S-function that was in original presentation about "pure Lisp" called /apply/ is
+here called /evalquote/ and is defined by the expression
+
+        /evalquote/[fn; x] = /apply/[fn; x; NIL].
+
+"Pure Lisp" is left as a mathematical idea, while the real interpretter worked
+somewhat differently. Introduced are many changes that made Lisp 1.5 more
+practical. More functions are defined, not just the basic five. Real /eval/ and
+/apply/ were much more complex. Beside the five elementary functions, defined are
+also many other functions.
+
+16.2 USE OF PROPERTY LISTS
+
+Property lists are intern representation of symbols. Property lists are similar
+to other lists, their maintance is done by the Lisp system, but a programmer
+can also manipulate them. It would be a misstake to think that property lists
+are symbol values. On contrary, a Lisp system can use property lists only to
+calculate a symbol value, if a programmer asks it to.
+
+For example, intern representation of a symbolic expression *(A B)* is shown
+graphically in image 17.
+
+#+ATTR_ORG: :width 800
+[[./images/17.png]]
+
+IMAGE 17. Graphical representation of a symbolic expression *(A B)*.
+
+In those places in graphical representation were *A* and *B* are written, are
+addresses of property lists of symbols *A* and *B* respective. In crossed,
+decerement part in second part of the list is address of property list of symbol
+NIL.
+
+#+ATTR_ORG: :width 800
+[[./images/18.png]]
+
+IMAGE 18. Graphical representation of property list for symbol *NIL*.
+
+In the example of property list of *NIL* symbol, it is also possible to see the
+general form of a property list. In address part of first element of a property
+list there is always a binary representation of number -1. In address part of
+next elements of property lists are addresses of indicators, here *APVAL* and
+*PNAME*. Indicators are symbols that denote kind of properties that immidiately
+follow. For example *APVAL* denotes that property that follows is the symbol
+value. Symbol *NIL* is a special case: value *NIL* is *NIL* itself.
+
+Indicator *PNAME* denotes that the following property is name of the symbol,
+stored in one or more memory words in the, back then used, BCD code.
+
+If a programmer with some expression defines a function then in the symbol list
+will be indicator *EXPR* after which will follow the address at which is
+representation of lambda-expression which defines the function. Lisp 1.5 allows
+also functions to be written in machine language. Then it is machine code for
+that function that is in the property list, after the indicator *FSUBR*.
+
+Function /deflist/[((u_1 v_1) ... (u_n v_n));i] inserts indicator /i/ with it assigned
+property v_1 in property list u_1, ..., indicator /i/ and it assigned property v_n
+into list of properties u_n. For example with the expression
+
+        /deflist/[((IDENTITY (LAMBDA (X) X)));EXPR]
+
+is defined identity function. If some symbol u_j already has indicator /i/ and it
+assigned property, that property will be substituted with v_j.
+
+Function /get/[s;i] returns property of symbol /s/ assigned to indicator /i/. For
+example, after computing the above expression
+
+        /get/[IDENTITY; EXPR] = (LAMBDA (X) X).
+
+Function /attrib/[x;e] concatenates two lists in computer memory changing last
+element of the first list so it points to the first element of the second list.
+Specially, if /x/ is a symbol, then /e/ will be added to the property list of that
+symbol. For example, function call
+
+        /attrib/[IDENTITY; (EXPR (LAMBDA (X) X))]
+
+inserts indicator *EXPR* and associated symbolic expression *(LAMBDA (X) X)* in
+property list of symbol *IDENTITY*.
+
+Function /remprop/[x;i] removes indicator /i/ and assigned property from the
+property list of symbol /x/.
+
+Programmer can insert any indicator and associated property into the property
+list of a symbol if he wishes. But, only some of indicators are used by the
+system.
+
+16.3 PSEUDOFUNCTIONS
+
+By utilizying property lists it is possible to store results obtained during
+the computation of symbolic expressions and then use them again later, for
+computations in other symbolic expressions. Functions that utilze that
+possibility - and which does not exist in mathematics - are called
+pseudo-functions. S-function /deflist/ and /attrib/ are obviously such functions.
+
+Another reason for using pseudo-functions is connected to list structures that
+are introduced just as intern representation of symbolic expressions, but which
+also themselves cause problems that needs to be solved. In Lisp 1.5 is defined a
+number of function inspired by the need for more efficient use of list
+structures. Most important example are functions /rplaca/ and /rplaced/. Function
+/rplaca/[x;y] substitutes first element of symbolic expression /x/ with /y/. For
+example,
+
+        /rplaca/[((A) B); (C D)]=((C D) B).
+
+It could be thought that
+
+        /rplaca/[x; y] = cons[y; cdr[x]].
+
+It is true if we think only in terms of symbolic expressions. But, while
+computing expression /cons/[y;cdr[x]] takes new list element from the free storage
+list and sets address and decrement parts of the list element to addresses of /y/
+and /cdr/[x], computing /rplaca/[x;y] writes address /y/ in address part of first list
+element of list /x/.
+
+For example, let *((A) B)* be value of symbol *X* and *(C D)* value of symbol Y. Call
+to function /rplaca/[x;y] will not just return *((C D) B)*, but the value of *X* will
+also be changed from *((A) B)* into *((C D) B)*. Image 19. shows what exactly will
+happen.
+
+#+ATTR_ORG: :width 800
+[[./images/19.png]]
+
+IMAGE 19. Property lists of symbolx *X* and *Y* before and after call to function
+           /rplaca/[x;y]
+
+Dotted thin arrow denotes the value of addres part of a list element before
+computing /rplaca/[x;y] and thick full line denotes value after the computation of
+/rplaca/[x;y]. After finnishing /rplaca/[x;y] value of symbol *X* will be changed;
+after computing /cons/[y; cdr[x]] it will not.
+
+Function /rplacd/[x;y] on same way change decrement part of the first list element
+/x/.
+
+Functions /rplaca/ and /rplacd/ have analogous effect also on list structures that
+are not symbol values.
+
+Other important pseudofunctions are /cset/[x;val] and /csetq/[x;val]. Those two
+functions are Lisp 1.5 equivalent of the command for assignement, or, as
+McCarthy wrote earlier, "fortran-like commands" /x/ = /val/. Both psuedofunctions
+set value of symbol /x/ to /val/ by writing /val/ in property list of symbol /x/,
+immidiately after the *APVAL* indicator. Letter /c/ infront of /set/ and /setq/ comes
+from the word "constant"; symbols whose value is stored in property list are
+in Lisp 1.5 manual called constants.
+
+16.4 SPECIAL FORMS
+
+Differences between psuedofunctions /cst/ and /csetq/ can be seen from the
+meta-expressions, but they can also be seen in translation from meta-expressions
+into symbolic expressions.
+
+| meta-exression      | translation into symbolic expression |
+|------------------------------------------------------------|
+| cset[X; (A B C D)]  | (CSET (QUOTE X) (QUOTE (A B C D))).  |
+| csetq[X; (A B C D)] | (CSETQ X (QUOTE (A B C D))).         |
+
+In translation of /csetq/ one *QUOTE* was not needed, and thus /csetq/ was used more
+often than /cset/.
+
+In function /eval/, function *CSETQ* must have different treatment than other
+functions because the first argument of the function must not be evaluated. For
+that reason *CSETQ* is not called a function or psuedofunction but "special form",
+as was also *COND* and *QUOTE*.
+
+More general, /special forms/ are expressions in form (e_1 e_2 ... e_n) computed
+without computing symblic expressions e_1, ..., e_n before the execution control
+is transformed to symbolic expression e_1. In /LISP 1.5 Manual/ expression e_1
+itself was also called special form. Today e_1 in expression (e_1 e_2 ... e_n) is
+usually called /special operator/.^245
+
+Second important property of special forms is that they, for the difference from
+functions, can (but don't have to) allow for variable number of arguments. For
+example, special form *COND* can have arbitrary number of arguments.
+
+16.5 FEXPRS
+
+In "pure Lisp", special forms have special rules for computing in function /eval/
+and programmer can not define his own operators. In Lisp 1.5 special operatos
+can be defined with lambda-expressions as well as functions, and interpreter
+recognize them by the indicator FEXPR^246 in property list and computes them
+differently. With time it become accustomed to call such special forms for
+/fexprs/ to differentiate them from other kinds of special forms which appeared
+during Lisp development. In Lisp 1.5, *CSETQ* is, for example, /fexpr/.
+
+Fexprs are very powerful. For example, let fexpr *Q2* be defined with
+
+        deflist[((Q2 (LAMBDA (V1 V2) (CAR V1))); FEXPR],
+
+*(Q2 X)* is a simple symbolic expression that uses fexpr and *((X A))* is an
+association list. Then it holds
+
+                eval[(Q2 X); ((X Y))] =
+        = eval[((LAMBDA (V1 V2) (CAR V1)) (QUOTE (X))
+                                          (QUOTE ((X Y))));
+               ((X Y))],
+        
+        so from the definition of /eval/ follows
+        
+        = /eval/[(CAR V1); ((V1 (X)) (V2 ((X Y))) (X Y))] =
+         = /car/[eval[V1; ((V1 (X)) (V2 ((X Y))) (X Y))]] =
+                             = /car/[(X)] =
+                                 = X.
+
+Also, fexpr *Q2* can be used instead of special operator *QUOTE*. As it is seen from
+the previous equality, fexprs have access to the association list which is
+passed to /eval/ that applies them.
+
+More general, fexprs are defined by expressions of form
+
+        /deflist/[((fx (LAMBDA (v1 v2) e)));FEXPR]
+
+where symbol /fx/ is name of the special form, v_1 and v_2 are symbols, /e/ is
+symbolic expression that probably contains v_1 and v_2. Let /a/ be the association
+list. Then the value,
+
+        /eval/[(fx e_1 e_2 ... e_n); a],
+
+is equal to the value
+
+        /eval/[((LAMBDA (v_1 v_2) e) (QUOTE (e_1 e_2 ... e_n))
+                       (QUOTE a)); a].
+
+Fexprs could, as functions, be defined in machine code too. Then in the property
+list they would be preceded by the indicator *FSUBR*. Almost all special operators
+in Lisp 1.5 system, including *COND*, *QUOTE*, *AND*, *OR* and *LIST* have indicator
+*FSUBR*.
+
+In "pure Lisp" and Lisp 1.5 functions does not need to have name; it is enough
+to use lambda- or later label-expressions, for example *(LAMBDA (X) X)*. Such
+functions are today called "anonymous functions". Information that some
+lambda-expression should be used as fexpr can only be in the property list and
+thus in Lisp 1.5 anonymous fexprs are not possible.
+
+Fexprs make it possible for a programmer to define elements of the language that
+seems more basic than functions. Despite this insight seeming exceptionally
+important and exciting^247, fexprs are only briefly described, without any
+examples. Also in other documents from that time, fexprs are barely even
+mentioned. McCarthy discussed fexprs in the memo from 1962.^248
+
+16.6 PROGRAMS IN LISP
+
+A program in Lisp 1.5 is a sequence of symbolic expressions pair. For example,
+program that defines S-function
+
+        append[x; y] = [null[x] → y;
+                        T → cons[car[x]; append[cdr[x]; y]]].
+
+and afterwards computes /append/[(A B); (B C)] is
+
+        DEFINE (((APPEND
+                  (LAMBDA (X Y)
+                    (COND ((NULL X) Y)
+                           (T (CONS (CAR X)
+                                    (APPEND (CDR X)
+                                             Y))))))))
+        APPEND ((A B) (B C)) .
+
+Interpreter calls in order function /evalquote/ with arguments which are pairs of
+symbolic expressions in the program. In this example, the interpreter
+calculates, in the order
+
+        /evalquote/[DEFINE; (((APPEND ...)))],
+         /evalquote/[APPEND; ((A B) (B C))].
+
+Function /evalquote/ calls as needed function /apply/, function /apply/ calls
+as needed function /eval/ etc.
+
+Lisp 1.5 interpreter "remembers" some symbol values and after the computation is
+finnished calls /evalquote/. In above example, interpreter wrote into property
+list for symbol *APPEND* in first call value *(LAMBDA (X Y) ...)*. In second call,
+/evalquote/ computes
+
+        /apply/[APPEND; ((A B) (B C)); NIL].
+
+Function /apply/ then computes
+
+        /eval/[APPEND; NIL]
+
+during which interpreter first searches for value *APPEND* in associated property
+list, and if it is not found there, then in the association list /a/. Also, once
+defined function *APPEND* can be used in entire program. Something like that was
+not possible in "pure Lisp" in which *APPEND* can be used only if the definition
+is in the association list, for example
+
+    /eval/[ (APPEND (QUOTE (A B)) (QUOTE (B C));
+          ((APPEND (LAMBDA (X Y) (COND ... )))) ].
+
+16.7 FUNCTIONAL ARGUMENTS
+
+Functionals, functions which accepts other functions as arguments are already
+discussed in chapters /Elements of functional programming/ and /Pure Lisp/. In
+fall 1959. Slagle run into unexpected problems, later called "/funarg
+problems/".^249 Such problems are barely noted in LISP 1.5 Manual^250 but
+Saunders^251 cites example similar to Slagel's^252,253 which shows why naive use
+of functions as arguments to other functions does not render expected results.
+That example is here exposed in somewhat simplified form.
+
+Let function *TESTR* be defined by lambda-expression
+
+    (LAMBDA (L FN)
+      (COND ((NULL L) NIL)
+            (T (TESTR (CAR L)
+                      (QUOTE (LAMBDA ()
+                               (CONS (CDR L)
+                                     (FN)))))))).
+    
+After call to
+    
+    (CHANGE (LAMBDA (A)
+                    (MAPLIST A
+                             (FUNCTION (LAMBDA (J)
+                                               (CONS (CAR J)
+                                                 (QUOTE X)))))))
+        (TESTR (QUOTE ((A) (B) (C)))
+               (QUOTE (LAMBDA (X) X)))
+
+parameters *L* and *FN* would have following values:
+
+        L:  ((A) (B) (C))
+        FN: (LAMBDA (X) X)
+       
+Since the condition *(NULL L)*, is not satisfied, then the execution would follow
+the other branch of /cond-expression/
+
+        (TESTR (CAR L)
+               (QUOTE (LAMBDA ()
+                              (CONS (CDR L)
+                                    (FN)))))
+
+After repeated call to function *TESTR*, the value of parameters would be
+
+        L: (A)
+        FN: (LAMBDA()(CONS (CDR L) (FN))).
+
+In the expression that is value of *FN* appears symbols *L* and *FN*, but values of
+those symbols is now different from the values that they have at time when the
+gunction *G* is called. [OBS! Otkud funkcija G?]
+
+McCarthy didn't show interess for this problem, so the solution was developed by
+Russell, Edwards and Patrick Firsher.^254 For the Lisp interpreter to correctly
+compute such expressions, it is important to also save original values of
+variables with expressions. In Lisp 1.5 for this is used operator *FUNCTION* with
+wich functions can be used as arguments to other functions. Thus, *TESTR* should
+be defined as
+
+        (LAMBDA (L FN)
+          (COND ((NULL L) NIL)
+                 (T (TESTR (CAR L)
+                           (FUNCTION (LAMBDA ()
+                                       (CONS (CDR L)
+                                             (FN)))))))).
+
+Then after the call
+
+        (TESTR (QUOTE ((A) (B) (C)))
+               (QUOTE (LAMBDA (X) X)))
+
+parameter values will be
+
+        L:  ((A) (B) (C))
+        FN: (LAMBDA (X) X)
+
+Since the condition *(NULL L)* is not met, execution would go to other branch of
+cond-expression
+
+        (TESTR (CAR L)
+               (FUNCTION (LAMBDA ()
+                                 (CONS (CDR L)
+                                       (FN)))))
+
+After repeated call to function *TESTR* values of the parameters would be
+
+        L:  (A),
+        FN: (FUNARG (LAMBDA()(CONS (CAR L) (FN)))
+                    ((L . ((A) (B) (C)))
+                    (FN . (LAMBDA (X) X)))).
+
+Lisp system thus have access to all data needed for the computation. More
+generally,
+
+          eval[(FUNCTION fn); q] = (FUNARG fn q)
+       apply[(FUNARG fn q); x; p] = apply[fn; x; q].
+
+The future would show that Lisp community was not satisified with this solution.
+Even McCarthy himself, after being not so interested in the start, expressed
+unsatisfaction with the solution.^255
+
+16.8 SPECIAL OPERATOR PROG
+
+Function program^256 as described in an earlier chapter, was introduced in Lisp
+1.5 as a special operator /prog/ and that in very developed form. For example,
+function /length/ which computes length of a list, is defined with
+
+        length[l] = prog[ [u; v];
+                           v := 0;
+                           u := l;
+                           A [null[u] → return[v]]
+                           u := crd[u];
+                           v: = v +1;
+                           go[A]].
+                           
+Translation of that definition into symbolic expressions is
+
+DEFINE (((LENGTH (LAMBDA (L)
+                   (PROG     (U V)
+                             (SETQ V 0)
+                             (SETQ U L)
+                         A (COND ((NULL U)
+                                  (RETURN V)))
+                           (SETQ U (CDR U))
+                           (SETQ V (ADD1 V))
+                           (GO A) ))))).
+
+First argument of /prog/-expression is a list of "program variables" which are
+treated same as parameters in lambda-expressions. If there are no program
+variables then it should be written either *()* or *NIL*.
+
+Rest or arguments to prog-expression are commands and atomic symbols.
+Prog-exression is computed by executing /commands/ in the order as they are
+written in the prog-expression. Terms "command" and "execution" as opposed to
+"term" and "computing" show an important difference: obtained value is ignored.
+
+Variables can be "installed" inside a prog-expression. Variables are installed
+by M-expressions such as /a := b/.
+
+Command /return/[e] is executed so that /e/ is computed after which prog-expression
+ends computing with the value obtained by computing /e/. If prog-expression runs
+out of commands to execute, it ends the computation with value *NIL*.
+
+Command /go/[s] causes continuation of prog-expression execution from the command
+directly after symbol /s/. Translation of prog-expressions into S-expressions is
+somewhat more complex and is not at all described in the literature. From
+examples is obvious that M-expressions /a := b/ translates into (SETQ a^* b^*),
+pseudo-functions *SET* and *SETQ* are behaving like in *CSET* and *CSETQ*, minor the
+difference they are applied on variables. Command /go/[s] is translated into *(GO
+s)* and command /return/[e] into (RETURN e^*). Inside the prog-expressions, symbols
+that serve as names of commands are translated directly, without *QUOTE*.
+
+16.9. GENSYM AND OBLIST
+
+One of most interesting functions in Lisp 1.5 is /gensym/[] which every time it is
+called generates a new symbol, previously not used in the program. In Lisp 1.5
+those symbols had names G00001, G00002, G00003, ...
+
+The /Manual/ does not describe how the function /gensym/ could be used. From only
+few documented examples of usage it can be observed two, somewhat different
+usage patterns.
+
+Generating new, previously unused symbols is often needed operation while
+processing logic formulas. For example, first two axioms of propositional
+calculus, written in symbolic expressions form are:
+
+    1. (→ A A)
+    2. (→ B (→ A B))
+
+If axiom 1. is substituted into axiom 2. instead of B into axiom 2. it is
+obtained
+
+    3. (→ (→ A A) (→ A (→ A A)))
+
+From 1. and 3. follows after /modus ponens/
+
+    4. (→ A (→ A A))
+
+That theorem is weaker then theorem (→ A (→ G00001 G00001)) which would be
+obtained if all symbols used in 1. theorem were substituted with new, previously
+unused symbol. Expression
+
+       sublis[cons[cons[A; gensym[ ]]; NIL]; (→ A A)]
+
+is computed into (→ G00001 G00001), if G00001 is first unused symbol. Function
+/gensym/ was used in such way in Abrahams' program PROOFCHECKER.^257,258
+
+Second reason for which function /gensym/ was used is processing of Lisp code. For
+example^259, recursive function /search/[l;p;h;u] in list /l/ searches /y/ for which is
+/p/[y] = *T*; if it is found, value of the function is /h/[y]; if it is not, value of
+the function is /u/. The function is defined with expression
+
+        search[l; p; h; u] = [null[l] → u;
+                             p[car[l]]→ h[car[l]];
+                             T·→ search[cdr[l]; p; h; u]].
+
+Such defined function is slow because during the every call, are used arguments
+/p/, /f/ and /u/ which are not changed. A possible solution is exchanging function
+/search/ with function /compsearch/[l;p;h;u] which for every argument quadruple
+defines and calls a new, similar to function /search/, but more efficient function
+/searchf/. Definition of /searchf/ has form
+
+        searchf[g] = [null[g]→ u;
+                      pf → hf;
+                      T·→ searchf[cdr[g]]],
+
+where /g/ is some generated symbol, for example G00001, and /pf/ and /hf/ are
+M-expressions which has same effect as /p/[car[g]] and /h/[car[g]], which are not
+applications of functions /p/ and /h/, but are constructed from the definitions of
+functions /p/ and /h/. For example, if
+
+        h[y] = [y = NIL → NIL;
+                T → λ[[r]; cons[r; y]][cons[y; y]]]
+
+then in place of /hf/ it should be
+
+        [car[g] = NIL → NIL;
+          T → λ[[r]; cons[r; car[g]]][cons[car[g]; car[g]]]].
+
+Generated symbol /g/ is needed because any other symbol could already be in use in
+the body of function /h/, just like in previous example symbol /r/ was used. Similar
+holds also for /pf/.
+
+The system keeps a list /oblist/ which holds all symbols used by the programmer.
+Generated symbols are not stored into /oblist/, which makes them different from
+symbols used by the programmer, even if the programmer on purpose uses symbols
+with same names.
+
+16.10 SYMBOLS *T*, **T** AND *NIL*
+
+Some of the changes in Lisp 1.5 are motivated completely practically. Symbolic
+expression *(QUOTE T)* was used so often in programs, specially in the last part
+of cond-expression, that a trick was often used. Instead with the symbol *T*, the
+truthness was represented with the symbol **T** and symbol *T* had the value **T**.
+Likewise, as example, an expression from "pure Lisp"
+
+        (COND,((EQ,Z,Y),X),
+              ((QUOTE,T),Z))
+
+was not correct in Lisp 1.5. Instead, it should be written
+
+        (COND ((EQ Z Y) X)
+               (T Z)).
+
+Value of the symbol **T** is **T**.
+
+Analogous, the falsehood was represented with the symbol *NIL*. Value of *F* is *NIL*.
+Value of the symbol *NIL* is *NIL*.
+
+Predicates are defined as functions for which values has at most two values: **T**
+and *NIL*.
+
+In functions of Lisp 1.5 which as arguments expect *T* or *NIL* every other value
+is processed equally to **T**.
+
+In conditions from conditional expressions any value different from *NIL* can be
+used instead of **T**.
+
+Those decisions, beside shortening programs, made the language at same time more
+complex and less beautiful. The authors of the manual described the mentioned
+definitions with the phrase "Humpty Dumpty semantics".^260
+
+In similar, pragmatic, but not so elegant way are redefined  also some functions
+from "pure Lisp". For example, function /eq/ in Lisp 1.5 is defined also on
+non-atomic expressions and value of that function is true if function arguments
+have same representation in computer memory.
+
+16.11 ARTITHEMTIC
+
+McCarthy wished from the early beginning for Lisp to also be suitable for
+numerical computations.^261 Unfortunately, the arithmetic implementation in
+style of Woodwards and Jenkins was not efficient enough for practical
+applications so Lisp 1.5 supports the arithmetic similar to Fortran and other
+programming languages. For example, the epxression 123 + 456 is in Lisp 1.5
+represented with meta-expression
+
+        /plus/[123;456]
+
+which is computed into value 579, while 123, 456 and 579 are
+symbols. Those symbols are different from others, so they are called
+"pseudo-atomic symbols".^262 Values of symbols 123, 456 and 579 are in
+order 123, 456 and 579 and can not be assigned other values. For that
+reason meta-expressions containing numbers translate into symbolic
+expressions without symbol *QUOTE*. For example, meta-expression
+/plus/[123;456] is translated into symbolic expression *(PLUS 123
+456)*. Same numbers written in different way, for example, 123 and
+123.00 are considered to be same symbol.
+
+Lisp 1.5 supported numbers with fix and floating comma. Defined is about
+twenty basic functions on numbers.
+
+16.12 FIELDS
+
+Fields are defined with pseudo-function /array/. For example
+after definition
+
+        array[((ALPHA (7 10) LIST) (BETA (3 4 5) LIST))]
+
+/alpha/ and /beta/ are functions that behave in a specific way. Value
+alpha at coordinates 5 and 6 is set to value 8 by expression
+
+        /alpha/[SET;8;5;6]
+
+after which expression /alpha/[5;6] has value 8. Symbol LIST is
+obligatory, and from the manual it is clear only that authors were
+thinking also about other fields, in which some other symbol would be
+used.
+
+16.13 LOGIC
+
+Considering the purpose of Lisp and relative maturity of the language
+in time when /Manual/ was published, support for logical operations,
+specially for processing logic expressions was surprisingly weak.
+
+There is no special logical type. NIL denotes non-truth and all other values
+represent truth. Number of supported propositional opeators is small: *OR*, *AND*
+and *NOT*, and there exist versions to be applied on bits: *LOGAND*, *LOGOR*, included
+is also *LOGXOR* ("exclusive or"). Other propositional operators could be easily
+defined; for example,
+
+        /implies[x;y]=~x∨y/,
+
+but same argument holds for many other arithmetic functions which
+still were supported in the language.
+
+Only two functions which can be useful during processing logic
+expressions (and not just logic values) are already described *SUBST*
+and *GENSYM*.
+
+Much later, McCarthy advised to augment Lisp with support for processing logic
+expressions^263 which existed only in experimental dialects of the language.
+
+236 “LISP 1 was characterized by great elegance, but in practice it
+     turned out to be a language in which it was impossible to write
+     useful programs. This situation led to many additions to LISP 1,
+     and the result of these additions has become known as LISP 1.5
+     (since it was believed to be halfway between LISP 1 and LISP 2).”
+    Abrahams pod LISP 1. misli na “čisti LISP” − private communication
+    Abrahams, /Symbol manipulation languages/, 1968., p. 69.
+237 “Experience with the present LISP system on a number of small
+     problems has shown the importance of being able to compute with
+     other quantities than symbolic expressions, and a revised version
+     of LISP is being considered which will allow computation of recursive
+     functions of a wide variety of kinds of information.”
+    McCarthy, /The LISP programming system/, RLE QPR 056, 1960., p. 159.
+238 “... they never documented or wrote down anything, especially McCarthy.
+     Nobody in that group ever wrote down anything. McCarthy was furious that
+     they didn’t document the code, but he wouldn’t do it, either.”
+    Fox, /An interview with Phyllis A. Fox/, 2005., p. 30.
+239 McCarthy et al., /LISP programmer's manual/, 1959.
+240 McCarthy et al., /LISP preliminary programmer's manual/, 1960.
+241 McCarthy et al., /LISP I. programmer's manual/, 1960.
+242 Levin, /Arithmetic in LISP 1.5/, AIM-024, 1961.
+243 Dijkstra, /Trip report, Edinburgh and Newcastle/, EWD 448., 1974.
+244 Saunders, /LISP — on the programming system/, 1964.
+245 Pitman, /Special forms in Lisp/, 1980.
+246 Term fexpr is probably abbreviated form for the term “functional
+    expression”. Former term was used for meta-expressions in McCarthy,
+    RFSE, MIT AIM-008, 1959., p. 4. in meta-expressions, as well as in
+    expressions whose first element is an fexpr symbol QUOTE is not needed.                  
+247 “... pure language was supposed to be based on functions, but its most
+     important components — such as lambda expressions, quotes, and conds — were
+     not functions at all, and instead were called special forms. (...) In the
+     practical language things were better. There were not just EXPRs (which
+     evaluated their arguments), but FEXPRs (which did not). My next questions
+     was, why on Earth call it a functional language? Why not just base
+     everything on FEXPRs and force evaluation on the receiving side when needed?
+     I could never get a good answer (...)”
+    Kay, /Early history of Smalltalk/, 1996., p. 534.
+248 See chapter /New function eval/.
+249 Stoyan, /The influence of the designer on the design/, 1991., p. 420.
+250 “We also need a special rule to translate functional arguments into
+    S-expression. If fn is a function used as an argument. then it is
+    translated into (FUNCTION fn*). Example
+    An examination of evalquote shows that QUOTE will work instead of
+    FUNCTION provided that there are no free variables present.”
+    McCarthy et al., /LISP 1.5 programmers manual/, 1962., p. 21.
+251 Saunders, /LISP — on the programming system/, 1964.
+252 Stoyan, /LISP history/, 1979., p. 47.
+253 McCarthy, /History of LISP/, 1981., p. 180.                           
+254 “And I never understood the complaint very well, namely, I said : ‘oh, there
+     must be a bug somewhere, fix it!’ And Steve Russell and Dan Edwards said,
+     there is a fundamental difficulty and I said, there can't be, fix it, and
+     eventually they fixed it and there was something they called the funarg
+     device. He tried to explain it to me but I was distracted or something and I
+     didn't pay much attention so I didn't really learn what the funarg thing did
+     until really quite a few years later. But then it turned out that these same
+     kinds of difficulties appeared in ALGOL and at the time, the LISP solution
+     to them, the one that Steve Russell and Dan Edwards had simply cooked up in
+     order to fix this bug, was a more comprehensive solution to the problem than
+     any which was at that time in the ALGOL compiler.”
+    McCarthy, /Talk about LISP history/, 1974., cited from Stoyan, /History of
+    Lisp/, 1979., p. 47.
+255 “Thus the system eval will accept functional arguments only when
+     they are preceded by FUNCTION, which is both a theoretical and
+     practical nuisance.”
+    McCarthy, /New eval function/, AIM-034, 1962., p. 8.
+256 See chapter /Fortran-like commands and function program/.
+257 Abrahams, /Application of LISP to checking mathematical proofs/, 1964., p.141.
+258 Abrahams, /The proofchecker/, AIM-021, 1961., p. 9.
+259 McCarthy et al., /LISP I manual/, 1960., p. 139.
+260 The phrase is used in the context of “corrupted and irredeemable”.
+    McCarthy et al., /LISP 1.5 programmer's manual/, 1962., p. 22.
+261 McCarthy, /Notes on improving Lisp/, 1986., p. LP-I.2.3.
+262 McCarthy et al., /Lisp 1.5 programmer's manual/, 1962., p. 14.
+263 McCarthy, /Beyond Lisp/, 2005., img. 4.

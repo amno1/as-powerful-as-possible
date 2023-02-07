@@ -1,0 +1,112 @@
+* 20 New function /eval/
+
+McCarthy's memo MIT AIM-034, /New eval function/ written 1962.^280, latest 6.
+March^281, is a late unswer on unsasisfying processing of functions as arguments,
+in "theoretic" as well as in "system" Lisp.
+
+McCarthy introduces several changes in notation. As in memoes about
+computability theory, he used round parenthesis in meta-expressions instead of
+rectangular. He denotes parenthesis with arbitrary number of dots or commas. For
+example, *..)* closes parenthesis *(..* and also all other parenthesis opened
+between those two signs. In conditional expressions he writes /t/ instead of *T* and
+thus conditional expressions are translated in the form of Lisp 1.5, i.e.
+*(COND ... (T ...))* instead of *(COND ... ((QUOTE T) ...))* as in "pure Lisp".
+
+20.1 AUGMENTED LISP
+
+For difference from "pure Lisp", "system" or "augmented Lisp" stores symbol
+values in a property list. Expressions of "augmented Lisp" or /E-expressions/ are
+built from atomic symbols and a /pointer/ (orig. /full word pointer/), address in
+memory. Definition of E-expression is
+
+1. Atomic symbol is E-expression
+2. Pointer is E-expression
+2. if e_1 and e_2 are E-expressions then (e1 . e2) is also an E-expression.
+
+Elementary function /car/ and /cdr/ are not defined for pointers.
+
+Predicate /atom/[x] is true only for symbols, and false for all other
+E-expressions.
+
+Predicate /eq/[x;y] is true if all /x/ and /y/ are same addresses in memory.
+
+Predicate /fullword/[x] is true iff /x/ is a pointer.
+
+Function /value/[x] is defined if and only if /x/ is a symbol. If /x/ has a vlue /v/
+stored in a property list, then
+
+        /value/[x] = (VALUE . v).
+
+20.2 NEW EVAL
+
+McCarthy tried to write funciton /eval/ which would enable usage of functions as
+arguments and was correct commputed reagrdless if values of symbols were given
+in an associative or a property list.
+
+If /e/ is a symbol, then /eval/ searches for a value of /e/ first in the property list,
+and if it is not found there then in the associative list /a/.
+
+If /e/ has form (fn arg_1 ... arg_n) then the function /fnval/ is defined first as a
+result of computing /fn/.
+
+If /fn/ is a function, then /fnval/ is the address of a function in machine language
+(which is tested by condition /fullword/[fnval]), a lambda- or a
+label-expression.Then /eval/ applies (by using /app1/) /fnval/ over computed values of
+the arguments.
+
+If /fn/ is fexpr, then /fnval/ has form (/fx/ . *FEXPR*) where /fx/ is an lambda- or
+label-expression. Then /eval/ applies /fx/ on a list (/args/ a) where args=(arg_1 ...
+arg_n).
+
+For applying the function over a list, function /app1/[f-nval;args;a] is used,
+similar to function /apply/ from /Lisp 1.5 programmer's manual/. For the difference
+from /apply/, function /app1/ does not compute values of symbols in operator place
+automatically.
+
+        /app1/[ /eval/ [fn; a]; /args/; a] = /apply/[fn; args; a].
+
+This is how suggested /eval/ looked like, using usual rectangle parantheses and
+somewhat shorter variable names:
+
+        /eval/[e; a] =
+          [atom[e] → /search/[e;
+                            λ[[j]; [eq[car[j]; VALUE]]];
+                            cadr;
+                            λ[[ ]; /assoc/[e; a]]];
+          t → /prog/[[fnval];
+                    /fnval/ = eval[car[e]; a]
+                    /return/[[fullword[fnval] ∨
+                    eq[car[fnval]; LAMBDA] ∨
+                    eq[car[fnval]; LABEL] →
+                       app1[fnval;
+                            maplist[cdr[e];
+                                    λ[[j]; eval[car[j]; a]]]];
+                            a];
+                    t→ app1[car[fnval];
+                            list[cdr[e]; a];
+                            a]]]]]
+
+New function /eval/ does not have special rules for computing of usage for basic
+functions /car/, /cdr/, /cons/, /atom/, /eq/, nor operators *COND* or *QUOTE* but searches for
+their values just like for any other function of fexprs.
+
+20.3 AUTONOMOUS LAMBDA AND LABEL
+
+Problem that was left was computing lambda- and label-expressions themselves,
+for example /eval/[(*LAMBDA (X) X*);a].
+
+McCarthy wasn't fond of using QUOTE or FUNCTION. Instead, he suggests that
+lambda- and label-expression should be /autonymes/, expressions that computes
+themselves. That stance is consistent: lambda-expressions are introduced into
+"imperative Lisp" for the purpose of avoiding the computing. McCarthy achieves
+that by defining *LAMBDA* and *LABEL* as fexprs. For example, value *LAMBDA* can be
+defined in a property list as
+
+        ((LAMBDA (E A) (CONS (QUOTE LAMBDA) E)) . FEXPR).
+
+McCarty was still ignoring then already two and a half year old funarg problem.
+Lisp implementers didn't accepted McCarthy's suggestions.^282
+
+280 McCarthy, /A basis for a mathematical theory of computation/, AIM-031, 1962., p. 1.
+281 Norton, /Some identities concerning function subst[x;y;z]/, AIM-037, 1962., p. 1.
+282 McCarthy et al., /LISP 1.5 Programmer's manual/, 1962., p. 70.

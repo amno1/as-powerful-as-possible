@@ -1,0 +1,40 @@
+* 12. Slagle's language for manipulating symbols
+
+In a 1961. work, Slagle also described briefly a "symbol manipulation language"
+"similar to McCarthy's Lisp".^203
+
+Basic property of Slagle's language is giving up on "dotted pairs". While
+McCarthy introduces symbolic expressions as pairs in form (e_1 . e_2), and 
+(e_1, ..., e_n) only as abbreviation to (e_1 . (e_2 . (...(e_n . NIL)...)), Slagle
+introduces lists directly. To him (e_1, ..., e_n) is a real symbolic expression,
+not just an abbreviation, while "dotted pairs" are not symbolic expressions at
+all. Function /cons/[x;y] is defined just if  /y/ is a non-atomic S-expressions or
+*NIL*.
+
+Instead of *T* and *F*, Slagle uses *TRUE* and *FALSE*. Instead of /car/ and /cdr/, he
+writes shortly /f/ (from /first/) and /r/ (from /rest/). Instead of /caar/, /cadr/, /cdar/,
+/cddr/, etc. he writed /ff/, /fr/, /rf/, /rr/, etc.
+
+Important is innovation and operation of function composition, for example, /f/ ◦ /g/.
+
+Slagle, as difference to McCarthy, explicits that function can be defined with
+expressions in form
+
+        function = λ[[x1; ...; xn]; form]
+          function[x1; ... ; xn] = form.
+
+Slagle defined a collection of interesting functions, for example procedures for
+inserting elements in ordered lists and for sorting lists, as well as predicates
+/forall/ and /therex/, as well as function /depth/ which computes "maximal parantheses
+level" in an S-expression.
+
+        /forall/[s; p] = /null/[s] ∨ [p ◦ f[s] & /forall/[r[s]; p]
+            /therex/[s; p] = ~forall[s; λ[[si]; ~p[si]]]
+
+        /depth/[s] = [atom[s] → 0.0;
+                   *TRUE* → /max/[[1.0 + /depth/ ◦ f[s]];
+                               /depth/ ◦ r[s]]].
+
+Slagle's Lisp was never implemented.
+
+203 Slagle, /A heuristic program .../, 1961., p. 16.

@@ -1,0 +1,1913 @@
+* 9. Pure Lisp
+
+The development from "impterative Lisp" to the end of 1958. was very quick and
+excellently documented. During this period, McCarthy realized that combination
+of expressed ideas does not just make for a practical programming language, but
+also an "elegant mathematical system" for describing computable functions, more
+"clean" than Turing machines and theory of recursive functions. Such reasoning
+motivated further simplifications, partly for the esthetic reasons, and partly
+because of the desire for development of techniques for proofing corectness of
+programs^130.
+
+In few intern memos and repports written during the March and April 1959. under
+the same title, "/Recursive functions of symbolic expressions and their
+computation by machine/", the simplified Lisp is already defined and precisely
+described^132,133,134. In Memo 8. McCarthy tried to use descriptive names for
+functions: /first/, /rest/ and /combine/ instead of /car/, /cdr/ and /cons/. Him and Russell
+tried to convince other project memebers to use new names, but without
+success.^135 Already in next Memo McCarthy gives up on new names. In
+September 1959. Lisp is presented at ACM conference^136.
+
+The text got it's final form of about tenth of pages long article published in
+early 1960. under the same title.^137 Some ideas, mainly relation between Lisp
+and comutation theory^138 were noted only in intern documents. Announced
+continuation of the article was supposed to contain examples of computations
+with algebraic expressions, but was never written^139.
+
+Surprisingly even for members of AI project, Lisp turned out as a language whose
+important property is - beauty.^140 It seems that some readers has certain
+problems with understanding of basic ideas of the language^141.
+
+In time when it was developed, the new dialect didn't have a special name. It
+was simply called *"LISP"*. Only with appereance of sufficiently different Lisp
+1.5, the dialect starts to be called "pure"^142 and somtimes also a "vanilla
+Lisp".^143 "Pure Lisp" is sometimes also wrongly identified with Lisp I., an
+intern version of practical Lisp that predeccesed more familiar Lisp 1.5.
+Intern, the group members also called it RSFE Lisp.^144 A special implementation
+of "pure Lisp" did not exist, so it could be also understood as a sub-language
+of implemented Lisp.
+
+McCarthy tried several times to approximately frame "basis of Lisp". He describe
+it as a "programming system for using IBM 704 computer for computing symbolic
+expressions in form of S-expressions"^145 or "a method of generating recursive
+function over symbolic expressions".^146
+
+Definitions and theses from several articles and intern documents can be
+organized in about ten groups.
+
+1. Introduced is a set of rules for forming mathematical expressions, especially
+   for expressions which define functions.
+
+2. Defined are /symbolic expressions/ or /S-expressions/ as a special kind of new
+   symbols. For example, *A*, *B*, *DA*, *E1*, *(A,B)*, *(A,(B,C),(B,(DA,E1)))* are all
+   symbolic expressions. Symbolic expressions are only kind of data in "pure
+   Lisp".
+
+3. Defined are /functions over symbolic expressions/ or /S-functions/. There are few
+   primitive S-functions. All other S-functions are defined with help of few
+   facilities as noted in 1. For example, /append/ is a function that for pair
+   *(A,B)* and *((A))* assigns *(A,B,(A))*.
+   
+   Every S-function is defined by some mathematical expression. For sake of not
+   confusing definitions of S-functions with symbolic expressions, parenthesis
+   are exchanged for rectangle brackets, and commas with semi-colons. Thus
+   written expressions are called meta-expressions. For example, λ[[x];
+   append[x; x]] is a meta-expression that that defines S-function which
+   assignes /append[x;x]/ to symbolic expression /x/. From definition of every
+   S-function is apparent how to calculate the value of that function for given
+   arguments.
+
+4. Defined is translation of meta-expressions into S-expressions. Used is
+   "Cambridge polish notation". For example, meta-expression /append[x;x]/ is
+   translated to *(APPEND,X,X)*. It is also written as
+
+           append[x; x]^* = (APPEND,X,X).
+
+5. Analog to universal Turing machine, defined is a universal S-function /apply/
+   which can replace any other S-function. Precisely, if /f/ is an S-function, and
+   f^* a translation of meta-expression with which /f/ is defined, then
+
+           /f/[arg_1; arg_2; ...; arg_n] = apply[f^*; (arg_1, arg_2, ..., arg_n)]
+
+   for all S-expressions arg_1, ..., arg_n.
+
+6. Defined is another important function, /eval/, that computes "value" of
+   S-expression with given argument "values". For example, if S-function /append/
+   "assignes" S-expressions then
+
+        eval[(APPEND,X,Y); ((X,(A)),(Y,((B))))] = (A,(B)).
+
+7. Described is, as a rough sketch, implementation of the system. Of special
+   importance is implementation of symbolic expressions in form that is today
+   called single linked lists, already described in the first memo.
+
+8. Proved is that every program can be represented by an S-function.
+
+9.1 MATHEMATICAL EXPRESSIONS
+
+At first sight surprisingly, McCarthy devoted significant part of the article to
+mathematical ideas and notation.^147 Some forms of expressions that were earlier
+introduced as part of Lisp, are now introduced as mathematical expressions.
+
+/Partial functions/ are functions not defined over entire domain field. /Predicate
+expressions/ are expressions that can be true or false, that is, whose values are
+true (denoted by sign /T/) or false (denoted by sign /F/). /Predicates/ are functions
+which, for those argument values for which they are defined, have values /T/ or /F/.
+
+9.2 CONDITIONAL EXPRESSIONS
+
+In function definitions computed differently for different arguments are usually
+used phrases in natural language or two-dimensional expressions in form like
+
+              −x for x < 0
+         |x| = 0 for x = 0
+               x for x > 0
+
+For that purpose, McCarthy introuces /conditional expressions/. For example, the
+absolute value can be defined by a conditional expression
+
+        |x|= (x < 0 → − x, x = 0 → 0, x > 0 → x).
+
+Contitional expressions can also be used outside the context of defining
+functions. For example,
+
+        (2 + 2 = 5 → 2^2 + 3^3, 2 + 2 = 4 → 4).
+
+If we need to compute the value of a conditional expression, it is not necessary
+to compute all subexpressions. For example, in previous expression it is
+necessary to evaluate 2 + 2 = 5. Since it is not the case, evaluating 2^2 + 3^3
+is not necessary.
+
+More generally, conditional expressions have form
+
+        (p_1 → e_1, ..., p_n → e_n)
+
+where p_1, ..., p_n are predicate expressions, and e_1, ..., e_n are any
+expressions. Value of a conditional expressions is computed so that expressions
+p_1, ..., p_n are evaluated in order, until the first p_i with value /T/ is found.
+Then the corresponding e_i is evaluated and obtained result is the value of
+entire conditional expression. If all p_1, ..., p_n are false, or some of
+sub-expressions that has to be evaluated does not have defined value, then the
+value of conditional expression is not defined.
+
+Instead of last condition is often used /T/. For example,
+
+        |x|=(x < 0 → − x, x = 0 → 0, T → x).
+
+Conditional expressions can, for example, replace all predicate conjuctions.
+
+        p ∧ q = (p → q, T → F)
+        p ∨ q = (p → T, T → q)
+           ~ p = (p → F, T → T)
+        p ⊃ q = (p → q, T → T).
+
+9.3 RECURSIVE AND SIMULTANEOUS RECURSIVE FUNCTION DEFINITIONS
+
+Functions can be defined by expressions in which name of the function appears on
+both left and right side of the equality, for example
+
+        n! = (n = 0 → 1, T → n · (n − 1)!).^148
+
+Functions are sometimes, although not often, defined with "simultaneous
+recursion". For example, functions /f/, /g/ and /h/ can be defined by expressions
+
+        f(n) = g(n – 1) + h(n – 1)
+        g(n) = (n = 1 → 1, T → f(n) + h(n − 1))
+        h(n) = (n = 1 → 2, T → f(n) + g(n – 1)).
+
+McCarthy mentioned that simultan recursive functions are possible in Lisp
+and that he will use them if needed^149. In important example described later
+(functions /eval/, /evlis/ and /evcon/) simultan recursion is indeed used.
+
+9.4 LAMBDA-EXPRESSIONS
+
+Functions are usually defined before being used in expressions. For example,
+function is first defined by an expression like
+
+        f(x) = sin(x) + cos(x)
+
+and then used in expressions, for example, /f(3)/. If numbers where threated in
+same way, we would have to write something like
+
+        a = 3 + 4
+        x = 2 + a.
+
+Under influence of Church's lambda calculus McCarthy introduces
+/lambda-expressions/, which makes it possible to use functions in the same
+expression, without introducing their name. For example, lambda-expression that
+defines the function /f/ is equal to
+
+        λ((x), sin(x) + cos(x))
+
+and instead of /f(3)/ it is written
+
+        λ((x), sin(x) + cos(x))(3).
+
+More generally, if /e/ is a mathematical expression, and x_1, ..., x_n are
+variables, then expression
+
+        λ((x_1, ..., x_n), e)
+
+defines function which to n-tuple (c_1, ..., c_n) assignes the value of expression
+/e/ in which x_1, ..., x_n has values c_1, ..., c_n in order.
+
+9.5 LABEL EXPRESSIONS
+
+Functions can be defined /recursively/, with expressions in which function name
+appears both on left and right side of equality. For example,
+
+        fact(n) = (n = 0 → 1, T → n · fact(n − 1))
+
+Since a recursive function on first sight calls itself, it seems at first that
+such function can not be defined with lambda-expressions. For that reason
+McCarthy introduces Rochester's lambda-expressions, somewhat changed and
+renamed in /label-expressions/, with which even recursive functions can be
+defined and which can be used inside other expressions. For example, function
+that computes factorials can be defined with expression
+
+        label(fact, λ((n), (n = 0 → 1, T → n· fact(n − 1)))).
+
+Function name, /fact/, used in the label-expression does not have value outside that
+label-expression. For example, in expression
+
+        label(fact, λ((n), (n = 0 → 1, T → n· fact(n − 1))))(5) + fact(10)
+
+the second addend is not defined.
+
+More generally, if /e/ is a mathematical expression that contains a call to
+function /f/ with /n/ variables, x_1, ..., x_n, then expression
+
+        label(f, λ(x_1, ..., x_n), e))
+
+defines function that to n-tuple (c_1, ..., c_n) assignes value of expression /e/ in
+which x_1, ..., x_n has values c_1, ..., c_n in order. Name of that function inside
+expression /e/ is /f/.
+
+At time of Lisp development, McCarthy, despite the inspiration form Church's
+lambda calculus, never red his book to the end. If he did, he would have known
+that introduction of label-expression is not necessary, even though alternative
+function definitions without label-expressions are considerably more complex,
+about which McCarthy later also wrote^150.
+
+9.6 FREE AND BOUND VARIABLES
+
+Occurrence of variables in expressions can be divided on /free/ and /bound/. For
+example, all occurrences of variables /x/ and /y/ in the expression y^2 + x are free,
+and in expression λ((x, y), y^2 + x) are bound. In the expression
+
+        x + λ((x), x^2)(3)
+
+first occurrence of variable /x/ is free, but second and third are bound.
+
+Generally, all occurrences of variables x_1, ..., x_n in λ((x_1, ..., x_n),e) are
+bound. Other occurrences of variables in λ((x_1, ..., x_n),e) are free (bound) if
+they are free (bound) in expression /e/. Occurrence of varible /f/ in the expression
+label(f, λ((x_1, ..., x_n), e)) is bound.
+
+In other expressions (those that are not lambda- or label-expressions)
+occurrence of variables are free (bound) if they are free (bound) in
+sub-expressions. A trivial occurrence of a variable (for example, /x/ is a variable
+in expression /x/) is free.
+
+Typically, for computing an expression value it is necessary to know values of
+free variables. For example, for computing /f(x)*f(x)/ it is needed to know value
+of /x/ and definition of /f/. Sometimes expressions can be evaluated without knowing
+values of free variables. For example, for computing /f(x)-f(x)/ it is only needed
+to know that function /f/ is defined for value /x/.
+
+
+9.7 REMARK ON SIMULTANEOUS RECURSIVE FUNCTIONS
+
+McCarthy didn't examined simultaneous recursion, more than giving it's
+definition. On a first sight, it seems that simultan recursion can define some
+functions which are not possible to define without it. This, though, is not
+true. Let
+
+        f1(x_1, ..., x_n) = e_1,
+               ...
+        fk(x_k, ..., x_n) = e_k.
+
+be a system of simultaneous recursive function definitions, where e_1, ..., e_k are
+expressions containing f_1, ..., f_k. Then it is possible in entire system to
+substitute expressions in form 
+
+        f1(a_1, ..., a_n) s g(1, a_1, ..., a_n),
+                       ...
+        fk(a_1, ..., a_n) s g(k, a_1, ..., a_n)
+
+so that the system transforms into a recursive definition of function /g/
+
+        g(i, x_1, ..., x_n) = {i = 1 → es_1, ..., i = k → es_k}
+
+where es_1, ..., es_k are results of substitution in expressions e_1, ..., e_k.
+Function /g/ can be defined with label-expression. Further, functions f_1, ..., f_k
+can be defined with non-recursive definitions
+
+        f_1(x_1, ..., x_n) = g(1, x_1, ..., x_n),
+                        ...
+        f_k(_xk, ..., x_n) = g(k, x_1, ..., x_n).
+
+9.8 DEFINITION OF SYMBOLIC EXPRESSIONS
+
+"Pure Lisp" has just one kind of data: /symbolic expressions/ or /S-expressions/. It
+could be said that symbolic expressions form the foundation for Lisp, in a way
+that sets are foundation for mathematics. Symbolic expressions are a subset of
+the set of all possible sequence of symbols, chosen for the suitability to
+express mathematical and logical formulas.
+
+/Atomic symbols/ or, shorter, symbols are finite sequences of capital letters,
+digits and single spaces. For example, *A*, *ABA* and *APPLE PIE NUMBER 3* are
+symbols.
+
+A symbol sequence /e/ is a /symbolic expression/ if:
+
+1. /e/ is atomic symbol, or
+2. e = (e_1·e_2) where e_1 and e_2 are symbolic expressions.
+
+For example, *(A·B)* and *(A·B)·XYZ)* are symblic expressions, but not symbols.
+Symbolic expressions in form (e_1·e_2) are called /ordered pairs/ or /dotted pairs/ of
+symbolic expressions e_1 and e_2.
+
+Sequence of symbols (e_1, e_2, ..., e_n) where e_1, e_2, ..., e_n are symbolic
+expressions is called a /list/ of symbolic expressions e_1, e_2, ..., e_n. A list
+(e_1, e_2, ..., e_n) is an abbreviation for the symbolic expression
+
+         (e_1·(e_2 (...(e_n·NIL)...))).
+
+For example, *(A,B)* is abbreviation for *(A·(B·NIL))*. As defined, *()* is
+abbreviation for *NIL*.
+
+McCarthy calls even lists for symbolic expressions^151 which is less precise, but
+shorter and it does not require lot of effort to avoid confusions.
+
+9.9 DISTINCTION BETWEEN FORMER DEFINITIONS
+
+Definition of symbolic expressions in article from 1960. distincts itself from
+the previous ones. Introduced are ordered pairs, less suitable for representing
+mathematical and logical formulas, and expressions of form (e_1, e_2, .., e_n) are
+degraded to abbreviations for symbolic expressions. McCarthy didn't explain
+reasons for that change, which is understandable: "old definitions" of symbolic
+expressions where not published and discussion of those would just confuse
+reader of the time.
+
+Reasons can be alluded from the symbolic expressions definition in Memo 8. which
+was discarded in the paper from 1960^158.
+
+1. Atomic symbols are symbolic expressions.
+2. Nul-expression, indiated with Λ, is a symbolic expression.
+3. If /e/ is a symbolic expression then (/e/) is also a symbolic expression.
+4. If e_1 and (e_2) are symbolic expressions then (e_1, e_2) is also a symbolic
+   expression.
+
+Definition from Memo 8. is not completely correct. According to this definition,
+for example, *(A,B,C)* is not a symbolic expression, which certainly was not
+McCarthy's intention. A correct defintion that might correspond to McCarthy's
+intention might look like this:
+
+1'. Atomic symbols are symbolic expressions.
+2'. Nul-expression (() can also be used as a notaion instead of Λ) is a symbolic
+    expression.
+4'. If e_0 and (e_1, e_2, ..., e_n), /n≥0/, are symbolic expressions, then
+    (e_0, e_1, e_2, ..., e_n) is also a symbolic expression
+
+Described error in Memo 8. seems as an oversight, unfinished analysis which
+gives us an insight in what author wanted: to define symbolic expressions so
+they can be built by the function *cons*, and not, as in "imperative Lisp", with
+problematic function *list*.
+
+Shortcoming of corrected function from Memo 8. is that *cons* could not be used on
+all symbolic expressions; second argument can not be a symbol. The definition from
+the paper from 1960. is almost sure consequence of a wish to define function *cons*
+over all pairs of symbolic expressions, and at the same time to keep lists.
+
+Unfortunately, with the symbolic expression definition from the 1960 paper, term
+/list/ become ambiguous. Lists are called sequences of symbols (e_1, ..., e_n) as
+well as the internal representation of such mathematical expressions in memory so
+that sometimes it needs to be emphasized what kind of a list is in question.
+
+9.10 META-EXPRESSIONS
+
+As "arithemtic-expressions" are "about numbers", so are /meta-expressions
+(M-expressions)/ "about" S-expressions. McCarthy describes meta-expressions as
+usual mathemtical phrases, that use "conventional mathematical notation" with
+few important changes. Semmicolon is written instead of comma, rectangle
+brackets are written instead of parenthesis, it is no longer allowed with
+capital letters in name of functions and variables^153. Purpose of those
+changes is the distinction of meta-expressions from S-expressions. Notation for
+truth and falsehood in a meta-expression are S-expressions *T* and *F*.
+
+Symbolic expressions are a special, trivial form of meta-expressions, similar as
+numbers are a trivial form of arithmetic expressions. Thus, for example, *T* is a
+symbolic expression and also a meta-expression.
+
+9.11 S-FUNCTIONS
+
+McCarthy defines "class" of /partially defined functions/ over S-expressions which
+he calls /S-functions/. He defines S-functions in two steps. First, he lists five
+elementary S-functions. Thereafter, he shows how new S-functions can be defined
+with those already defined functions. There are no other S-funcions beside those
+mentioned above. S-functions coincide with all /computable functions/ over
+S-expressions. Proof of that statement follows from ability to define Turing
+machines in Lisp.
+
+9.12 ELEMNTARY S-FUNCTIONS
+
+1. Elementary S-functions /atom/. For example,
+
+           /atom[X] = T,/
+           /atom[(X·Y)]/ = F.
+
+value /atom[x]/ is defined for all S-expressions /x/ and have value *T* if /x/ is atomic
+symbol, *F* otherwise. On first sight looking unusual, /atom[()] = T/ because () is
+an abbreviation for *NIL*.
+
+2. Elementary S-function /eq/. For example, 
+
+          /eq[X;Y]/ = F,
+          /eq[X;X]/ = T,
+          /eq[X;(X·Y)]/ is not defined.
+
+Generally, value /eq[x;y]/ is defined only if /x/ and /y/ are atomic symbols and has
+value *T* if /x/ and /y/ are same symbols, *F* otherwise.
+
+3. Elementary S-function car. For example,
+
+          /car[(A·B)] = A/,
+          /car[(A,B,C)] = A/.
+
+Value /car[e]/ is defined only if /e/ is non-atomic expression, i.e. /e = (x·y)/. Then
+
+          /car[(x·y)] = x/.
+
+4. elementary S-function /cdr/. For example,
+
+          /cdr[(A·B)] = B/.
+          /cdr[(A,B,C)] = (B,C)/.
+          
+Value /cdr[e]/ is defined only for non-atomic symbol expressions /e/, i.e. /e = (x·y)/
+and 
+
+          /cdr[(x·y)] = y/.
+
+5. Elementary S-function /cons/. For example,
+
+             /cons[A;B] = (A·B)/,
+           /cons[A;(B,C)] = (A,B,C)/.
+
+Generally, /cons[x;y] = (x·y)/ for all S-expressions /x/ and /y/.
+
+If symbolic expressions were defined as in early versions of Lisp, the
+second argument would not be allowed to be a symbol.
+
+McCarthy points out important relation between S-functions /car/, /cdr/ and /cons/.
+
+        /car[cons[x; y]] = x/
+        /cdr[cons[x; y]] = y/
+
+If /x/ is not atomic symbol, then also
+
+        /cons[car[x]; cdr[x]] = x/.
+
+We could ask why McCarthy choosed those particular functions, and not some
+others. McCarthy himself never tried to answer that question. It is certain that
+McCarthy could define all functions which he tried to define in few previous
+months with help of those five elementary functions. We also know that all
+elementary functions are "computable": for all given arguments, a human can
+compute value of the function. Moreover, it is possible to do it in finite time,
+linearly dependent in number of arguments.
+
+Elementary functions are not independent. For example, /cons/ can be defined with
+help of /car/ and /cdr/:
+
+        /cons[x; y] = z/ such that /car[z]=x i cdr[z]=y/.
+
+Equally so, /car/ and /cdr/ can be defined with help of /cons/:
+
+        /car[x] = z such that there exists y so that cons[z; y] = x/
+        /cdr[x] = y such that there exists z so that cons[z; y] = x
+
+Those definitions are correct, but they don't produce an algorithm for computing
+/cons[x;y]/. If he accepted such method of defining S-functions, McCarthy would
+"loose computability" of S-functions.
+
+9.13 REMARKS WITH MCCARTHY'S S-FUNCTION DEFINING
+
+McCarthy's described way in wich other S-functions can be defined with help of
+elementary functions briefly^154 and leaves ambiguities, which are, luckily,
+resolved with numerous examples. For example, S-function /ff/ is defined for all
+expressions and returns first element in S-expression, ignoring parantheses.
+Exempelwise,
+
+        /ff[((A·B)·(C·D))] = A/.
+
+That S-function is defined by meta-expression
+
+        /ff[e] = [atom[e] → e;/
+                /T → ff[car[e]]]/.
+
+More generally, S-functions are defined with meta-expressions of form
+
+        /f[x1; ...; xn] = e/,
+
+where /f/ is a name of function, x_1, ..., x_n are variables, /e/ is a meta-expression
+build by composing s-functions, equality predicate, logic conjuctions,
+conditions, lambda- and label-expressions. If /f/ is a recursive functions, then
+name of that functions appears also on a right side of the equality.
+
+McCarthy suggests^155 that S-functions can also be defined with expressions
+like
+
+        /ff = label[ff; λ[[e]; [atom[e] → e;/
+                              /T → ff[car[e]]]]]/.
+
+More general, S-functions are defined with meta-expressions in form
+
+        f = label[f, λ[[x_1; ...; x_n]; e]],
+        / = λ[[x_1; ...; x_n]; e],
+
+where /f/, x_1, ..., x_n and /e/ are same as for the form /f/[x_1, ..., x_n] = e.
+
+In later texts, for example, Slagle's dissertation^156, both ways are
+explicitly stated, and were supported in many if not perhaps all implementations
+of the language. It seems appropriate to name those two ways of defining
+functions in order, /implicit/ and /explicit definition of a function/, terms that
+McCarthy didn't use.
+
+Defining methos for S-functions still does not comprehend all methods used in
+mathematics. For example, the expression
+
+        /f/[x] = [[∃y][cons[y; y] = x] → T, T→ F]
+
+can not be used to define a S-function. Common to all methods which can be used
+to define S-functions is that they are constructive, i.e. a definition of
+S-function also gives the procedure wich can be used to compute the value of
+that function, if such a value exists.
+
+It is important to note that same S-function can be defined with different
+meta-expressions. For example, function /ff/ can also be defined with expression
+
+        /ff = label[ff; λ[[e]; [atom[e] → e;/
+                              /T → ff[car[e]]]]]/
+
+as well as with expression
+
+        /ff = label[ff; λ[[e]; [~atom[e] → ff[car[e]];/
+                              /T → e]]/.
+
+9. 14 EXAMPLES OF NON-ELEMNTARY S-FUNCTIONS
+
+McCarthy cites numerous examples of S-functions. Examples are important because
+they show the style in which Lisp programmers think, and clarify of the authors
+intentions.
+
+1. S-functions /caar, cadr, cdar, cddr, caaar, caadr/ ... are all defined with
+meta-expressions 
+
+        /caar[x] = car[car[x]]/,
+        /cadr[x] = car[cdr[x]]/,
+        /cdar[x] = cdr[car[x]]/,
+                 ···
+For example,
+
+       /cadr[(A,B,C)] = car[cdr[(A,B,C)]] = car[(B,C)]= B/.
+
+McCarthy also calls S-functions /caar, cadr, cdar, cddr, caaar, caadr/ ... for
+"abbreviations".
+
+2. S-function /ff/. Value /ff/[e] is the first element in S-expression /e/, ignoring
+parentheses. For example
+
+        /ff/[((A·B)·(C·D))] = A.
+
+   S-function /ff/ is defined by meta-expression 
+
+        /ff[e] = [atom[e] → e;/
+                /T → ff[car[e]]]/.
+
+3. S-functions /subs/. Value /subst[x;y;z]/ is result of "substituting" expression /x/
+   in every occurrence of atomic symbol /y/ in expression /z/. For example,
+
+        /subst[(A·B); C; ((C·D)·E)] = (((A·B)·D)·E)/.
+
+S-function /subst/ is defined by meta-expression
+
+        /subst[x; y; z] = [atom[z] → [eq[z; y] → x;/
+                                     /T → z];/
+                         /T → cons[subst[x; y; car[z]];/
+                                  /subst[x; y; cdr[z]]]]/.
+
+4. S-function equal. Value /equal[x; y]/ is defined for all symbolic expressions /x/
+   and /y/ and equals *T* if a given /x/ and /y/ are same S-expression, symbol for symbol,
+   *F* otherwise. For example,
+
+        /equal[(A·B); (A·B)] = T/.
+
+S-function /equal/ is defined by meta-expression
+
+       /equal[x; y] = [[atom[x] ∧ atom[y] ∧ eq[x; y]] ∨/
+                      /~atom[x] ∧ ~atom[y] ∧ equal[car[x]; car[y]]/
+                                           /∧ equal[cdr[x]; cdr[y]]]]/.
+
+5. S-function /null/. Value /null[x]/ is *T* if /x/ equals *NIL*; *F* otherwise. S-function
+   /null/ is defined by meta expression
+
+        /null[x] = atom[x] ∧ eq[x; NIL]/.
+
+6. S-function /append/. For example,
+
+        append[(A,B,C); (A,C,A)] = (A,B,C,A,C,A).
+
+S-function /append/ is defined by meta-expression
+
+        /append[x; y] = [null[x] → y;/
+                       /T → cons[car[x]; append[cdr[x]; y]]]/.
+
+7. S-function /among/. Value /among[x; y]/ is *T* if /x/ occures as a list element of
+   list /y/; *F* otherwise. For example,
+
+        /among[X; (A,B,X,C)] = T/.
+
+S-function /among/ is defined by meta-expression
+
+        /among[x; y] = [~null[y] ∧ [equal[x; car[y]]/
+                                   /among[x; cdr[y]]]]/.
+
+8. S-function /pair/. For example,
+
+        /pair[(A,B,C); (X,(Y,Z),U)] = ((A,X),(B,(Y,Z)),(C,U))/.
+
+S-function /pair/ is defined by meta-expression
+
+       /pair[x; y] = [null[x] ∧ null[y] → NIL;/
+                   /~atom[x] ∧ ~atom[y] → cons[list[car[x]; car[y]];/
+                                             /pair[cdr[x]; cdr[y]]]]/
+
+where /list[x; y]/ is an abbreviation for /cons[x; cons[y; NIL]] = (x,y)/.
+
+9. S-funcion /assoc/. Variables are often associated values, for example, /x = b/,
+/y = sin b/. Information about associations can be encoded with S-expressions like
+*((X,B),(Y,(SIN,B)))*. Value /assoc[s; a]/ is an expression associated with symbol /s/
+in the association list /a/; first one if there are multiple such associations. For
+example, 
+
+        /assoc[X;((X,B),(Y,(SIN,B)),(X,C))] = A/.
+
+S-function /assoc/ is defined by meta-expressions
+
+        /assoc[x; y] = [eq[caar[y]; x] → cadar[y];
+                       T → assoc[x; cdr[y]]]/
+
+If S-expressions are defined as single linked lists, then computing value of
+S-function /assoc/ is in some cases innefficient for reasons that McCarthy
+warned about in the first memmo: for example, for computing
+
+        /assoc/[X,((A,e_1),(B,e_2),...,(Z,e_26))]
+
+has to call itself 23 times.
+
+10. S-function /sub2/. Value /sub2[x; y]/ is the first symbol in association list /x/
+associated with /y/. If such symbol does not exist, it remains /y/.
+
+        /sub2[((X,A),(Y,(B,C)),(Z,D)); Y] = (B,C),
+                sub2[((X,A),(Y,B)); Z] = Z/
+
+
+S-function /sub2/ is defined by meta-expression
+
+         /sub2[a; x] = [null[a] → x;/
+                       /eq[caar[a]; x] → cadar[a];
+                       /T → sub2[cdr[a]; x]]/.
+
+11. S-function /sublis/. S-fucntin /sublis/ is a generalization of /sub2/; value
+    /sublis[x; y]/ is a result of substituting atomic symbols in S-expression /y/
+    with values associated in list /x/. For example
+
+         /sublis[((X,(A,B)),(Y,(B,C))); (A,(X·Y))] =/
+                    /(A,((A,B)·(B,C)))/.
+
+S-functin sublis is defined by meta-expression
+
+        /sublis[a; x] = [atom[x] → sub2[a; x];/
+                       /T → cons[sublis[a; car[x]];
+                       /sublis[a; cdr[x]]]]/.
+
+12. S-fucntions /first, rest, second, third/ ... Despite McCarthy giving up on
+    attempt to change names /car/, /cdr/ and /cons/ with /first/, /rest/ and /combine/
+    nothing stops from defining those functions.
+
+        /first[l] = car[l]/
+        /rest[l] = cdr[l]/
+
+Analogous, often are also defined functions
+
+        /second[l] = cadr[l]/
+        /third[l] = caddr[l]/
+               /.../
+
+9.15 ABBREVATION AND FUNCTION LIST
+
+McCarthy also introduces the important /function/ and /abbreviation list/.^157. For
+example
+
+        /list[A; B; (A,B); C] = (A,B,(A,B),C)/.
+
+Function is defined by expression
+
+        /list/[e_1; ...; e_n] = cons[e_1; cons[e_2; ...; cons[e_n; NIL]...]].
+
+Definition is mathematically correct, but it differs from the previous ones: it
+contains three dots - which can not be removed because /list/ has to be defined
+for arbitrary number of arguments. From that follows that /list/ is not an
+S-function, despite McCarthy not writing it out explicitly. Still, /list/ can be
+used in meta-epressions as an abbreviation, as long is at can be substituted by
+repeated use of funcion /cons/.
+
+9.16 FUNCTIONS AS LIST ARGUMENTS
+
+McCarthy points out that we can define many "useful" functions which takes other
+functions as arguments. He lists example of function /maplist/ which for list the
+(l_1, l_2, ..., l_n) and function /f/ assignes list
+
+        (f[(l_1, l_2, ..., l_n)], f[(l_2, ..., l_n)], ..., f[(l_n)]).
+
+For example
+
+        /maplist[(A,B,C); λ[[x]; x]] = ((A,B,C),(B,C),(C))/.
+
+Definition of /maplist/ is
+
+        /maplist[l; f] = [null[l] → NIL;/
+                         /T → cons[f[l];/
+                         /maplist[cdr[l]; f]]]/.
+
+Functions that takes other functions as agruments are specially useful for
+defining other functions, which McCarthy shows with example of a function of two
+variables, /dff/. Value, /diff[y;x]/ is a derivation of expression /y/ in variable /x/.
+Expression /y/ can be an atomic symbol or a symbolic expression in form (*PLUS*, e_1,
+..., e_n) or (*TIMES*, e_1, ..., e_n), where e_1, ..., e_n are symbolic expressions
+which can be first argumnets to function /diff/.
+
+Second argument of function /diff/ is a symbol on which to differentiate.
+
+        /diff[y; x] = [atom[y] → [eq[y; x] → ONE; T → ZERO ];/
+                     /eq[car[y]; PLUS] → cons[PLUS;/
+                                             /maplist[cdr[y];/
+                                              /λ[[z]; diff[car[z]; x]]]];/
+                     /eq[car[y]; TIMES]] →/
+                       /cons[PLUS;/
+                           /maplist[cdr[y];/
+                                   /λ[[z];/
+                                     /cons[TIMES;/
+                                         /maplist[cdr[y];/
+                                                 /λ[[w];/
+                                          /[~eq[z; w] → car[w];/
+                                      /T → diff[car[w]; x]]]]]]]]]/
+
+9.17 REMARK ABOUT ABBREVATION ELEMINATION AND NON-ELEMENTARY S-FUNCTIONS
+
+While defining new functions, it is possible to use previously defined
+non-elementary S-functions. Despite McCarthy not stating it explicitly, for
+understanding later McCarthy's definitions it is important to note that every
+S-function definable by abbreviations, predicate operators and names of
+previously defined non-elementary functions, can also be defined without those
+elements. For example, from the definition
+
+        /pair[x; y] = [[null[x] ∧ null[y]] → NIL;/
+                     /[~atom[x] ∧ ~atom[y]] → cons[list[car[x]; car[y]];/
+                                                /pair[cdr[x]; cdr[y]]]]/
+
+we can eleminate operators ∧ and ~ as well as abbreviation /list/. We get function
+
+        /pair[x; y] = [[null[x] → null[y]; T → F] → NIL;/
+                     /[[atom[x]→F; T→T] → [atom[y] → F; T →T ];/
+                     /T → F] → cons[cons[car[x]; cons[car[y]; NIL]];/
+                                   /pair[cdr[x]; cdr[y]]]]./
+
+S-function /null/ "has" M-expression
+
+        /λ[[x]; atom[x] ∧ eq[x; NIL]]/
+
+from which by elimination of logical conjuction ∧ is derived
+
+        /λ[[x]; [atom[x] → eq[x; NIL]; T → F]]/.
+
+If that expression is inserted instead of /null/ in defintion /pair/ we obtain
+
+        /pair[x; y] = [[λ[[x]; [atom[x] → eq[x; NIL]; T → F]][x] →/
+                      /λ[[x]; [atom[x] → eq[x; NIL]; T → F]][y];/
+                      /T → F] → NIL;/
+                     /[[atom[x] → F; T→T]→[atom[y] → F; T → T];/
+                     /T → F] → cons[cons[car[x]; cons[car[y]; NIL]];/
+                                  /pair[cdr[x]; cdr[y]]]]/
+
+Final defination for the function /pair/, far less understandable, is ekvivalent
+to the starting one and does not contains names of non-elementary functions nor
+abbreviations.
+
+Functions that are defined by simultaneous recusion could be eliminated first after
+substituting simultaneously recursive functions by previosly described functions
+or some other equivalents, but not with simultaneous recursive definitions.
+
+By naive elemination of call to previously defined functions by insertion of
+according lambda- or label-expressions, original function definition can be made
+exponentially larger. For example, let
+
+        f_0[x] = cons[f_1[x]; f_1[cons[x; x]]]
+        f_1[x] = cons[f_2[x]; f_2[cons[x; x]]]
+                          /.../
+        f_n − 1[x] = cons[f_n[x]; f_n[cons[x; x]]].
+
+and finally
+
+        f_n[x] = x.
+
+By inserting f_1 in defintion f_0 we obtain
+
+f_0[x] = cons[cons[f_2[x]; f_2[cons[x; x]]];
+           /cons/[f_2[cons[x; x]]; f_2[cons[cons[x; x]; cons[x; x]]]]]
+
+in which f_2 appears four times, and if we continue with such inserting, function
+f_n would occur 2^n times. Method used for eliminating simultaneously recursive
+definitions can be used here as well. Instead of defining /n/ functions in one
+variable, we should define one function in two variables
+
+        [i; x] = [i = 0^* → f_0[x];
+                /.../
+        i = n^* → f_n[x]],
+
+where 0^*, ..., n^* are some S-expressions. Now we can insert definitions of
+functions f_0, ..., f_n and in obtained expression substitue all calls f_i[x] with
+/f[i;x]/. Obtained is recursive definition for function /f/. From that definition, /f/
+can be defined by a label expression /label[f;λ[[i; x]...]]/ and from 
+f_0[x]=f[0^*; x] comes
+
+        f_0 = λ[[x]; label[f; λ[[i; x]...]][0^*; x]].
+
+There is not much differences if functions f_0, ..., f_n are functions in several
+variables.
+
+
+9.18 TRANSLATION OF M-EXPRESSIONS INTO S-EXPRESSIONS.
+
+Translations of meta-expression /e/ into S-expression is denoted by e^*. There are
+six rules for translation, depending on which kind translated meta-expression
+is.
+
+1. Symbolic expressions. If /e/ is a symblic expression, then e^* = (QUOTE, e). For
+   example,
+
+        T^* = (QUOTE,T).
+
+2. Name of functions and variables. If /e/ is function or variable name then e^* is
+   also a name, with small letters just being capitalized. For example,
+
+        xyz^* = XYZ.
+
+3. S-fucntion application. Let /f/[e_1; ..., e_n] be applied S-function; /f/ is
+   function name or expression which defines the function. Then,
+
+        /f/[e_1; ...; e_n]^* = (f^*,e_1^*, ..., e_n^*).
+
+    For example,
+
+              cons[T; xyz]^* = (CONS,(QUOTE,T),XYZ),
+          λ[[x]; cons[x; x]][A]^* = (λ[[x]; cons[x; x]]^*,(QUOTE,A))
+
+4. Conditional expression. Let [p_1 → e_1; ...; p_n → e_n] be a conditional
+   expression, where p_i and e_i are any meta-expressions. Then
+
+   [p_1 → e_1; ...; p_n → e_n]^* = (COND,(p_1^*,e_1^*),...,(p_n^*,e_n^*)).
+
+   For example,
+   
+       [eq[z; y] → x; T → z]^* = (COND,((EQ,Z,Y),X),
+                       ((QUOTE,T),Z)).
+                       
+   The rule for conditional expression translation was later criticized by
+   McCarthy because it leads to big number of parentheses.^158
+
+5. Lambda-expressions. Let λ[[x_1; ...; x_n], m] be a lambda expression; 
+   x_1; ...; x_n any variables, /m/ any meta-expression.
+
+        λ[[x_1; ...; x_n]; m]^* = (LAMBDA,(x1^*,...,x_n^*),m^*).
+
+6. Label-expressions. Let /label/[ /a/; m] be a label-expression, /a/ name of a
+   function, /m/ lambda expression. Then,
+   
+        /label/[ /a/; /m/ ]^* = (LABEL,a^*,m^*).
+
+   For example,
+
+       /label/[f; λ[[e]; [atom[e] → e;
+                        T → f[car[e]]]]]
+
+ is translated into S-expression
+
+ (LABEL,(F,(LAMBDA,(E),
+              (COND,((ATOM,E),E),
+                    ((QUOTE,T),(F,(CAR,E))))))).
+
+ Somewhat larger M-expression
+
+        /label/[ /subst/; λ[[x; y; z];
+                        [ /atom/[z] → [eq[z; y] → x;
+                                      T → z];
+                         T → cons[subst[x; y; car[z]];
+                                  subst[x; y; cdr[z]]]]]]
+
+is translated into S-expression
+
+        (LABEL,SUBST,
+          (LAMBDA,(X,Y,Z),
+            (COND,((ATOM,Z),(COND,((EQ,Z,Y),X),
+                                    ((QUOTE,T),Z))),
+                  ((QUOTE,T),(CONS,(SUBST,X,Y,(CAR,Z)),
+                               (SUBST,X,Y,(CDR,Z))))))).
+
+McCarthy was reserved about readability of such, in S-expression translated
+M-expressions^{159}, partially perhaps because he still didn't accepted Rochester's
+formatting by indenting lines. For example, the above expression is written in
+original as:
+
+     (LABEL, SUBST, (LAMBDA, (X, Y, Z), (COND,
+       ((ATOM, Z), (COND, (EQ,Y,Z),X),((QUOTE,
+       T),Z))),((QUOTE,T),(CONS,(SUBST,X,Y,
+      (CAR,Z)),(SUBST,X,Y,(CDR,Z))))))).
+
+9.19 REMARKS ABOUT M-EXPRESSION TRANSLATION
+
+It seems reasonable to introduce notion of "symbolic expressions assigned to
+functions" about which McCarthy didn't write, but which are natural and useful
+analogy to meta-expressions assigned to functions, and which will be needed in
+chapter about S-functions and computation theory. /S-expression assigned to
+function h/, denoted by h⁽s⁾ should be a translation of meta-expression assigned
+to function /h/. For example,
+
+        list1 = λ[[x]; cons[x; NIL]]
+    list1⁽s⁾ = (LAMBDA,(X),(CONS,X,(QUOTE,NIL))).
+
+Further, despite McCarthy not writing about it, not all meta-expressions can be
+translated into symbolic expressions in described way. A wide class of
+meta-expressions which McCarthy didn't use while defining S-expressions, such as
+
+        [[∃y][ /cons/ [y; y] = x] → T, T→ F]
+are not translatable, because instructions for their translation are not given.
+This restriction is not result of limit of the idea of meta-expression
+translation into S-expressions, but just of McCarthy being interested
+exclusively into translating only meta-expressions which define S-expressions.
+If some particular program needs to translate some other meta-expressions, it is
+possible to introduce new rules for translation.
+
+Even meta-expressions which usually define functions, in form of
+
+        /f/[x_1; ...; x_n] = /e/
+
+can not be converted, since there is no rule to convert equality. But,
+meta-expression on the right side of the equality, /e/ is usually convertible.
+Convertible are also meta-expressions in form of
+
+        λ[[x_1; ...; x_n]; e]
+    label[f, λ[[x_1; ...; x_n]; e]]
+
+for concrete variables x_1, ..., x_n and /e/. Important exception is /list/ which
+definition
+
+        /list/[e_1; ...; e_n] = cons[e_1; cons[e_2; ...; cons[e_n; NIL]...]]
+
+is not convertible because the right side of equality, and thus belonging
+label-expression contain tre dots which are not possible to remove, for which
+also, a conversion rule is not given.
+
+Meta-expressions which contain conjuctions are not convertible. If conjuctions
+are replaced with equivalent conditional expressions, obtained meta-expressions
+are convertible.
+
+It is important to note that rules for converting meta-expressions can be
+broaden, and thus make it possible to convert larger class of meta-expressions
+into S-expressions. Truly, in later Lisp development, this was done. For
+example, definitions in form of /f/[x_1; ...; x_n] = /e/ were converted with
+(DEFINE,f^*,(x_1^*,...,x_n^*),e^*).
+
+We can ask if it is possible to convert all meta-expressions (also, all
+mathemtical expressions), with some set of rules into symbolic expressions. It
+seems that it is; the author of this book does not know of any mathematical
+expression that couldn't be translated into a symbolic expression.
+
+Non-atomic S-expressions which are not "reducible" to list form or to a nested
+list, for example, (A·B), are not a translation of some meta-expression.
+The exception are S-expressions in which non-reducible parts are inside a list
+of form (QUOTE, /e/). For example, (QUOTE,(A·B)) is conversion of meta-expression
+(A·B).
+
+9.20 MATHEMATICAL DEFINITION OF S-FUNCTION EVAL
+
+Some meta-expressions have a value. For example /cons/[A; (B)] has value (A,B).
+Meta-expression /f/[ /x/; (B) ] has a value only if /f/ and /x/ have values. Implemented
+Lisp-system should compute values of meta-expressions instead of humans.
+
+McCarthy defines S-function /eval/ which, although, not computing values of
+meta-expressions, does something similar: it computes values of converted
+M-expressions.
+
+S-function /eval/ takes two arguments:
+
+1. symbolic expression obtained by converting M-expression and
+2. list of variable pairs and function names and their values. That list is in
+   Lisp literature called association list.^{160}
+
+Let, for example, /x/ = (A) and /y/ = (B). Then computing /cons/[x;y] can be reduced
+to applying function /eval/.
+
+        /cons/[x; y] = eval[(CONS,X,Y);((X,(A)),(Y,(B)))].
+
+Computing value of meta-expression /append/[x;y] is possible if we add to the list
+of pairs also definition of non-elementary S-function /append/. That S-function
+"has M-expression"
+
+        label[append; λ[x; y][null[x] → y;
+                              T → cons[car[x];
+                                        append[cdr[x]; y]]]]
+
+in which is also used S-function /null/ "whose M-expression" is, if we eliminate
+conjuction ∧,
+
+        λ[[x]; [atom[x] → eq[x; NIL]; T → F]].
+
+Then
+
+        append[x; y] = eval[(APPEND,X,Y);
+        ((X,(A)),
+          (Y,(B)),
+          (APPEND,
+            (LABEL,APPEND,
+              (LAMBDA,(X,Y),
+                 (COND,((NULL,X),Y),
+                       ((QUOTE,T),
+                        (CONS,(CAR,X),
+                              (APPEND,(CDR,X),Y)))))),
+         (NULL,(LAMBDA,(X),
+                  (COND,((ATOM,X),(EQ,X,NIL)),
+                  ((QUOTE,T),(QUOTE,F))))))].
+
+Generally, let /e/ be a convertible meta-expression, x_1, ..., x_n are "free
+variables" whose values are S-expressions s_1, ..., s_n, and f_1, ..., f_k are names
+of non-elementary functions whith meta-expressions, m_1, ..., m_k. If, on basis of
+given data, it is possilbe to compute value /e/ then that value is
+
+/eval/[e^*; ((x_1^*,s_1),...,(x_n^*,s_n),(f_1^*, m_1^*),...,(f_n^*,m_k^*))].
+
+Value /eval/[e;a] is defined depending on the form of /e/.
+
+1. Symbols. S-function /eval/ is reduced to /assoc/. For example,
+
+        eval[X; ((X,B))] = assoc[X; ((X,B))] = B.
+
+Generally, if /e/ is symbol, then
+
+        eval[e; a] = assoc[e; a].
+
+2. Quote-expressions. S-functions /eval/ and /quote/ cancel each other. By example,
+
+        eval[(QUOTE,Y); ((Y,B))] = (Y).
+
+Generally, if /e/ = (QUOTE, e_0) then
+
+        eval[e; a] = eval[(QUOTE,e_0); a] = e_0.
+
+3. Atom-expressions. /Eval/ is reduced to S-function /atom/. For example,
+
+        eval[(ATOM,X); ((X,A))] = atom[eval[X; ((X,A))]].
+
+Generally, if /e/ = (ATOM e_0) then
+
+        eval[e; a] = eval[(ATOM,e_0); a] = atom[eval[e_0; a]].
+
+4. Eq-expressions. For example,
+
+        eval[(EQ,X,(QUOTE,A));a] =
+               eq[eval[X; a];
+            eval[(QUOTE,A); a]].
+
+Generally, if /e/ = (EQ, e_1, e_2), then
+
+eval[e; a] = eval[(EQ,e_1, e_2); a] = eq[eval[e_1; a];eval[e_2; a]].
+
+5. Cond-expressions. For example,
+
+           eval[(COND,((CAR,A),A),((CDR,B),B)); a] =
+        = [eval[(CAR,A); a] → eval[A; a]; eval[(CDR,B); a] →
+                              eval[B; a]].
+
+Generally, if /e/ = (COND,(p_1, e_1),...,(p_n, e_n)) then
+
+            eval[e; a] = eval[(COND,(p_1, e_1),...,(p_n, e_n));a] =
+        = [eval[p_1; a] → eval[e_1; a]; ...; eval[p_n; a] → eval[e_n; a]].
+
+6. Car-expressions. For example,
+
+        /eval/[(CAR,(QUOTE,(A,B)));a] = car[eval[(QUOTE,(A,B));a]
+
+Generally, if e = (CAR,e_0) then
+
+eval[e; a] = eval[(CAR,e_0); a] = car[eval[e_0; a]].
+
+7. Cdr-expressions. For example,
+
+        eval[(CDR,(QUOTE,(A,B))); a] =
+          cdr[eval[(QUOTE,(A,B)); a].
+
+Generally, if e = (CDR,e_0) then
+
+        eval[e; a] = eval[(CDR,e_0); a] = cdr[eval[e_0; a]].
+
+8. Cons-expressions. For example,
+
+        eval[(CONS,(QUOTE,(A,B)),(QUOTE,(C,D))); a] =
+    = cons[eval[(QUOTE,(A,B)); a]; eval[(QUOTE,(C,D)); a]].
+
+Generally, if e = (CONS,e_1, e_2) then
+
+        eval[e;a] = eval[(CONS,e_1, e_2); a] =
+          cons[eval[e_1; a];eval[e_2; a]].
+
+9. S-expressions whose /car/ is a lambda expression. For example,
+
+       eval[((LAMBDA,(X),(APPEND,X,X)),(QUOTE,(Y)));()] =
+                  = eval[(APPEND,X,X); ((X,(Y)))].
+
+Generally, if  e = ((LAMBDA,(x_1, ..., x_n), e_0), e_1, ..., e_n) then
+
+eval[e; a] = eval[((LAMBDA,(x_1, ..., x_n),e_0),e_1, ..., e_n); a] =
+= eval[e_0; append[((x_1, eval[e_1; a]),...,(x_n, eval[e_n; a])); a]].
+
+10. S-expressions whose /car/ is a label-expression. For example,
+
+        eval[((LABEL,F,(LAMBDA,(X),(F,X))),Y); ()]=
+          = eval[((LAMBDA,(X),(F,X)),Y);((F,(LAMBDA,(X),(F,X))))].
+
+Generally, if e = ((LABEL,f,l),e_1, ..., e_n) then
+
+        eval[e; a] = eval[((LABEL,f,l), e_1, ..., e_n); a] =
+          = eval[(l, e_1, ..., e_n); append[((f,l)); a]].
+
+11. S-expression whoce /car/ is a symbol. For example,
+
+        eval[(F,A);((F,(LAMBDA,(X),X)))] =
+= eval[((LAMBDA,(X),X),A);((F,(LAMBDA,(X),X)))].
+
+Generally, if e = (s,e1,...,en), where /s/ is a symbol, then
+
+        eval[e; a] = eval[(s, e_1, ..., e_n); a] =
+          eval[(assoc[s; a], e_1, ..., e_n); a].
+
+9.21 S-FUNCTION EVAL
+
+Previous description is enough for mathematically correct definition of function
+/eval/. Anyway, McCarthy defined /eval/ same as most of other non-elementary
+S-functions, by meta-expression which uses conditional expression to include all
+different cases. Definition of /eval/ function in the memo, and also in all other
+internal documents that preceded it, contains obvious, but non-important errors
+that were wrote about by Jordan^161, Stoyan^162 and Graham^163. Errors were
+corrected in definition
+
+eval[e; a] =
+[atom[e] → assoc[e; a];
+  atom[car[e]] → [eq[car[e]; QUOTE] → cadr[e];
+                 eq[car[e]; ATOM] → atom [eval[cadr[e]; a]];
+                 eq[car[e]; EQ] → eq[eval[cadr[e]; a];
+                                     eval[caddr[e]; a]];
+                 eq[car[e]; COND] → evcon[cdr[e]; a];
+                 eq[car[e]; CAR] → car[eval[cadr[e]; a]];
+                 eq[car[e]; CDR] → cdr[eval[cadr[e]; a]];
+                 eq[car[e]; CONS] → cons[eval[cadr[e]; a];
+                                         eval[caddr[e]; a]];
+                 T→ eval[cons[assoc[car[e]; a]; cdr[e]^164]; a]];
+                 eq[caar[e]; LABEL] → eval[cons[caddar[e]; cdr[e]];
+                                           cons[list[cadar[e]; car[e]]; a]]];
+                 eq[caar[e]; LAMBDA] →
+                   eval[caddar[e];append[pair[cadar[e];evlis[cdr[e]; a]]; a]]].
+
+    
+Used are also some "abbreviations" /card/, /caddr/, /caddar/, ... as well as /list/.
+Helping S-functions /evcon,/ which which serves for calculation of conditional
+expressions, and /evlis/ which applies /eval/ "inside a list" are defined as
+
+
+        evcon[c; a] = [eval[caar[c]; a] → eval[cadar[c]; a];
+                       T → evcon[cdr[c]; a]]
+
+        evlis[m; a] = [null[m] → NIL;
+                      T → cons[eval[car[m]; a];
+                          evlis[cdr[m]; a]]].
+
+Function /eval/ applies "computational strategy" today known as "call by value"
+for all function calls. Arguments to the function are calculated before function
+is applied. Quote-expressions and cond-expressions are calculated without
+previous calculation of the arguments.
+
+9.22 REMARKS ALONG THE DEFINITION OF EVAL FUNCTION
+
+Lisp defined inside /eval/ function is different from the Lisp with which /eval/
+itself is defined. This is not just about syntax, symbolic expressions instead
+of meta-expressions. "Inside" Lisp has operator QUOTE, which is used when
+defining S-functions. "Outer" Lisp accepts a line of function definitions in
+implicit or explicit form, and then make them avialable for calculating
+expressions that use those functions. "Inside" Lisp requires all previously
+defined functions to be passed in the second argument, in the form of
+
+        (f^*,(LAMBDA,(x_1^*,...,x_n^*),e^*))
+
+Where /f/ is function name, x_1, ..., x_n are symbols and /e/ expression. Here, if
+function /f/ is recursive, it is not needed to use label-expressions. For example,
+call to function
+
+        /eval/[(APPEND,X,Y);
+             ((X,(A)),
+              (Y,(B)),
+              (APPEND,(LABEL,APPEND,(LAMBDA,(X,Y),...))),
+              (NULL,(LAMBDA,(X),...))) ],
+
+is, considering how computation of label-expression is defined, computed
+somewhat more complex, but has same value as
+
+        /eval/[(APPEND,X,Y);
+             ((X,(A)),
+             (Y,(B)),
+             (APPEND,(LAMBDA,(X,Y),...))),
+             (NULL,(LAMBDA,(X),...))) ].
+
+There are some differences between McCarthy's /eval/ and one in most contemporary
+implementations of the language. A programmer probably does not expect that
+
+      /eval/[(P,(QUOTE,(A,B))); ((P,Q),(Q,CAR))] =
+     = /eval/[(Q,(QUOTE,(A,B))); ((P,Q),(Q,CAR))] =
+    = /eval/[(CAR,(QUOTE,(A,B))); ((P,Q),(Q,CAR))] =
+                 = /car/[(QUOTE,(A,B))] =
+                           = A.
+
+In Mccarthy's Lisp implementation, computing (P, (QUOTE, (A,B))) would surely
+ended by error repport such as "Q is not an operator." Despite, it can not be
+stated that this is an error in original /eval/. If we reason about M-expressions
+as a special sort of mathematical expressions, then from /p = q/ and /q = car/
+follows that /p[x] = car[x]/.
+
+McCarthy's /eval/ does not process correctly expressions in which a function
+argument is a lambda-expression or label-expression. For example,
+
+           /eval/[(*ATOM*,(*LAMBDA*,(X),X)); a] =
+           = /atom/[eval[(*LAMBDA*,(X),X); a]] =
+        = /eval/[cons[assoc[ *LAMBDA*; a]; ((X),X)]; a]].
+
+While computing /assoc/[ *LAMBDA*; /a/ ] there would be en error. McCarthy has simply
+forgotten lambda- and label-expressions in this place. He returned to that
+problem only after three years.^165
+
+Another possible, and according to many important error in /eval/ definition, is
+ignoring possibility of using lambda-expression parameters in association
+lists, among other responsible for the "funarg problem".^166
+
+It is often stated that /eval/ defines "formal"^167 or "operational"^168 Lisp
+semantics. 
+
+To many readers, encounter with function /eval/ represents a very plesant
+surprise. Enthusiasm about eval was expressed by, for example, Smalltalk author
+Alan Kay^169, Eiffel author Bertrand Meyer^170 and Paul Graham.^171 Despite this,
+it is not easy to understand why /eval/ leaves this impression. Very respected
+Edsger W. Dijkstra denied the value of so defined interpreter.^172
+
+9.23. UNIVERSAL S-FUNCTION APPLY
+
+After exampel of universal Turing machine, McCarthy defined function /apply/ which
+can substitute any other S-function, if it is given that other function as an
+argument. For example,
+
+        /cons/[A; (B,C)] = /apply/[CONS; (A,(B,C))].
+
+             λ[[x; y]; /cons/[y; x]][(A); B] =
+      /apply/[ (LAMBDA,(X,Y), (CONS,Y,X)); ((A),B)].
+
+Generally, let /f/ be a name of S-function that "has meta-expression" /m/ without
+abbreviations, logical conjuctions and calls to non-elementary functions. Then
+for all S-expressions e_1, ..., e_n holds
+
+        f[e_1; ...; e_n] = apply[m^*; (e_1 ,..., e_n)].
+
+S-function /apply/ can be defined with help of S-function /eval/. For example,
+
+                  /apply/[CONS; (A,(B,C))] =
+        /eval/[(CONS,(QUOTE,A), (QUOTE,(B,C))); ()].
+
+Generally,
+
+          /apply/[f; args] = apply[f; (args1,...,argsn)] =
+        = /eval/[(f,(QUOTE,args1),...,(QUOTE,argsn)); ()] =
+               = /eval/[cons[f; appq[args]]; ()]
+
+where
+
+        /appq/[l] = [null[l] → NIL;
+                  T → /cons/[list[QUOTE; car[l]];
+                           /appq/[cdr[l]]]].
+
+S-function /apply/ does not allow for the use of "surrounding" as it is used by
+/eval/. If a function /f/ is defined by a meta-expression /m/ in which are used names
+of previously defined, non-elementary S-functions, /apply/ will not work. For that
+reason it is necessary to eliminate calls to help functions.
+
+9.24 LISP INTERPRETER
+
+Programmer Russell realized that implementation of /eval/ in machine language
+gives a simple and useful interpreter for Lisp. That idea surprised McCarthy
+himself who didn't believe in it's practical value.^173,174 McCarthy's suspicion
+appeard to Stoyan as improbable.^175
+
+An interpreter for a programming language written in the language itself is
+usually called "meta-cirkular evaluator". That term, as it seems, was coined by
+John C. Reynolds, 1972.^176 McCarthy's /eval/ is not first meta-cirkular evaluator;
+it was preceded by Böhm's^177, and even earlier by Turing's machine.^178
+
+At the time of creation of "pure Lisp", McCarthy saw S-function /apply/ as the
+interpreter.^179,180 Only, quite later did he started to call S-function /eval/ the
+interpreter for Lisp.^181,182
+
+Russel managed to implement /eval/ which made possible for programmers to write
+programs in form of S-expressions.^183
+
+9.25. S-FUNCTIONS AND COMPUTABILITY THEORY
+
+McCarthy supported idea that S-functions are suitable basis not just for a
+programing language, but also as a mean for development of computability
+theory.^184 There are three reasons for this: simple expression of recursive
+functions on symbolic expressions as symbolic expressions, which renders
+"artificial" constructions like Turing machines and Gödel's numbers
+unnecessary.^185 Second, simple and effective computations of interesting
+S-functions with help of a computer. Finally, use of conditional expressions 
+significantly simplifies recursive functions.
+
+Basic results of theory of computable functions are, according to McCarthy
+
+1. Turing's thesis, an argument about every effectively computable process
+   representable by the Turing machine.
+
+2. Existence of an universal Turing's machine that can simulate work by all
+   other Turing machines.
+
+3. Proof of non-existence of a Turing machine that computes if every Turing
+   machine will terminate.
+
+The universal S-function was given in addendum; it is the S-function /apply/.
+Instead of claim that every effectively computable process can be represented by
+a S-function, McCarthy proofs that every Turing machine can be simmulated by
+S-function. Finally, he also gives an independent proof that there is not such
+S-function that computes if a S-function is defined for a given set of
+arguments.
+
+9.26 SIMULATION OF TURING MACHINES WITH S-FUNCTION
+
+McCarthy defines S-function turing^186,187 which "simulates" work of Turing
+machine. The definition is very direct, with just few help functions, presented
+here is the version from RLE QPR 053, with minor corrections and
+simplifications.
+
+Definitions of Turing machines appear in literature with minor differences,
+McCarthy's version being very typical.
+
+#+ATTR_ORG: :width 800
+[[./images/11.png]]
+
+IMAGE 11. Scheme of a Turing machine. State of machine is /β/. Value of tape
+           field under the reading and writing head is /C./
+
+Turing machines have two kind of memory, s.c. /machine state/ and /tape/. During the
+work, the machine is always in one of the finite number of states. The machine
+state changes according the "instructions" which are also part of the definition
+of a Turing machine.
+
+The tape is one dimensional, infinite on both sides and divided into fields. At
+each field on the tape can be written one of finite many signs. Despite the tape
+being infinite, in every moment, a sign is written only on finite many fields.
+Other fields are empty. By agreement, an empty field can be understood as if a
+special sign, "blank", is written on it. Turing machine has a "head" which is
+mounted over only one field and can read and write signs only on the field below
+the head, and thus the tape can be moved only left or right on the track. The
+head of the machine can be moved only one field left or right, in accordance to
+instructions.
+
+Functioning of a Turing machine is defined by a finite, unchengable stream of
+instructions in form of
+
+"If
+         state of machine is x_1 and
+         sign under the reading head is y_1
+the
+         change state of the machine in x_2
+         write sign y_2 on the tape and
+         move the head in direction /d./"
+
+The machine stops the execution if there is no such instruction that describes
+what to do for a given combination of machine state and the sign under the head.
+The tape content after the execution ends, is the result of machine execution.
+
+S-function that simulates Turing machines. To show that all functions computable
+by a Turing machines are also computable by S-functions, McCarthy defines
+S-function /turing/. Call to function
+
+        /turing/[machine; tape]
+
+is defined for S-expression /machine/ which represents a Turing machine and
+S-expression /tape/ that represents the tape of Turing machine. the value of the
+call is S-expression that represents tape configuration in moment of stopping,
+if the Turing machine terminates.
+
+The representation of a Turing machine. A Turing machine is represented by a
+Symblic expression
+
+        (initial-state,instruction_1, ..., instruction_n),
+
+where /initial-state/ is a symbol representing the initial state of the machine,
+and instruction_i, /i/ = 1, ..., /n/, n≥0, are quintuples representing instructions
+of a Turing machine.
+
+Representing instructions of Turing machines. Quintuple instruction_i in form 
+
+        (current-state_i, current-symbol_i, new-symbol_i, direction_i, new-state_i)
+
+represents instruction
+
+"If
+        the state of a machine is current-state_i and
+        current-symbol_i is under the head
+then
+        write new-symbol_i to the tape,
+        move the head in direction direction_i and
+        change the state of the machine to new-state_i."
+
+For example, the Turing machine that moves to the left-most field on the tape,
+and computes the parity of numbers 1 on the tape
+
+ignoring zeros, until it encounters an empty field is represented by the
+S-expression
+
+        (0,(0,0,B,R,0),(0,1,B,R,1),(0,B,0,R,2),
+           (1,0,B,R,1),(1,1,B,R,0),(1,B,1,R,2)).
+
+Representating the tape of a Turing machine. Tape of a Turing machine is
+represented by a symbolic expression in form of
+
+        (current-symbol,left-part,right-part),
+
+where /current-symbol/ represents a sign written on the tape under the current
+position of head for reading, /left-part/ is a list of symbols that represent the
+part of the tape to the left of the machine head, and /right-part/ is a list of
+symbols representing the part of the tape to the left of the machine head. Rest
+of the fields on the tape are empty.
+
+#+ATTR_ORG: :width 800
+[[./images/12.png]]
+
+IMAGE 12. Example of a Turing machne tape.
+
+For example, tape of the Turing machine in image 12 with highlighted place over
+which the reading and writing head resides is represented by symbolic expression
+(0,(1,0,1,1),(1,1,0)).
+
+Help S-function /find/. Call to S-function
+
+        /find/[current-state; current-symbol; instructions],
+
+is defined for symbols /current-state/ which represents the state of the machine,
+/current-symbol/ which represents the sign below the head of the Turing machine,
+and a list of /instructions/ which represents a set of instructions. Call to
+S-function has value
+
+        (new-symbol,direction,new-state),
+
+a triple which describes what given Turing machine has to execute next. Function
+/find/ is defined by the meta-expression
+
+    find[current-state; current-symbol; instructions] =
+      [null[instructions] → NIL;
+       [first[first[instructions]] = current-state ∧
+        second[first[instructions]] = current-symbol]
+                                    → third[first[instructions]];
+        T → find[current-state;
+                 current-symbol;
+                 rest[instructions]]].
+
+where functions /first/, /rest/, /second/, /third/ are equivalent to functions /car/, /cdr/,
+/cadr/, /caddr/.
+
+Representing configuration of a Turing machine. /Turing machine configuration/
+consists of the changeable elements of Turing machine during the execution: the
+state of the machine, the tape and the position of the head on the tape. It is
+represented by the S-expression
+
+        (current-state,current-symbol,left-part,right-part),
+
+where /current-state/ represents the current state of the machine, /current-symbol/,
+/left-part/ and /right-part/ are same as in S-expression representing the tape of a
+Turing machine.
+
+Help S-function /successor/. Call to function
+
+        /successor/[machine; configuration]
+
+is defined for every S-expression /machine/ in form
+
+        (initial-state,instruction_1, ..., instruction_n)
+
+which represents a Turing machine and every S-expression /configuration/ which
+represents configuration of a Turing machine. Value of the function call is the
+following configuration created during the execution of Turing machine, NIL if
+such does not exist, i.e. if the machine is terminated. For clearer definition
+exposition, some abbreviations are used which McCarthy originally didn't use;
+/todo/ is an abbreviation for meta-expression
+
+        find[first[configuration]; second[configuration]; rest[machine]]
+
+which has value (/new-symbol/, /direction/, /new-state/), a tripple which describes
+what machine should do next;
+
+/current-tape/ is an abbreviation for meta-expression
+
+        rest[configuration]
+
+which has value (/current-symbol/, /left-part/, /right-part/) which represents the
+state of the tape. S-function /successor/ is defined by meta-expression
+
+successor[machine; configuration] =
+  [todo = NIL → NIL;
+  T→cons[third[todo];
+         [second[todo] = L →
+           list[first[second[current-tape]];
+                rest[second[current-tape]];
+                cons[first[todo];third[current-tape]]];
+          second[todo] = R →
+            list[first[third[current-tape]];
+                 cons[first[todo];second[current-tape]];
+                 rest[third[current-tape]]]]]].
+
+If values for abbreviations are substituted in, the "real definition" is
+obtained, considerably more complex then this.
+
+Help S-function /tu/. Call to function
+
+                /tu/[machine; configuration]
+
+    (/current-state/, /current-symbol/, /left-part/, /right-part/),
+
+is defined for symbolic expression /machine/ which represents a Turing machine and
+symbolic expression /configuration/ which represents a configuration of the Turing
+machine, if that corresponding Turing machine terminate. The value of the call
+represents the state of the Turing machine after the termination. S-function /tu/
+is defined by meta-expression
+
+        tu[machine; configuration] =
+          [successor[machine; configuration] = NIL →
+            rest[configuration];
+          T → tu[machine; successor[machine; configuration]]].
+
+S-function /turing/. Call to function
+
+        /turing/[machine; tape]
+
+calculates end state of a Turing machine represented with S-expression /machine/
+applied to a tape represented with symbolic expression /tape/. S-function /turing/
+is defined by meta-expression
+
+        turing[machine; tape] =
+    tu[machine; cons[first[machine]; tape]].
+
+McCarthy show not only how individual Turing machines can be encoded into
+S-functions that simulates them, but he also defined S-function that simulates
+all Turing machines.
+
+9.27 QUESTIONS ABOUT S-FUNCTIONS NON-DECIDABLE WITH S-FUNCTION
+
+McCarthy proofs, similarly as in other computing theories, that some important
+questions about S-functions can not be decided by S-functions. His proof is in
+addendum slightly simplified and somewhat more precisely decribed then in the
+original.
+
+Let denote h^(S) a translation of meta-expression assigned to a function /h/. For
+example,
+
+        list1 = λ[[x]; cons[x; NIL]]
+    list1^(S) = (LAMBDA,(X),(CONS,X,(QUOTE,NIL))).
+
+We can say for S-function /h/ that it is a /selfapplyable/ if the value /h/[h^(s)] is
+defined. For example, /car/ is not selfapplyable; λ[[x]; car[x]] is. We could ask
+if selfapplyability can be described with a S-function. More precisely, does a
+S-function /selfapplyable/ exists, with property
+
+        selfappliable[h(S)] =   T if h[h^(S)] is defined
+                                F if h[h^(S)] is not defined
+
+Let us suppose that it exists. Then we can also define S-function /contra/
+
+        contra[x]=[selfappliable[x] = T → car[NIL];
+                   selfappliable[x] = F → ANYVALUE].
+
+Function /contra/ execute reverse from what /selfapplyable/ execute. Is function
+/contra/ selfappliable, i.e. is value /contra/[contra^(s)] defined? Let us suppose
+that it isn't. From definition of /contra/ follows that
+
+        /selfappliable/[contra^(S)] = T.
+
+Then, from /selfapplayble/ property, the value /contra/[contra^(s)] is defined, which
+is a contradiction to the assumption.
+
+Let us suppose that /contra/[contra^(s)] is defined. Then, according to definition
+of /contra/, it holds that
+
+        /selfappliable/[contra^(S)] = F.
+
+Then, by property of /selfapplyable/, value /contra/[contra^(s)] is not defined.
+
+Also, the statement that /contra/ is a S-function leads to a contradiction. But,
+definition of /contra/ is correct, if /selfapplayable/ is a S-function. Thus,
+/selfapplayable/ is not a S-function.
+
+It can be proofed same way that more general function,
+
+        /def/[h^(S); (args_1 ,..., args_n)]
+
+which computes if S-function /h/ is defined for arbitrary arguments args_1, ...,
+args_n is not a S-function. If /def/ would be a S-function, then also
+/selfappliable/ could be defined
+
+        /selfappliable/[h^(S)] = /def/[h^(S); h^(S)],
+
+which is correct definition for S-function. Since /selfappliable/ is not a
+S-function, thus can /def/ not be a function either.
+
+9.26 PROGRAMS AS S-FUNCTION
+
+McCarthy also wrote a small note about translation of other programming
+languages into S-functions. Idea is simple and didn't raise bigger discussions.
+
+"Machine configuration" is in every moment defined by value of all variables
+whose values are given in the program. Those variables and their values can be
+"combined" in a list in form
+
+        ((variable, value),(variable, value),...).^188
+
+"Program blocks", parts of a program that have only one "input" and one "output"
+transoform the configuration. For example, program block
+
+        A = B + 1
+
+transforms the configuration ((A,0),(B,1)) into ((A,2),(B,1)). Let X^(1), ..., X^(n)
+be all possible "configurations" for the machine, and let Y^(1), ..., Y^(n) be
+corresponding configurations after the execution of that program block. Then
+S-function given by
+
+        /f/[x] = [x = x^(1) → y^(1), ..., x = x^(n) → y^(n)]
+
+computes same configuration as the program block. An important restriction,
+during this, is that set of all possible configurations has to be finite. In
+many programs, number of configurations is almost infinite and is limited only
+by the computer memory.
+
+A program block can also consist of parts which also are program blocks, as
+well as conditions that decide which block will continue the execution. Such
+sets of blocks and conditions can be represented by a so called flow chart.
+
+#+ATTR_ORG: :width 800
+[[./images/13.png]]
+
+IMAGE 13. A program described by a flow chart.^189
+
+McCarthy states an example of translating the program given by a flow chart in
+Image 13. Let /r/, /s/, and /t/ be S-functions which simulate part of the program
+between points R, S, and T and program exits, respectivly. Let π_11 and π_12 be
+possible choice decisions at place π_1. Then
+
+        r(x) =[π_11[x] → s[f_1[x]]; π_12 → s[f_2[x]]],
+        s[x] = [π_21[x] → r[x]; π_21[x] → t[f_3[x]]],
+    t[x] = [π_31[x] → f_4[x]; π_32[x] → r[x]; π_33[x] → t[f_3[x]]].
+
+There is no essential difference if a program block has multiple exists.
+
+9.29 REPRESENTING SYMBOLIC EXPRESSIONS IN COMPUTER MEMORY
+
+Representation of symbolic expressions in computer memory is same as in
+"imperative Lisp". Words are divided in two parts, address one and decrement
+one. Every part can contain addresses of symbols or other words. Set of all such
+connected addresses, of which one is distinguished as starting one McCarthy
+calls for a list structure. Thereby, for lots of consideration, real memory
+addresses are not important; only relations between addresses are. For this
+reason, list structures, just like in the first memo, can be easily represented
+graphically. Compared to Memo 1., graphical representations are improved: an
+arrow showing list start is added.
+
+#+ATTR_ORG: :width 800
+[[./images/14.png]]
+
+IMAGE 14. Graphical representation of a list structure corresponding to the
+           expression (A,(B,C),(B,(D,E)),F).
+
+List structures can grow or shrink as needed, and enable effective use of
+computer memory.
+
+9.30 DIFFERENCES BETWEEN SYMBOLIC EXPRESSIONS AND LIST STRUCTURES
+
+List structures are more general than symbolic expressions. Symbolic expressions
+in which same expression appears twice or more times can be represented as list
+structures in several considerably different ways.
+
+#+ATTR_ORG: :width 800
+[[./images/15.png]]
+IMAGE 15. Two different memory representations of expression ((A.B),(A.B)).
+
+On the other side, a list structure that contains cycles, /circular list/
+structures are not at all representations of symbolic expressions.
+
+#+ATTR_ORG: :width 800
+[[./images/16.png]]
+
+IMAGE 16. Example of a list structure containing a cycle.
+
+A language designer can design a language such that the programmer can process
+all list structures and accept all possible complications following from
+differences between list structures and symbolic expressions; maybe even take
+advantage from the more general structure. Alternativly, he could exclude list
+structures that does not represent symbolic expressions, and if symbolic
+expressions have multiple representations, support only one of those. McCarthy
+choose the middle way; he allowed different representations of same symbolic
+expression, but not for list structures containing cycles.^190
+
+9.31 GARBAGE COLLECTION
+
+Manipulating free memory with help of "free memory list" was introduced in FLPL
+and accepted in "imprative Lisp". McCarthy realized very soon clumsiness of need
+to explicitly release occupied memory and expressed intention for automatic
+release.^191 Result of McCarthy's intensive work^192 on this problem is a program
+in machine language, a part of Lisp which intern was called "garbage collector",
+name that to McCarthy didn't appear as serious enough for a scientific paper.^193
+
+"Garbage collector" activates only when function /cons/ tries to use a word from
+the free memory list and it appears that free memory list is empty. Then,
+"garbage collector", starting with few basic words by consecutive use of /car/ and
+/cdr/ iterates through entire avialable memory and marks all words which it
+accesed by setting value of S (sign) bit to 1. If it during this iteration
+encounters a word in which S bit is already set to 1, the program assumes that
+word, and all words accessible from this word are already processed.
+
+In second iteration through the memory, this time entire, "garbage collector"
+organizes all those words in which S bit has value 0 into a free memory list.
+
+Finally, the program iterates for the third time through the memory, starting
+only from the basic words and sets value of S bit to 0.
+
+Described technique is today known as "mark-sweep". McCarthy thought about the
+other well-known, "reference counting" technique that was also used in some Lisp
+implementations, but not under McCarthy's leadership.^194
+
+Members of the project didn't rush with "garbage collector" implementation,
+since first programs were just a testbed for the system and didn't needed to be
+really effective.^195 Despite the memory being very small (free memory list had
+initially about 15 000 words) at the time of "garbage collector" development,
+the program was practically slower then McCarthy's estimation (several seconds)
+and became a source of anecdots.^196
+
+130 McCarthy, /History of LISP/, 1981., p. 173.
+131 McCarthy, /History of LISP/, 1981., p. 178.
+132 McCarthy, /Recursive functions .../, AIM-008, 1959.
+133 McCarthy, /Recursive functions .../, AIM-011, 1959.
+134 McCarthy, /Recursive functions .../, RLE QPR 053, 1959., p 124-152.
+135 Faase, /The origin of CAR and CDR in LISP/, 2006.
+136 McCarthy, /LISP: A programming system for symbolic manipulation/, 1990.
+137 McCarthy, /Recursive functions .../, CACM, 1960., p. 193.
+138 McCarthy, /Recursive functions .../, RLE QPR 053, 1959.
+139 McCarthy, /History of LISP/, 1981., p. 178.
+140 “And then, two years later came John's paper ... That changed the
+     whole ball game, and it changed how people perceived LISP. Now
+     all of a sudden, LISP was not merely a language you used to do
+     things. It was now something you looked at: an object of beauty. It
+     was something to be studied as an object in and of itself.”
+    Abrahams, /Transcript of discutant's remarks/ in McCarthy, /History of LISP/,
+    1981., p. 193.
+141 Woodward i Jenkins, /Atoms and lists/, 1961., p. 51.
+142 McCarthy et al, /LISP 1.5 programmer's manual/, 1962., p. 20.
+143 Talcott, /Rum. An intensional theory of function .../, 1988., p. 15.
+144 Personal communication with Abrahams., 2014.
+145 “The Lisp programming system is the system for using the lBM
+     704 computer to compute with symbolic information in the form of
+     S-expressions (...) The basis of the system is a way of writing computer
+     programs to evaluate S-functions.”
+    McCarthy, /Recursive functions .../, CACM, 1960., p. 191.
+146 “The LISP programming system will be shown ... to be based
+     mathematically on a way of generating the general recursive functions of
+     symbolic expressions.”
+    McCarthy et al., /The LISP programming system/, 1959., p. 122.
+147 McCarthy, /Recursive functions .../, CACM, 1960., p. 184.
+148 We should differ betwen recursive definition from recursive activation of,
+    for example, expression /f(f(x)).
+149 McCarthy, /Recursive functions .../, CACM, 1960., p. 185.
+150 See chapter in /A Basis for a Mathematical Theory of Computation/
+151 “Since we regard the expressious with commas as abbreviations for
+     those not involving commas, we shell refer to them all as S-expressions.”
+    McCarthy, /Recursive functions .../, CACM, 1960., p. 187.
+152 McCarthy, /Recursive functions .../, AIM-008, 1959., p. 3.
+153 “We now define a class of functions of S-expressions. The expressions
+     representing these functions are written in a conventional functional
+     notation. However, in order to clearly distinguish the expressions
+     representing functions from S-expressions, we shall use sequences of
+     lower-case letters for function names and variables ranging over the set of
+     S-expressions. We also use brackets and semicolons, instead of parentheses
+     and commas, for denoting the application of functions to their arguments.
+     Thus we write car[x], car[cons[(A∙B); x]]. In these M-expressions
+     (meta-expressions) any S-expression that occur stand for themselves.”
+    McCarthy, /Recursive functions .../, CACM, 1960., p. 187.
+154 “Compositions of car and cdr give the subexpressions of a given
+     expression in a given position. Compositions of cons form expressions of a
+     given structure out of parts. The class of functions which
+     can be formed in this way is quite limited and not very interesting.
+     (...) We get a much larger class of functions (in fact, all computable
+     functions) when we allow ourselves to form new functions of S-expressions
+     by conditional expressions and recursive definition.”     
+    McCarthy, /Recursive functions .../, CACM, 1960., p. 187.
+155 “... function whose M-expression is label[subst; λ[[x; y; z]; [...]]] has
+     the S-expression ...”
+    McCarthy, /Recursive functions .../, CACM, 1960., p. 189.
+156 Slagle, /A heuristic program .../, Ph.D. thesis, 1961., p. 18.
+157 “Another useful abbreviation is to write list[e_1; ...; e_n] for		
+     cons[e_1; cons[e_2; ...; cons[e_n; NIL]...]]. This function gives the list,
+     (e_1, ..., e_n) as a function of its elements.”
+    McCarthy, /Recursive functions .../, CACM, 1960., p. 188.
+158 “Some of the decisions made rather lightheartedly for the “Recursive
+     functions ... ” paper later proved unfortunate. These included
+     the cond notation for conditional xpressions, which leads to an
+     unnecessary depth of parentheses, and the use of the number zero
+     to denote the empty list NIL and the truth value false.”
+    McCarthy, /History of LISP/, 1981., p. 179.
+159 McCarthy, /Recursive functions .../, CACM, 1960., p. 189.
+160 In original RFSE, the term "association list" is used for what usually,
+    including this book too, is called "property list".
+161 Jordan, /A note on LISP universal S-functions/, 1973.
+162 Stoyan, /The influence of the designer on the design — McCarty and Lisp/, 1991.
+163 Graham, /Roots of Lisp/, 2002.
+164 In original paper, also in Lisp I. handbook here is, according to opinions
+    by all commentators, a logical misstake: instead of cdr[e] it stated
+    evlis[cdr[e];a].
+165 See chapter New Function eval
+166 See chapter Lisp 1.5.
+167 Gilmore, /An abstract computer with a Lisp-like machine language.../, 1963.,
+    p. 72.
+168 Sebesta, /Concepts of Programming Languages/, 2012., p. 680.
+169 “Yes, that was the big revelation to me when (...) I finally understood that
+    the half page of code on the bottom of page 13 of the Lisp 1.5 manual was
+    Lisp in itself. These were “Maxwell’s Equations of Software!” This is the
+    whole world of programming in a few lines that I can put my hand over.”
+    Kay, /A conversation with Alan Kay/, 2004., p. 26.
+170 “... an unbelievable feat, especially considering that the program
+     takes hardly more than half a page — an interpreter for the language being
+     defined, written in that very language! The more recent reader can only
+     experience here the kind of visceral, poignant and inextinguishable
+     jealously that overwhelms us the first time we realize that we will never be
+     able to attend the première of Don Giovanni ...”
+    Meyer, John McCarthy, 2011.
+171 “So by understanding eval, you're understanding what will probably be the
+     main model of the computation well into the future.”
+    Graham, /Roots of Lisp/, 2002., p. 11.
+172 “In the early sixties we have suffered from a piece of computer science
+     folklore, viz. that the crucial test whether on had designed “a good
+     language” was, whether one could write its own interpreter in itself. I have
+     never understood the reason for that criterion --it was suggested that such
+     a language definition would solve the problem of the definition of
+     (particularly) the semantics of the language--, the origin of the criterion
+     was the example of LISP, which was “defined” by a ten-line interpreter
+     written in LISP, and that, somehow, set the standard. ... This unfortunate
+     LISP-interpreter formulated in LISP has somehow given mechanistic (or
+     “operational”) language definitions an undeserved aura of respectability ...”
+    Dijkstra, /Trip report/, Edinburgh and Newcastle, 1974., p. 0.
+173 “... This EVAL was written and published on the paper and Steve
+     Russell said, look, why don't I program this EVAL and you remember the
+     interpreter, and I said to him, ho, ho, you're confusing theory with
+     practice, this EVAL is intended for reading not for computing. But he went
+     ahead and did it. That is, he compiled the EVAL in my paper in to 704
+     machine code fixing bugs and then advertised this as a LISP interpreter
+     which it certainly was, so at that point LISP had essentially the form that
+     it has today, the s-expression form ...”
+    Stoyan, Early LISP history (1956-1959), 1984., p. 307.
+174 Stoyan, /LISP history/, 1979., p. 45.
+175 Stoyan, /Lisp 50 years ago/, 2008.
+176 Reynolds, /Definitional interpreters .../, 1972., p. 725.
+177 Böhm, /Calculatrices digitales .../, 1954.
+178 Turing, /On computable numbers, with an application .../, 1936.
+179 McCarthy, /Recursive functions .../, RLE QPR 053, 1959., p. 144.
+180 McCarthy, /Recursive functions .../, CACM, 1960., p. 193.
+181 McCarthy, /History of LISP/, 1981., p. 173., 179.
+182 McCarthy, /Lisp − notes on its past and future/, 1980., p. v.
+183 McCarthy, /History of LISP/, 1980.
+184 McCarthy, /Recursive functions .../, RLE QPR 053, 1959., p. 145.
+185 McCarthy, /Recursive functions .../, RLE QPR 053, 1959., p. 124.
+186 McCarthy, /Recursive functions .../, AIM-008, 1959., p. 9-12.
+187 McCarthy, /Recursive functions .../, RLE QPR 053, 1959., p. 145-147.
+188 McCarthy, /Programs in LISP/, AIM-012, 1959., p. 2.
+189 According to McCarthy, /Recursive functions .../, RLE QPR, 1959., p. 150.
+190 “The prohibition against circular list structures is essentially a
+     prohibition against an expression being a subexpression of itself.
+     Such an expression could not exist on paper in a world with our
+     topology. Circular list structures would have some advantages in
+     the machine, for example, for representing recursive functions, but
+     difficulties in printing them, and in certain other operations, make
+     it seem advisable not to use them for the present.”
+    McCarthy, /Recursive functions .../, CACM, 1960., p. 192.
+191 See chapters FLPL, Imperative Lisp and Elements of funkcional programming.
+192 McCarthy, /Guy Steele interviews John McCarthy, father of Lisp/, 2009.
+193 McCarthy, /Recursive functions .../, 1995., p. 27., bilješka 7.
+194 McCarthy, /Guy Steele interviews John McCarthy, father of Lisp/, 2009.
+195 McCarthy, /History of LISP/, 1981., p. 178.
+196 McCarthy, /History of LISP/, 1981., p. 183.

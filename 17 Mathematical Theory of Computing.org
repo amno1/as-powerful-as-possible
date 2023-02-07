@@ -1,0 +1,426 @@
+* 17 Mathematical Theory of Computing
+
+During 1961. and 1962. McCarthy gave several presentations about
+mathematical theory of computations on scientific gatherings. During
+the midterm 1961., at /Western Joint Computer Conference/ in Los
+Angeles, McCarthy held the presentation /A basis for a mathematical
+theory of computation - preliminary repport/. Same year, presentation
+with same theme was given on a seminarium in IBM's school in
+Blaricuum, Netherlands. The presentation was published first
+in 1963. in book /Computer programming and formal systems/, but it was
+also contained in a much older AIM-031 from january 1962. It seems
+that in the article from 1963, the name LISP appears for the first
+time in form Lisp.^264 Second presentation, /Towards a mathematical
+science of computation/ was held at second IFIP congress in München,
+Germany and was published in the congres's journal,^265 as published on
+McCarthy's Web pages. Those two publications cover and complement each
+other in many parts.
+
+McCarthy suggests development of "mathemtical theory of computation". One
+element of the computing theory is the development of a universal programming
+language. McCarthy claims that formalism he describes, very similar to
+generalized "pure Lisp" is not a suitable candidate for universal programming
+language but the reason he cited was not very strong.^266
+
+A mathematical theory of computation would be very useful in practice.
+Programming languages cold be developed systematically, and proofing the
+correctness of a program could almost completely substitute "debugging".^267
+Amongst goals of the mathematical theory of computation, is also representation
+of an algorithm with symbolic expressions so that important changes in algorithm
+behavour can be represented with small changes in symbolic expressions. He also
+states a bold claim that the consciousness of algorithm representation is also
+accessible and suitable for processing by another algorithm.^268
+
+17.1 FUNCTIONS DEFINED BY BASIC FUNCTIONS
+
+There are five basic functions in "pure Lisp" defined over symbolic
+expressions, and from them could other functions be defined according
+to certain rules. Here, McCarthy allows any set of "basic functions"
+/F/ defined over any arbitrary set, and then defines functions
+computable on basis of those functions. Set of all computable
+functions over basis /F/ is denoted C{F}. Means with which functions
+can be defined are same as those in "pure Lisp".
+
+For exampl⋜e, using only two basic functions over non-negative numbers,
+/succ(n)=n'/, for example, /succ(8)=9/ and /eq/ (n_1, n_2) = T if and only if
+n_1 and n_2 are equal, it is possible to define function /pred/ (n) inverse
+to function /succ/, addition, multiplication, relation ≤ and many other
+functions. All those functions are defined relatively naturally, for
+example, 
+
+        m ≤ n = (m = 0) ∨ (~ (n = 0) ∧ (pred(m) ≤ pred(n))).
+
+17.2 FUNCTIONALS
+
+Specially, rules for defining functions allow use of functions as
+arguments to functions. For example, functions /map/ and /apply/ are
+functionals. McCarthy introduces a hierarchy, separation of
+functionals into "orders". /First order functionals/ are functions which
+take arguments from a base domain (in case of Lisp, symbolic expressions).
+/Second order functionals/ take arguments from the base domain or first order
+functionals, etc.
+
+Some functionals are not in this hierarchy. For example, functions can be
+defined so that they accept themselves as arguments. Unfortunately, McCarthy
+stayed on a remark and didn't ever try to describe more sophisticated
+classification of functionals.
+
+17.3 REMOVABILITY OF LABEL-EXPRESSIONS
+
+Functions that accepts themselves as arguments are used for proof that
+label-expressions are not necessary for defining recursive functions. The proof
+is based on substitution of a function /f(x)/ with more abstract function /p(x,ϕ)/
+which can be defined non-recursively, applied on itself, /p(x,p)/. McCarthy shows
+that with suitably defined function /p/, for every /x/ for which /f(x)/ is defined,
+holds
+
+        /f(x) = p(x,p)/.
+
+During the computation /p(x,p)/ calls itself, despite that call was not necessary
+while defining /p/. Specially, /f = λ((x), p(x, p))/. It is left to show how to
+define /p/. For example, let
+
+        fact(n) = (n = 0 → 1,
+                   T → n·fact(n − 1)).
+
+Function /fact/ can be defined with a label-expression
+
+       fact = label(f, λ((n), (n = 0 → 1,
+                               T → n· fact(n − 1)))).
+
+Function /p/ can be defined as a function that computes factorials directly by
+computing only base case, /n = 0/, and for all others, more demanding cases, by
+calling some other function.
+
+        p(n, ϕ) = (n = 0 → 1,
+	           T → n · ϕ(n − 1)).
+
+Function /p/ is not a recursive function. Specially, if second argument
+of function /p/ is function /fact/ then also /p/ computes factorials, i.e.
+/p(n,fact)=fact(n)/.
+
+Application of function /p/ on any other function gives correct results
+for /n = 0/. For example /p(0,sin)=fact(0)/.
+
+Since /p/ is a function of two variables, if application of function on
+itself will have sense, the definition has to be slightly changed
+
+        p(n, ϕ) = (n = 0 → 1,
+	           T → n· ϕ(n − 1, ϕ)).                            (*)
+
+Function /p/ is still not recursive. Specially, it holds
+
+        p(n, p) = (n = 0 → 1,
+	           T → n· p(n − 1, p)).                           (**)
+
+It follows that
+
+        p(n, p) = fact(n).
+
+We could think that /p(n)/, after the expression (***) is anyway a
+recursive functon. But, equality (**) is not a definition of function
+/p/, but only a result of substitution of /p/ for /ϕ/, and function
+definition (*) is not recursive, and thus it is possible to define
+function /p/ also with lambda-expression
+
+        p = λ((n, ϕ), (n = 0 → 1,
+	               T → n· ϕ(n − 1, ϕ))).
+
+Function /p/ is still a function of two variables, and is not identical
+to function /fact/. But, function
+
+        λ((n), p(n, p))
+
+is also not recursively defined, and can be defined with
+label-expression
+
+        fact2 = λ((m), p(m, p))
+
+and for every /n = 0, 1, .../ holds fact_2(n)=fact(n).
+
+Same technique McCarthy applies also in general case. Let /f/ be a
+recursive function defined by label
+
+        /f(x) = E(x,f)/
+
+where E is an expression in which /x/ and /f/ appears. Fucntion /f/ can be
+defined with a label-expresison which we wish to avoid. Let /p/ be a
+function defined with expression
+
+        p(x, ) = E(x, λ((y), ϕ(y, ))).
+
+Function /p/ is not recursive so
+
+        p = λ((x, ϕ), E(x, λ((y), ϕ(y, ϕ))).
+
+Function f_2 is defined with expression
+
+        f_2(x) = p(x, p).
+
+Function f_2 is not recursive, so it can be defined with
+lambda-expression 
+
+        f_2 = λ((x), p(x, p)).
+
+Then for every /x/ holds
+
+        f_2(x) = p(x, p) = E(x, λ((y), p(y, p)) = E(x, f_2).
+
+Function f_2(x) defined exclusively with lambda-expessions is identical
+to f(x) for all x = 0, 1, 2, ... Definition itself is, if unfolded,
+unusually conplex:
+
+            f = f_2 = λ((x), p(x, p)) =
+	= λ((x), λ((z, ϕ), E(z, λ((y), ϕ(y, ϕ)))
+	         (x, λ((v, ψ), E(v, λ((w), ψ(w, ψ)))) )
+
+McCarthy's derivation holds, with some unsignificant changes, also for
+functions of several variables.
+
+17.4 CONDITIONAL EXPRESSIONS ARE NOT FUNCTIONS
+
+It could be thought it is possible to define function cond_n in /2n/
+varibables for a given natural number so that
+
+        (p_1 → e_1, ..., p_n → e_n) = condn(p_1, ..., p_n, e_1, ..., e_n).
+
+According to McCarthy, it is not possible because "normally" all
+function agruments must be defined. For conditional expessions though,
+it is important that some of p_i and e_i are not defined. For example,
+in definition of factorial
+
+        n! = (n = 0 → 1, T → n ∙ (n − 1)!)
+
+sub-expression n ∙ (n − 1)! is not defined for /n = 0/.
+
+17.5 NON-COMPUTABLE FUNCTIONS
+
+Beside lambda- and label-expressions, McCarthy develops new
+expressions with which functions could be defined. Let /e/ be an
+exression which can have values /T/ and /F/, and which contains variable
+/x/. We can define new form
+
+               T if e has value T for all x
+        ∀((x), e = F if e has value F for at least one x
+               undefined otherwise
+
+With help of that form we can define other functions that are not
+S-functions, i.e. they can not be defined in Lisp because ∀((x), e)=F
+is defined even in case when /e/ i computed infinitely for some
+expression /x/.
+
+17.6. Multivalued functions [OBS! Viseznacne = multivalued?]
+
+Multivalued functions have for avery argument a given set of valid values, and
+during the execution one of those values is chosen. Basic v function is /amb(x,y)/
+which at execution chooses one of values /x,y/. Other functions can be defined by
+using function /amb/, for example
+
+        less(n) = amb(n − 1, less(n − 1)),
+	ult(n) = (n = 0 → 0, T → ult(less(n)))
+
+Then holds
+
+        ∀((n), ult(n) = 0) = T.
+
+17.7 RECURSIVE DEFINITION FOR SETS OF SYMBOLIC EXPRESSIONS
+
+Some results described in presentations are interesting foremost to
+Lisp community. In original Lisp, symbolic expressions are sequences
+of symbols; for example ((A.B).C). Lists, such as (A,B,C) were
+abbreviations, in this case (A.(B.(C.NIL))). Here McCarthy defines
+symbolic expressions as ordered n-tubles over some such base set.
+
+Let /A/ be a set of symbols {A,B,C,AA,...}. Let /(a · b)/ be a notation for an
+oredered pair. Then, for example, (((A · B) · C) is an element of set /(AXA)XA/.
+Set of al symbolic expressions over /A/ is denoted /sexp(A)/. Then recursive
+definition of a set of symbolic expressions holds
+
+        sexp(A) = {Λ} ∪ A ∪ (sexp(A) × sexp(A)).
+
+Set of all lists over /A/ is a set of all symbolic expressions in form
+
+        (a_1, ..., a_n) = (a_1 · (a_2 · ... (a_n· Λ)))
+
+where a_1, ..., a_n are symbolic expressions. That set is the solution for the
+equation
+
+        seq(A) = {Λ} ∪ A × seq(A).
+
+Over those sets can usual Lisp functions such as /car/, /cdr/, /cons/,
+/atom/, /eq/ be defined.
+
+17.8 RECURSIVE INDUCTION
+
+In usual mathematical induction, if we wish to proof the equality in
+which variable /n/ appears holds for every natural number /n≥0/, it is
+enough to proof that
+
+1. equality holds for /n = 1/;
+2. if equality holds for /n-1/ then it also holds for /n/.
+
+McCarthy introduces analogous method for proofing equality of functions over
+symbolic expresions which he calls /recursive induction/.
+
+Let g(x_1, ..., x_n) and h(x_1, ..., x_n) be functions over symbolic expressions and
+it needs to be shown that for all x_1, ..., x_n holds
+
+        g(x_1, …, x_n) = h(x_1, …, x_n).
+
+Then it is enough to proof that there exists /i/ such that 
+
+1. if /null/[x_i] then g(x_1, …, x_i, …, x_n) = h(x_1, …, x_i, …, x_n);
+2. if g(x_1, …, cdr[x_i], …, x_n) = h(x_1, …, cdr[x_i], …, x_n) then
+
+        g(x_1, …, x_i, …, x_n) = h(x_1, …, x_i, …, x_n).
+
+For example, let /x*y/ be concatenation of lists /x/ and /y/. For example,
+
+        (A B) * (B (C D)) = (A B B (C D)).
+
+Function /x*y/ is defined with
+
+        x * y = [null[x]→ y; T → cons[car[x];cdr[x]*y].
+
+McCarthy shows that concatenation is associative operation, i.e. that
+for all symbolic expressions /x/, /y/ and /z/ holds
+
+        [x * y] * z = x * [y * z].
+
+For the left side of the equality holds
+
+        [x * y] * z = [null[x] → y; T → cons[car[x]; cdr[x] * y]] * z
+	    = [null[x] → y * z; T → cons[car[x]; cdr[x] * y] * z]
+	   = [null[x] → y * z; T → cons[car[x]; [cdr[x] * y] * z]].
+
+For the right side of equalith holds
+
+        x * [y * z] = [null[x] → y * z ;
+	               T → cons[car[x]; cdr[x] * [y * z]]].
+
+From the last two equality follows
+
+1. if /null/[x] then [x*y]*z = x*[y*z];
+2. if [cdr[x] * y] * z = cdr[x] * [y * z] then [x * y] * z = x * [y * z]
+
+what was necessary to proof.
+
+McCarthy'r student Lewis M. Norton proofed in early 1962. about twenty lemmas and
+theorems about equality of expressions that contain applications of function /subst/.^269
+
+17.9 ABSTRACT SYNTAX OF PROGRAMMING LANGUAGES
+
+In volumnous litterature prevailes the concensus that McCarthy introduced the
+idea of abstract syntax of programming languages.^270 Abstract syntax is defined
+with functions which (1) recognize the kind of /term/, symbolic expressions legal
+in a programming language, (2) analyze terms and (3) synthetize terms.
+
+For example, let there be a given programming language in which only
+arithmetic expressions exist and the only operations are addition and
+multiplication of two arguments. The abstract syntax of that language is
+described with following sequence of functions:
+
+1. Predicates that recognize the term kind: /isconstant(t)/,
+   /isvariable(t)/, /issum(t)/ and /isproduct(t)/. Predicate
+   /equalvariable(t,u)/ which checks if two symbols are repetition of
+   same variable.
+
+2. Functions that factor out members of sum and product: /augment(t)/
+   and /addend(t)/, multiplier(t) and multiplicand(t).
+
+3. Funkcije koje synthetize expressions: /makesum(t,u)/,
+   makeproduct(t,u)/.
+
+If an implementation of a programming language make use only of above
+stated functions during the processing of a term, then it does not
+effect the implementation if terms are in form of a+b, +ab, (PLUS A B)
+or even Gödel's numbers.
+
+Abstract syntax has two advantages over back then popular /Backus
+normal forms/. First, Backus' normal forms are synthetic; they don't
+give rules for subdivision of a program in parts. McCarthy's abstract
+syntax is synthetic, but also analytic, it makes it possible to subdivide a
+program in parts. Second, abstract syntax is independent of the concret syntax
+of a programming language. 
+
+McCarthy didn't tried to connect Lisp with abstract syntax, but the way in which
+Lisp is defined - with functions applied on symbolic expressions - it makes it
+/almost/ the language of the abstract syntax. McCarthy's definition of /eval/, in
+"pure Lisp" and Lisp 1.5, still though, contain complex M-expressions used for
+factoring out parts of S-expressions, which means they are not written with
+abstract syntax in mind.^271 Later, McCarthy held that every language, including
+Lisp should also include functions that support it's abstract syntax, and that
+languages should have several different syntaxes, for different purposes.^272
+
+The idea of abstract syntax allows for generalizations about which McCarthy
+didn't speak: defining language by more complex data structures than symbolic
+expressions alone, for example, list structures.
+
+17.10 SEMANTICS
+
+To define a semantic of the described arithmetic programming language, i.e. /the
+meaning of the language terms/, according to McCarthy we should define
+
+1. function /valueconstant(t)/ whose value is a number denoted by /t/.
+2. function /valuevariable(t,x) whose value is equal to number
+   assigned to symbol /t/ in association list /x/.
+3. function /makeconstant(n)/ whose term denotes number /n/
+
+Function /valuvariable/ is identical to already known function /assoc/. Finally, it
+is possible to define /value(t,x)/, the meaning of term /t/ for given vector of
+machine states /x/:
+
+value(t, x) =
+  (isvariable(t) → valuevariable(t, x),
+   isconstant(t) → valueconstant(t),
+   issum(t) → value(addend(t), x) + value (augend(t), x),
+   isproduct(t) → value(multiplier(t), x) ·
+                  value(multiplicand(t), x))
+
+Function /value(t,x)/ in arithmetic language is analogous to function /eval(e,a)/ in
+Lisp.
+
+More generally, /program meaning/ is defined by result of applying the program to
+a machine state vector. Entire programming language can be defined as a function,
+for example 
+
+        /x'=algol(p,x)/
+
+Where /p/ is any program and /x'/ and /x/ are machine state vectors, associative lists
+of variables and values.
+
+McCarthy's thoughts are generalizations of concepts known from Lisp. Scientific
+community stand divided about importance of McCarthy's presentations. For
+example, while Dines Bjørner sees them as a "great classics of computer
+science"^273, Martin Davis left "unconvinced of any of McCarthy's ideas presented
+in first presentation."^274
+
+264 McCarthy, /A basis for a mathematical theory of computation/, 1963., p. 52
+265 McCarthy, /Towards a mathematical science of computation/, 1962.
+266 “We believe that this goal has been written off prematurely by a
+     number of people. Our opinion of the present situation is that ALGOL
+     is on the right track but mainly lacks the ability to describe
+     different kinds of data, that COBOL is a step up a blind alley on
+     account of its orientation towards English which is not well suited
+     to the formal description of procedures, and that UNCOL is an
+     exercise in group wishful thinking. The formalism for describing
+     computations in this paper is not presented as a candidate for a
+     universal programming language because it lacks a number of features,
+     mainly syntactic, which are necessary for convenient use.”
+    McCarthy, /A basis for a mathematical theory of computation/, 1963., p. 34.
+267 McCarthy, /Towards a mathematical science of computation/, 1996., p. 6.
+268 “Programs that are supposed to learn from experience change their
+     behavior by changing the contents of the registers that represent
+     the modifiable aspects of their behavior. From a certain point of
+     view, having a convenient representation of one's behavior available
+     for modification is what is meant by consciousness.”
+    McCarthy, /A basis for a mathematical theory of computation/, 1963., p. 34.
+269 Norton, /Some indentities concerning the function subst[x; y; z]/,
+    AIM-037, 1962. 
+270 Bjorner, /Software engineering 2/, 2006., p. 87.
+271 “Lisp is close to its abstract syntax, but needs it anyway.”
+    McCarthy, /Beyond Lisp/, 2006., sl. 2.
+272 McCarthy, /Guy Steele interviews John McCarthy, father of
+    Lisp/, 2009.
+273 Bjorner, /Software engineering 2/, 2006., p. 87.
+274 Davis, /Review of John McCarthy, A basis for a mathematical theory …/, 1968.

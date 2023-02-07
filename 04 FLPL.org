@@ -1,0 +1,163 @@
+* 04 FLPL
+
+Barely a half year later, McCarthy was offered opportunity to participate in
+creation of a language he wanted. Early 1957. Rochester started project GEOMETRY
+THEOREM MACHINE after the mentioned idea by Minsky. Head of the project was
+Herbert Gelernter, and McCarthy was a consultant. McCarthy suggested^25 to use
+Fortran, developed for numerical computations, but also considered as usable for
+logical computations, instead of planned IPL for the IBM 704 computer.^26
+"Function call nesting" makes it possible to describe very complex operations
+on numbers in one command in Fortran. Gelernter and McCarthy attribute to
+themselves discovery that even lists could be processed in the same way.^27,28
+Fortran augmented by numerous special functions was considered a new language
+and was named "FORTRAN-compiled list-processing language" - FLPL. McCarthy
+worked on the project until fall 1958.
+
+4.1 OPERATIONS ON WORDS
+
+Memory in IBM 704 computer is divided in words ("registers"), each 36 bits in
+size. Bits are divided in groups named by their usual use in machine language;
+/prefix/ holds bits S, 1 and 2; /decrement/ holds bits 3-17; /tag/ holds bits 18-20;
+and finally, /address/ holds bits 21-35.^29
+
+#+ATTR_ORG: :width 800
+[[./images/1.png]]
+
+IMAGE 1. Graphical representation of a word in IBM 704 computer.
+
+Some of functions defined in FLPL extracted parts of words. For example, if /j/ is
+address of a word in computer memory, then calls to functions *XCPRF(/j/)*, *XCDRF(/j/)*,
+*XCTRF(/j/)* and *XCARF(/j/)* returned value contained in respective parts of the word
+at address /j/: /prefix/, /decrement/, /tag/, /address;/ in order. Some functions were
+defined as compositions of functions *XCDR* and *XCAR*. For example, *XCDADF(/j/)* is
+equivalent *XCDRF(XCARF(XCDRF(/j/)))*.
+
+Other functions were, conversely, writing values into words. For example,
+callling functions *XSTORAF(/j/, /k/)* and *XSTORDF(/j/, /k/)* wrote value /k/ into address
+part or the decrement part of the word at adress /j/.
+
+4.2 LISTS
+
+Support for list processing in FLPL was adaptation of list support from IPL for
+IMB 704 computer. FLPL authors talk about "/NSS memory/" and "/NSS lists/",^30 where
+NSS are initials of Newell, Simone and Shaw, the authors of IPL. List processing
+is reduced to processing individual words in memory. 
+
+Lists in FLPL were made of simple "/list elements/". Relative long word length in
+IBM 704 made it possible to represent list elements in a single computer word.
+In /address part/ is address of data in memory. In /decrement part/ is address of
+next list element or 0 - if next element does not exists.
+
+#+ATTR_ORG: :width 800
+[[./images/2.png]]
+
+IMAGE 2. A list element.
+
+List elements are as a rule not stored in the memory consecutively.
+
+#+ATTR_ORG: :width 800
+[[./images/3.png]]
+
+IMAGE 3. List (0.71412, 2.71828, 3.141259) at adress 1001.
+
+Because of the optimisation, data that fits in fifteen bits can be stored
+directly into adress part of the word. In FLPL, lists are just abstraction used
+by programmers, not a special type of data. Functions for processing lists take
+as argument address of the first element in the list.
+
+Such represented lists are flexible, of varying lenghts and make it possible to
+quckly insert and remove data. On the other side, it is not possible to directly
+access, for example, a hundredth piece of data in a list, but that data has to
+be accessed stepwise, in hundred steps.
+
+4.3 LIST CREATION
+
+Free memory at the start of a program execution is stored in a special, intern
+list /lavst/ (/list of avialable storage/). From /lavst/ comes words needed for list
+creation and words longer not needed for the program execution are stored there.
+
+Most important function for list creation is *XLWORDF*. For example, call to
+function *XLWORDF(1,2,3,5)* removes word from /lavst/, writes 1,2,3 and 5 in
+respective parts (/prefix/, /decrement/, /address/ and /tag/ respectively), and also
+returns, as a value, address for that word. There were other, similar functions.
+*XLWORDF* could be, as a function, composed with other functions, which at the
+time wasn't an obvious idea.^31
+
+Particularly, elements of a list can contain, as data, also other lists. That
+gives rise to complex /list structures/ - name taken from IPL. For example,
+expression
+
+     XLWORDF(1,XLWORDF(2,3),4,XLWORDF(5,6))
+
+would during computation create a list structure and return it as a result.
+
+Since the "address part" of a list element contains address of data, it was
+possible for multiple different lists to contain same data. That useful
+possibility makes certain operations on lists more complex. For example, if we
+wish to remove a data from a list, it is not clear if the memory occupied by
+that data could be freed, since it is possible that same data is still contained
+in some other list. The solution applied in FLPL is introduction of a kind of
+ownership over data. If first bit of a list element is 1, then when list element
+is erased, data is erased as well. If first bit contains 0, then data is
+"borrowed" and erasing the list element does not erase the data itself.
+
+#+ATTR_ORG: :width 800
+[[./images/4.png]]
+
+IMAGE 4. Two list elements containing same data. The lower list element
+          "borrows" the data.
+
+Taking care of the previous, call to function *XERASEF(/j/)* erases list element at
+adress /j/, a call to function *XTOERAF(/j/)* erases entire list at address /j/;
+respective data is erased as well - if so is decided by value of bit 1.
+
+Example FLPL program is a program that tests membership in a list.^32
+
+        FUNCTION MEMBER(X, L)
+            LI=L
+        1 IF LI=0 2, 4, 2
+        2 EL=XCARF(LI)
+            IF EL=X 3, 5, 3
+        3 LI=XCDRF(LI)
+            GOTO 1
+        4 MEMBER=0
+            GOTO 6
+        5 MEMBER=1
+        6 RETURN
+        END
+
+FLPL didn't support recursive functions. Language authors belived that recursion
+could be emulated by storing intermediate results in lists or even by letting
+calling function modificate the caller program^33, but during the writing of
+GEOMETRY THEOREM MACHINE there were no needs for that.
+
+Similarity between processed expressions and lists themselves were also
+observed, but it is not clear if that similarity was somehow exploited by the
+language authors^34.
+
+McCarthy tried during the summer 1958. without success, to write a progam for
+expression differenciation in FLPL. Besides the lack of support for recursion^35,
+he was also bothered with clumpsy branching of the program execution, for which
+early Fortran is well-known for today. Since Gelernters group was satisfied
+with FLPL, McCarthy concluded that he has to develop a new language^36. Many
+elements from FLPL found its place in Lisp.
+
+25 Gelernter et al., /A Fortran-compiled list-processing language/, 1960., p.88.
+26 Backus et al., /The Fortran − automatic coding system for the IBM 704/, 1956., p.2.
+27 Gelertner et al., /A Fortran-compiled list-processing language/, 1960., p.88.
+28 McCarthy, [[http://www.softwarepreservation.org/projects/LISP/MIT/AIM-001.pdf][/An algebraic language ...]]/, AIM 001, 1958., p.3.
+29 /704 electronic data-processing machine − manual of operation/, IBM, New York, 1955.
+30 Gelernter et al, /A Fortran-compiled list processing language/, 1959., p. 37-1-2.
+31 McCarthy, /The logic and philosophy of AI/, 1988., p. 4.
+32 Stoyan, /List processing/, 1992., p. 151.
+33 McCarthy, /History of Lisp/, 1981., p. 189.
+34 “The authors have since discovered a further substantial advantage of an
+    algebraic list-processing language ... It is the close analogy that exists
+    between the pucture of an NSS list and a certain class of algebraic
+    expressions that may be written within the language.”
+    Gelernter et al., /A Fortran-compiled list-processing language/, 1959., p. 37-3.
+35 “If FORTRAN had allowed recursion, I would have gone ahead
+    using FLPL. I even explored the question of how one might add
+    recursion to FORTRAN. But it was much too kludgy.”
+    Shasha & Lazere, /Out of their minds .../, 1998., p. 27
+36 McCarthy, /History of Lisp/, 1981., p. 176.

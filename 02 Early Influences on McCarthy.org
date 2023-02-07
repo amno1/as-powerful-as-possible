@@ -1,0 +1,99 @@
+* 02 Early Influences on McCarthy
+
+Hundreds of people have participated in development of Lisp. Yet, for the author
+of the language is unqestionably considered an American, John McCarthy
+(1927-2011), a researcher of artificial intelligence. Lisp, the programming
+language suitable for solving problems in field of artificial intelligence, is
+one McCarthy's first projects.
+
+2.1 TECHNOLOGICAL ENTHUSIASM
+
+McCarthy is often considered a visionary^2, a man whose work looks toward the
+future. Amongs many projects, he also wrote and maintened web pages with
+futuristic themes.^3 
+
+His scientific and life interests, McCarthy considered as consequences of the
+fostering. Mother Ida and father Jack were communist activists who back then had
+strong belief in the science, technology and unstoppable progress of humankind.
+The children red popular scientific literature from the /soviet/ and McCarthy
+especially liked a book by Mikhail Ilina, /100 000 Whys/.^4 Political views, as
+well as the confidence in the science, the parents managed to successfully
+transfer over to John. McCarthy also noticed similar interests amongst other
+children fostered in communist families. McCarthy considered himself a "radical
+optimist:" he believed that outcome will be successful even if people don't
+listen to his advices.^5
+
+2.2 FINITE AUTOMATA AND EXPLICIT FACT REPRESENTATIONS
+
+McCarthy was an exceptionally good student. Hi went out high school two years
+earlier then expected. He started mathematical studies 1944 by entering the
+third year courses, but he was expelled from the university because of him
+skipping the physical education classes. After shorter break he was anyway
+allowed to continue the studies.^6
+
+Conference /Hixon Symposium for Cerebral Mechanisms in Behaviour/ in Pasadena,
+1948., especially presentation by John von Neumann about automatons that
+could replicate, mutate and evolve, intrigued McCarthy about artificial
+intelligence.^8,9
+
+McCarthy's first important idea is representation of /an intelligent actor and/
+/its environment/ with finite automata. Despite von Neumanns recommendation to
+publish his ideas, McCarthy refuses because of impossibility to represent facts
+about the environment in finite automata.^10 Until the end of his studies he
+researched partial differential equations. Between 1951 and 1958 he changed
+several different jobs, mainly in higher education institutions.
+
+The second important idea, McCarthy developed 1952. Problems are, he presumed,
+decided by a function that tests problems solution. Then we can find solution
+for a problem by applying inverse of that function.^11 McCarthy published a paper,
+but he faced same problems as with the previous idea.^12 Shortly and for the last
+time he returns to differential equations.
+
+First failures ascertained McCarthy that intelligent automata must process
+explicit representations of facts.^13 That insight is basic for later
+McCarthy's work, "the logic of artificial intelligence" and clear inspiration
+for the development of Lisp.
+
+2.3 DIGITAL COMPUTERS AS INTELLIGENT AUTOMATON
+
+Digital computers can imitate all automatons with finite number of states. If
+intelligent machines are even possible, it will certainly be digital computers
+equipped with appropriate programs. This idea today seems like an unnecessary
+trivialitet, but for the very first researchers it wasn't selfevident. Alan
+Turing started to represent that idea 1947.,^14 but he published it
+first 1950.^15 McCarthy came to same conclusion summer 1955., while working in
+IBM's center in Poughkeepsie under leadership by Nathaniel Rochester, the
+constructor of the personal computer.
+
+2 Lord, /John McCarthy has passed, 2011/
+3 McCarthy, /Progress and its sustainability/, 1995
+4 Shasha & Lazere, /Out of their minds .../, 1995, p23.
+5 McCarthy Susan, /What your dentist doesn't want you to know/, 2012
+6 Nilsson, /John McCarthy/, 1927-2011, 2012, p3.
+7  von Neumann, /The general and logical theory of automata/, 1951.
+8  McCarthy, /The logic and philosophy of artificial intelligence/, 1988., p3.
+9  "Q. What is artificial intelligence? A. It is the science and engineering of
+   making intelligent machines, especially intelligent computer programs."
+   McCarthy, /What is Artificial Intelligence?/, 2007., p2.
+10 "It considered a brain as a finite automaton connected to an environment
+   also considered as an automaton. To represent the fact that the brain is
+   uncertain about the environment is like, I considered an ensemble (i.e. a
+   set with probabilities) of environment automata. Information theory applied
+   to this ensemble permitted defining an entropy at time 0 when the brain was
+   first attached to the environment and later when the system had run for a
+   while and the state of the brain was partially dependent on which
+   environment from the ensemble had been chosen.The difference of these
+   entropies measured how much the brain had learned about the environment."
+   McCarthy, /The logic and philosophy of artificial intelligence/, 1888., p2
+11 McCarthy, /The inversion of functions defined by Turing machines/, 1956.,
+   p177
+12 McCarthy, /The logic and philosophy of artificial intelligence/, 1988., p3
+13 "McCarthy thought that even if the 'brain automaton' could be made to act
+   intelligently, it's internal structure wouldn't be an explicit
+   representation of human knowledge. He thought that somehow brains did
+   explicitly represent and reason about 'knowledge', and that's what he wanted
+   computers to be able to do."
+   Nielsson, /John McCarthy 1927-2011./, p4
+14 Turing, /Lecture to the London Mathematical Society on 20 February 1947./
+15 Turing, /Computing machinery and intelligence/, 1950
+16 McCarthy, /The philosophy of AI and AI philosophy/, 2008., p713

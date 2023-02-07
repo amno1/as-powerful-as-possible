@@ -1,0 +1,49 @@
+* 15 Woodward-Jenkins arithmetics
+
+If a programmer would like to implement arithemetic in "pure Lisp", numbers
+should be represented as symbolic expressions, for example, 857 as (8,5,7) and
+then to implement algorithms such as those as used by humans when computing
+basic computing operations.
+
+D.P. Jenkinks implemented 1960. or 1961. a Lisp on a computer TREAC in /Royal
+Radar Establishment/ in Malvern. Jenkins and Phillip Woodward 1961.^234 described
+a program for addition of numbers. Numerals are symbols contained in a list /tab/
+that has value
+
+        (0,1,2,3,4,5,6,7,8,9).
+
+Ingeres are represented as lists of /tab/ sublists, written in reversed order. For
+example, number 857 is represented by the list
+
+        ((7,8,9),(5,6,7,8,9),(8,9)).
+
+Functions needed for list addition are
+
+        sum[x; y] = [null[y] → x;
+                    T → inc[x; y; tab]]
+
+        inc[x; y; b] =
+          [eq[caar[y]; car[b]] →cons[car[x]; sum[cdr[x];cdr[y]]];
+           T → inc[step[x]; y; cdr[b]]]
+                   step[x] =[null[x] → cons[cdr[tab]; NIL];
+                            null[cdar[x]] → cons[tab; step[cdr[x]]];
+                            T → cons[cdar[x]; cdr[x]]].
+
+McCarthy wrote later that even the original group at MIT made an attempt to
+represent numbers in similar fashion, but that this approach was abandoned due
+to slowness.^235 Author of this book did not found any document in which such
+attempts are described, and neither did the members of the original group with
+whom he consultated remember such attempts.
+
+In Lisp I., and also in later Lisp 1.5, numbers were already implemented as
+special type of atoms. Such implementation certainly undermine the beauty of the
+language and brings suspicion to it's usability, but it seems that it was
+unavoiadble. Even today, in all practical Lisp implementations, numbers are
+implemented as a special type of data.
+
+234 Woodwards & Jenkins,/ Atoms and lists/, 1961., p. 52.
+235 Numbers were originally implemented in LISP I as lists of atoms,
+    and this proved too slow for all but the simplest computations. A
+    reasonably efficient implementation of numbers as atoms in S-expressions was
+    made in LISP 1.5
+    McCarthy, /History of Lisp/, 1981., p. 180.

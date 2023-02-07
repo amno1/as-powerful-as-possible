@@ -1,0 +1,507 @@
+McCarthy and Minsky, then employed at american MIT, started in September 1958.^47
+a work on project ARTIFICAL INTELLIGENCE. The work was relatively well
+documented with numerous articles and presented at conferences and in intern
+documents, /Artifical Intelligence Memo/ (AIM), /Research Laboratory of Electronic,
+Quaterly progress report/ (RLE QPR) and by student works. "The Uncle"^48,49,
+McCarthy was, following the examples of projects LOGIC THEORY MACHINE - *IPL* and
+GEOMETRY THEOREM MACHINE - *FLPL*, intended to develop an "expert system", ADVICE
+TAKER^50, and a programming language for "manipulation with symbolic expressions"
+in which the system would be written^51. After the presentation to the public,
+despite McCarthy not abandoning the ADVICE TAKER, the work died out and is
+barely mention in numerous intern and published documents^53,54. The programming
+language, was on contrary, intensely developed.
+
+In the beginning described just as "/an algebraic language for the manipulation
+of symbolic expressions/"^55 and "/symbol manipulating language/"^56, the language
+soon got name "LISP (/List Processer/)"^57, and somewhat later, "LISP (/List Proces-
+/sor/)"^58. Sometimes the name "List Processing Language" was also used.
+Association of name *LISP* and "List Processer" has soon weakened, and thus
+sometimes is written that name *LISP* comes from "/List processing/"^60 and even
+term "/LISP Processor/" is used^61. The name of the language was mainly written
+with capital letters, but McCarthy sometimes used, today more usual form,
+"Lisp"^62.
+
+John McCarthy is considered the author of the language^63. Members of the
+project were first "hackers" which worked "in atmosphere ... of unlimited
+ambition and enthusiasm"^65. McCarthy didn't prohibited other members of the
+project from including their own ideas in the language^66. Steven "Slug" B.
+Russell, was the "compiler"^67: he would personally translate McCarthy's Lisp
+programs into assembly, he developed the interpreter and took part in design of
+the language. Robert Brayton and David C. Luckham^68 were first students who
+worked on the project, and successfuly wrote the first compiler in assembler.
+David M. R. Park helped in writing the compiler and such contributed to desing
+of the language^69, as well as Rochester^70, then part-time employed at MIT.
+Klim Maling wrote a compiler in Lisp. Daniel J. Edwards wrote the first "garbage
+collector". Phylllis Fox wrote Lisp I. the manual. First users were Rochester,
+Slagle, Paul W. Abrahams, Louis Hodes, Seymor Z. Rubentein and Solomon H.
+Goldberg. Finally, Minsky, Dean Arden, Shannon, Hartley Rogers, Roland silver
+and Alan Tritter were interested observers and commentators^71.
+
+First draft of the language was written in September 1958. Followed was
+gradual, continuous developmnet and big number of changes until November^72 1962.
+when McCarthy leaves for Stanford university because of disagreement with
+supervisers about development of the "time sharing"^73. Only sidestep from the
+continuty was "pure Lisp", a subset of really implemented Lisp which McCarthy
+wrote in spring 1959. for the purpose of presenting the basic principles of the
+language. Despite McCarthy's wish to continue to lead Lisp development^74, the
+center of the language development stayed at MIT.
+
+7.1 IMPERATIVE AND ALGEBRAIC LANGUAGE
+
+Already in the beginning of September^75, McCarthy wrote first memo, /An
+algebraic language for the manipulation of symbolic expressions/. The title is
+just a description for a language which then yet had no name. Some details were
+better described in later memos, especially in the third one.
+
+First design of the language was, according to McCarthy's description "/language of
+imperative statements/"^76, called "imperative Lisp". McCarthy described that
+dialect later as "/a Fortran-like language with list structures/"^77, also, not
+much more than FLPL. "Imperative Lisp" was, according to team members, a
+pragmatically designed language^78.
+
+The phrase, "algebraic language", ment for McCarthy a higher programming
+language in which, for difference of the assembler and machine languages, is
+possible to write complex expressions. Advantages of such languages were not yet
+widely recognized, so McCarthy explained that programs are shorter and simpler.
+He points out that "exit" from one procedure can be used as "entry" into another
+so there is no need to name intermediate results^79.
+
+It seems that McCarthy doubted if the language should be specialized for
+symbolic processing. Thus at the beginning of the Memo^80, he writes that the
+language is not suitable for presenting "lists of fixed lenghts" and acces to
+data in a list in different order than the one in which data is in the list,
+which is a large, unacceptable shortcoming for a general purpose programming
+language. Though, already after few pages, McCarthy introduces "field" type, so
+it seems that the idea of a specialized language was immediately refuted^81.
+
+7.2 BASIC TYPES AND STATEMENTS
+
+The language supports some usual types of data. Arithmetic was supposed to be
+same as in Fortran. /Whole words/ in computer memory are a distinct type.
+/Propositional quantities/ /true/ and /false/, were represented with one bit: 1 and 0.
+/Propositional statements/ are expressions that have propositional values.
+Functions that return propositional values, for example < i = are called
+/predicates/. "Imperative Lisp" was based on statements; especially on the
+statement for the assignmenet (orig. /arithemtic/ or /replacement statement/), the
+most important statement for lists processing^82. Statement for the
+assignmenet has usual form,
+
+        /l/ = /r/
+
+where /r/ is any statement and /l/ is the name of a variable or "indexed variable",
+for example, *a=15* or *A(i)=15*, or a function call. For example, *cwr(3)=15* writes
+value 15 in word at address 3.
+
+/Iteration statement/ *do*, taken from Fortran, was supposed to support iteration
+through segments of integer numbers as well through lists. At times of
+memorandum writing, the details were not yet decided.
+
+More statements can be organized in /compound statement/ using "vertical brackets"
+*/* and *\*. For example,
+
+        */ t = a*
+          *a = b*
+        *\ b = t*.
+
+/Conditional expressions/ that should be distinguished from conditional branching
+have form
+
+        (p_1 -> e_1, p_2 -> e_2, ..., p_n->e_n)
+
+where p_1, ..., p_n are propositional expressions and e_1, ..., e_n are any
+statements. p_1, ..., p_n are computed in order until value of one of them, for
+example p_i, evaluates to 1. The value e_i is then the value for entire
+conditional expression. If none of /p/ is not true, then the statement that
+contains the conditional expression is not executed.
+
+/Flow control/ is taken from /Suggestion by ad hoc committee/. Places in a program
+are marked with symbols and are considered as values of a special, localisation
+type. The program flow is redirected with special statement *go(/e/)* where /e/ is
+/expression/ that computes the positional value. For example,
+
+        */        i = 0*
+            *loop i = i + 1*
+        *\       go(loop)*.
+
+/Operations over location values/ are limited, but it is possible to use
+conditional expressions. It is also possible to use set-statement, for example
+
+        set(A; q_1, ..., q_m)
+
+to define field *A* that contains location values q_1, ..., q_m and then to use
+statement *go(A(e))*, where /e/ is an expression that evaluates into natural number.
+
+7.3 SUBPROGRAMS AND "FUNCTIONS"
+
+The language included about twenty already defined functions and subprograms,
+but programmers can also define their own subprograms and functions. Definition
+of a function and a subprogram is made of a header, for example
+
+        *subroutine eralis(J)* or
+        *function copy(J)*,
+
+after which a complex command follows. Execution of subprograms and functions is
+interrupted with *return* statement. A function returns, as a result of
+computation, the last value calculated before the return statement. For example
+
+        *function abs(x)*
+        */  (X<0) -> -X, X=0 -> 0, X>0 -> X)*
+        *\ return*.
+
+Function can also be defined by simpler statements, for example,
+
+        *abs(X) = (X<0 -> -X, X=0 -> 0, X>0 -> X)** (58).
+
+Subprograms and functions are called the usual way, for example, *abs(-3)*,
+*copy(L)*.
+
+Subprograms and functions can be recursive, i.e. call themselves. Recursion is
+especially useful when processing lists. That property of "imperative Lisp" is
+an important improvement in regard to FLPL.
+
+Functions are values of special, /functional type/ and thus can also be used as
+arguments in calls to other subprograms and functions. McCarthy writes that
+possibilities of functional type are not exploited in their entirety in the
+"early system"^84.
+
+Functions in "imperative Lisp" differ from the usual mathematical functions.
+Function values for same agruments can be different because it depends on memory
+state. Functions can change values of variables and memory registers.
+
+7.4 SYMBOLIC EXPRESSIONS
+
+/Symbolic Expressions/, whose processing "imperative Lisp" was intended for, are
+sequences of charachters in special form, useful for translation of mathematical
+symbols and logical expressions, but also for processing with help of a
+computer. For example, mathematical expression
+
+        /x/ · (/x/ + 1) · sin /y/
+
+can be written as a symbolic expression
+
+        *(times,x,(plus,x,1),(sin,y))*.
+
+That form reminds of so called, /polish notation/, but parenthesis enables use of
+functions with variable number of arguments, as with *times* for example. Symbolic
+expressions can be used as data in programs for "manipulating sentences of
+formal language", theorem proofing, development of /Advice taker/, formula
+simplifing symbolic derivations and integration, compilers, in programs for
+processing expressions which number and length vary in unpredictable ways.
+
+Symbolic expressions are defined more formally. /Symbols/ are sequences of one or
+more charachters. Especially, sequences of signs that represents numbers are
+symbols also. For example, *times*, *X*, *plus*, *1*, *sin* and *Y* are all symbols.
+
+1. All symbols are /symbolic expressions/
+
+2. If e_1, ..., e_m are symbolic expressions, then (e_1, ..., e_m) is also a
+   symbolic expression.
+
+For example, *(plus,x,1)* is a symbolic expression because *plus*, *x*, and *1* are
+symbolic expressions. Similarly, *(sin,y)* and *(times,x,(plus,x,1),(sin,y))* are
+symbolic expressions.
+
+7.5 PROPERTY LISTS
+
+In computer memory symbols are represented with data structures called "/property
+lists/". Property lists, a generalization of "/symbol table/" in IBM 704 assembler,
+holds basic data about a symbol: name used for printing, address in memory of
+property list itself, information if symbol is a number, variable or a constant
+and similar. Information from the symbol list can be used by the compiler, but also
+by a programmer.
+
+Property lists can be changed with /declarative statements/ in unexpected form
+
+        *I declare(...)*
+
+where punctuation *(...)* represents expression in form *(a; /p1/, ..., /pn/)* which
+adds expressions /p1, ..., pn/ to property list /a/, or in form *(/a1, ..., an, p/)*
+which adds expression /p/ to a property lists of symbols /a1, ..., an./
+
+Syntax close to the natural language was not used more during the language
+developmnet under the McCarthy's leadership, and McCarthy didn't liked when it
+appeared in later Lisp versions^85.
+
+7.6 LISTS AND SYMBOLIC EXPRESSIONS REPRESENTATION
+
+Symbolic expressions are in computer memory represented with data structures
+called /lists/.
+
+Moreover, the form of symbolic expressions seems to be inspired exactly by
+the simplicity of translating them into lists^86,87.
+
+List implementation is similar to that of FLPL, beside names of functions for
+list processing being somewhat different. The only McCarthy's innovation
+regarding lists in "imparetive Lisp" is clear graphical illustration of lists
+that is still in use today.
+
+#+ATTR_ORG: :width 800
+[[./images/6.png]]
+
+IMAGE 6. Graphical view of list structure representing the symbolic expression 
+          *(a, (b,c),(b,(d,e)),f)*.^88
+
+Rectangles represent "list elements", single words in computer memory. Left and
+right rectangle-halfs represent respective address- and decrement part of the
+word. The order of address and decrement word parts is reversed in the graphical
+view in respect to order as in the computer word, because members of the project
+found it natural^89 or because it was the usual order in IBM 794 assembler^90. The
+arrow replaces the address of a word. A symbol written in "address" or
+"decrement" part of a rectangle denotes that respective part of the word
+contains the /address of the property list/ for that symbol. First element in
+property list, in address part, has value null - in that way can programs
+recognize a property list of other lists.
+
+Same symbolic expression can be represented by different list structures. It is
+sufficient that list elements are in different places in memory.
+
+Despite the graphical view not showing the other parts of words than address and
+decrement, those parts are still used in "imperative Lisp". If the address part
+of a list element contains a sublist address, data in prefix part of list
+element (more precisely, in bits 1 and 2, which McCarthy calls /indicator/)
+determined if a sublist could be erased too when a list is erased. In later Lisp
+development such control of memory was abandoned. Property lists of symbols do
+not belong to any list, and are not erased if a list is erased.
+
+Like in FLPL, lists are not implemented as a special data structure but are an
+abstraction, a way of thinking by programmers. Programs process addresses of
+list elements, and assumed lists are in programs represented by the address of
+the first list element. Such simplification of lists to memory addresses was
+later criticized as "too close to hardware"^91. McCarthy hoped that list
+operations could be defined at level of entire lists, but his experience told
+him that most of list operations still has to be defined at level of list
+elements^92.
+
+Lists can also "modell" sequences, mathematical objects that don't have relation
+to sequences of signs. For example, 2, 3, 5, 7, 11 is a finite sequence.
+
+#+ATTR_ORG: :width 800
+[[./images/7.png]]
+
+IMAGE 7.Graphical vew of a list that modells the sequence 2, 3, 5, 7, 11 and
+         whose external representation is *(2,3,5,7,11)*.
+
+Once modelled as lists, sequences also has their "external representation" in
+form of symbolic expressions. For example a list that modells finite sequence 2,
+3, 5, 7, 11 has extern representation *(2,3,5,7,11)*. Finite sequences are often
+written in similar form, as ordered /n/-tuples, even in mathematical texts.
+
+McCarthy didn't explictly expressed intention to represent entire program in
+list form. Stoyan's thesis is that, considering the idea that compiler should be
+written in Lisp itself as expressed in memo introduction, McCarthy already had
+such ideas^93. That thesis seems valid, especially considering the mentioned
+/Letter to Perlis and Turanski/.
+
+7.7 FUNCTIONS FOR WORD ANALYSIS AND SYNTHES AND REFERENCING
+
+Defined is a number of functions for extraction of word parts. For example, calls
+to functions *add(/e/)*, *dec(/e/)* and *ind(/e/)* returns values of address, decrement and
+indicator parts which are results of computing expression /e/. Some functions
+extracted values of arbitrary bits or word segments.
+
+Few functions constructed values of words. For example, *comb 4(/p,d,t,a/)* returns
+/value/ of a word constructed by writing values /p, d, t/ and /a/ in respective parts
+of the word (prefix, decrement, tag and address).
+
+/Reference functions/ compute values of words or parts of words at given address.
+For example, calls to functions *cwr(3)*, *car(3)*, *cdr(3)* and *cir(3)* return values
+of a word at address 3 and respective address, decrement and indicator part of that
+word. Reference function names are abbreviations, for example, "[C]ontent of the
+[A]ddress part of [R]egister".
+
+Data can be written directly to memory addresses, by using statements for the
+assignement and reference functions. Alternative is made of functions *stwi*,
+*star*, *stdr*, etc, so that, for example, *stwr(3,15)* has same result as *cwr(3) = 15*.
+
+7.8 FREE STORAGE MANAGEMENT
+
+Management of free memory is taken from FLPL. /Free storage list/ has same
+structure as other lists and contains memory currently not in program use. It is
+allocated at program execution. Functions that use memory for conpucting new
+lists or adding new elements to already existing lists use and remove words from
+free storage list.
+
+#+ATTR_ORG: :width 800
+[[./images/8.png]]
+
+IMAGE 8. Putting symbol x in third place in list *L*.
+
+/Construction functions/ choose first word from the free storage list, remove it
+from the free storage list, write some value in it and as a result return the
+/address/ of that word. Call to function *consw(e)* writes /e/ into a word. Call to
+function *consel(/a/, /d/)* writes value /a/ into address part and value /d/ into
+decrement part of a word. Seems that names *consw* and *consel* come from the
+phrases "construct word" and "construct element"^95. There are other similar
+functions.
+
+Function *list* constructs new list from function arguments. Value list(i_1, ...,
+i_n) is a list that contains values i_1, ..., i_n.
+
+"Imperative Lisp" still didn't have a "garbage collector". Function *erase*
+returns memory addresses that are no longer needed for computation to free
+storage list. For example, call to function *erase(3)* returns third word in
+memory to /free storage list/. Value of function *erase* is the old content of newly
+released word.
+
+7.9 BASIC OPERATIONS OVER WHOLE LISTS
+
+The way lists are defined makes it possible to define operations on whole lists.
+Call to subprogram *eralis(/J/)* erases entire /list structure/ whose first element is
+at address *J* and returns freed memory to /free storage list/. McCarthy defines
+subprogram *eralis* in "imperative Lisp"; it is the first example of subprogram in
+the memo and as such can be considered the first documented program in Lisp.
+
+        subroutine eralis(J)
+        /   J = 0 → return
+            go (a(cir(J))
+        a(1) jnk = erase(car(J))
+        a(0) eralis(dec(erase(J)))
+            return
+        a(2) eralis(car(J))
+        \   go (a(o))
+
+Subprogram *eralis* analyses first element of a list. If the list is empty, the
+subprogram ends execution. If not, then branching is done depending on the value
+of the indicator in first list elemenet.
+
+1. If the indicator has value 0, then the value in the address part of the list
+   element is the address of "borrowed" sublist which should not be erased from
+   the memory. Subprogram *eralis* erases element of the list by calling function
+   *erase* and applies itself on the rest of the list.
+
+2. If the indicator has value 1, in the address part of the list element is a data
+   address; *eralis* erases that data by calling *erase*, removes first element of
+   the list by calling function *erase* and applies itself on the rest of the
+   list.
+
+3. Finally, if indicator has value 2, then the data is a list that is not
+   "borrowed"; *eralis* applies itself on that data, and afterwards removes first
+   list element by calling function *erase* and applies itself on the rest of the
+   list.
+
+A curiosity is the first syntax error in a Lisp program: in the last row,
+instead of 0, McCarthy wrote small letter *o*.
+
+Function *copy* constructs and returns as a value of computation a copy of the
+/list structure/ at last given address. Memory in which the copy is stored is
+taken from the list of free storage. Function is defined by conditional
+expression in which basic case is solved directly, and rest of cases by
+recursive call of same function, applied on the rest of the list. That pattern
+is later applied on many other functions. Function *search* looks up elements of
+list structure that satisfy a given criteria. Funcion *equal* checks equality of
+list structures at given addresses.
+
+7.10 FUNCTION MAPLIST
+
+Function *maplist* which applies a given function /on data in list/ has important
+role in further Lisp development. In the first memo *maplist* is defined briefly
+and unprecisely^96, but ambiguities can be avoided on basis by exempel^97 and
+later McCarthy's explanation^98. For example, the value of symbolic expression
+
+        (maplist(list(1,2,3),x,x*x))
+
+is computed so that variable *x* associates value of all items whose address is in
+addres part of /list elements/ in *list(1,2,3)*. For all those values *x*x* is
+computed, i.e. 1,4 and 9. A new list is formed, from list elements taken from
+the /free storage list/ in whose address part is written addresses at which are
+results of previous computation. That list is returned as a function value.
+
+#+ATTR_ORG: :width 800
+[[./images/9.png]]
+
+IMAGE 9. Result of applying *maplist(list(1,2,3),x,x*x)*.
+
+Generally, the expression *maplist(/L/, /J/, /f(J)/)*, where /L/ is an expression that
+computes to a list, /J/ is a symbol, /f(J)/ an expression given by inserting symbol
+/J/ in function /f/, is computed so that (1) variable /J/ assumes all values in /L/; (2)
+for every of values /J/ is computed value /f(J)/ and (3) a new list is formed where
+in address parts of list elements are values /f(J)/. That list is returned as a
+value of the computation.
+
+47 Stoyan, /Early LISP history (1956-59)/, 1984., p. 304.
+48 Levy, /Hackers/, 2010., p. 36.
+49 “The teacher was a distant man with a wild shock of hair and an
+    equally unruly beard — John McCarthy. A master mathematician, McCarthy was a
+    classically absent-minded professor; stories abounded about his habit of
+    suddenly answering a question hours, sometimes even days after it was first
+    posed to him.” 
+   Levy, /Hackers/, 2010., p. 11.
+50 McCarthy, /Programs with common sense/, 1959., p. 75-92.
+51 McCarthy & Minsky, /Artificial Intelligence in RLE QPR 052/, 1959., p. 129.
+52 McCarthy, /Situations, actions and causal laws/, 1963., p. 1.
+53 “The main problem in realizing the Advice Taker has been devising
+    suitable formal languages covering the subject matter about which
+    we want the program to think.”
+   McCarthy, /A basis for mathematical theory of computation/, 1963., p. 69.
+54 Stoyan je nezavisno rekonpuirao Advice Taker in /Programmiermethoden der
+   Künstlichen Intelligenz/, 1988., p. 193-231.
+55 McCarthy, /An algebraic language ..., AIM-001/, 1958., p. 1.
+56 McCarthy, /A revised definition of maplist, AIM-002/, 1958., p. 1.
+57 McCarthy, /Revisions of the language, AIM-004/, 1959., p. 9.
+58 McCarthy, /Recursive functions ..., AIM-008/, 1959., p. 1.
+59 McCarthy et al., /Artificial intelligence u RLE QPR 053/, 1959., p. 122.
+60 Berkeley i Bobrow, /LISP − its operations and applications/, 1964., p. 4.
+61 Edwards, /Secondary storage in LISP, AIM-063/, 1963., p. 13.
+62 McCarthy, /Recursive functions ..., AIM-008/, 1959., p. 13-17.
+63 Abrahams, /Discussant's remarks in HOPL I/, 1981., p. 192.
+64 Levy, /Hackers/, 2010.
+65 Minsky, /Introduction to COMTEX Microfische edition .../, 1983., p. 10.
+66 McCarthy, /Guy Steele interviews John McCarthy, father of Lisp/, 2009.
+67 Russell, /Adventures and pioneering with John/, 2012.
+68 Personal communication with Brayton and Luckham, 2012.
+69 Personal communication with Brayton and Luckham, 2012.
+70 Rochester, AIM-005, 1959.
+71 Stoyan, /Early History of LISP (1956-1959)/ (slides), 1984., p. 24-6.
+72 Stoyan, /LISP, Anwendungsgebiete, Grundbegriffe, Geschichte/, 1980.
+73 McCarthy, /An interview with John McCarthy/, 1989., p. 4.
+74 “Maintenance and further development of LISP will be continued
+    by Professor J. McCarthy, who is now at Stanford University. We
+    plan to continue close association with his group.”
+   Minsky, /Artificial intelligence/, RLE QPR 068, 1963., p. 159.
+75 Stoyan, /Early LISP History (1956-1959)/, 1984., p. 304.
+76 McCarthy, /Revisions of the language/, AIM-003, 1958., p. 1.
+77 McCarthy, /The logic and philosophy of AI/, 1988., p. 5.
+78 Abrahams, /Transcript of discussant remarks/, in McCarthy, /History of Lisp/,
+   1981., p. 193. 
+79 McCarthy, /An algebraic language .../, AIM-001, 1958., p. 3.
+80 “... this language is best suited for representing expressions whose
+    number and length may change ... It is not so convenient for representing
+    lists of fixed length where one frequently wants the n-th element where n is
+    computed rather than obtained by adding 1 to n − l.”
+   McCarthy, /An algebraic language .../, AIM-001, 1958., p. 2.
+81 McCarthy, /An algebraic language .../, AIM-001, 1958., p. 7-8.
+82 “Programs for manipulating list pucture are written mainly in
+    terms of replacement statements (i.e. of the form a = b).”
+   McCarthy, /An algebraic language .../, AIM-001, 1958., p. 11.
+83 Both function definitions *abs** are written for purpose of this book. All
+   McCarthy's examples in the original memo are too complex to be used in this
+   place.
+84 McCarthy, /An algebraic language .../, AIM-001, 1958., p. 7.
+85 McCarthy, /Guy Steele interviews John McCarthy, father of Lisp/, 2009.
+86 McCarthy, /An algebraic language .../, AIM-001, 1958., p. 18.
+87 Stoyan, /Lisp history/, 1979., p. 45.
+88 After illustration in McCarthy, /An algebraic language .../, AIM-001, 1958., p. 5.
+89 Faase, /The origin of CAR and CDR in LISP/, 2006.
+90 Abrahams, /Transcript of discussant's remarks/, in McCarthy, /History of Lisp/, 1981., p. 192.
+91 Landin, /Next 700 programming languages/, 1966., p. 160.
+92 McCarthy, /An algebraic language .../, AIM-001, 1958., p. 5.
+93 Stoyan, /Early LISP history (1956-1959)/, 1984., p. 305.
+94 According to McCarthy, /Revisions of the language/, AIM-003, 1958., p. 7.
+95 Slagle, /A heuristic program .../, 1961., p. 17.
+96 “Maplist (L,J,f(J)). The value or this function is the address of a list
+    formed from the list L by mapping the element J into f(J).”
+   McCarthy, /An algebraic language .../, AIM-001, 1958., p. 17.
+97 Funkcija za diferenciranje:
+           function diff(L)
+           / diff=(...
+                   car(L)="x” → 1,
+                   car(L)="plus” → consel("plus",
+                                          maplist(cdr(L),
+                                                  J,
+                                                  diff(J))),
+                                                  \ ...)
+    McCarthy, /An algebraic language .../, AIM-001, 1958., p. 20.
+98 “The version of maplist in memo 1 was written “maplist(L,J,f(J))”
+    where J is a dummy variable which ranges over the address parts
+    of the words in the list L and f(J) was an expression in J.”
+   McCarthy, /Symbol manipulating language/, AIM-004, 1958., p. 4.

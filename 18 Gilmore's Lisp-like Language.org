@@ -1,0 +1,102 @@
+* 18 Gilmore's lisp-like language
+
+In same book as McCarthy's article /A basis for a mathematical theory of
+computation/, is also published an article by Paul C. Gilmore, /An abstract
+computer with Lisp-like machine language without label operator/, probably the
+first "independent" attempt to improve Lisp and the only such attempt in the
+period which is the subject of this book.
+
+Gilmore considers more generally defined Lisp, defined by a class of primitive
+functions /F/ over some given set /U/, "universe", which does not necessary need
+to be the set of all symbolic expressions. It is necessary, though, that the
+elements of the universe, primitive functions and operator /cond/ can be
+represented as strings. With /C(F)/ is denoted a class of all functions that can
+be defined as in McCarthy's paper /Recursive funcions over symbolic expressions/.
+
+18.1 CONDITIONAL EXPRESSIONS
+
+McCarthy's Lisp has, according to Gilmore, two deficiencies. One is in the
+definition of the condition expression, (p_1 → e_1, ..., p_n → e_n), where p_1, ...,
+p_n are propositional expressions with "logical values", *T* or *F*. Because of
+that, symbols *T* and *F* have to be elements of the universe /U/ and at least some of
+the primitive functions have to have them as values. Gilmore defines conditional
+expressions in form
+
+        cond(x, y, z, w) = /z/ if /x/ and /y/ are equal
+                           /w/ otherwise
+
+for which *T* and *F* does not have to be elements in the universe. McCarthy's
+conditional expression can be defined as a composition of Gilmore's conditional
+expressions. For example, for /n = 2/ holds
+
+        (p_1 → e_1, p_2 → e_2) = cond(p_1, T, e_1, cond(p_2, T, e_2, e)),
+
+where /e/ is any expression.
+
+18.2 QUOATE AND LABEL
+
+Second, bigger problem is in operators /quote/ and /label/ which do not belong
+"naturally" into the theory of computable functions. McCarthy's elimination of
+label-expressions does not satisfy Gilmore because he searches for additional
+assumption that functions can accept themselves as arguments, and alternative,
+non-recursive definitions are significantly more complex from starting ones.
+
+The need for operators /quote/ and /label/ is, to Gilmore, a consequence of not
+recognizing that symbols in Lisp are used in different ways, as:
+
+1. elements of universe /U/ which can be arguments to funcitons or operators;
+
+2. names of elements of universe /U/; for example, truth and false can be elements
+   in /U/, and their names are *T* and *F*;
+
+3. name for functions or operators, primitive or defined ones.
+
+Gilmore succeeds in avoiding operators /quote/ and /label/ by introducing the
+"/initial load operation/", for example
+
+        !: (lambda, x, cond(x, 1, 1, x · (x − 1)!).
+
+He held that this does not violate “drastically” the simple structure of Lisp.
+Initial command is very similar to operators /cset/ or /csetq/ from Lisp 1.5. Since
+Gilmore does not compare those two commands, at the time he wrote the article,
+he probably wasn't familiar with the Lisp 1.5 about which first articles were
+published first in 1962.
+
+18.3 ABSTRACT MACHINE
+
+The semantics of /lisp-like language/ is described with a virtual abstract machine
+with an infinite number of memory places denoted with characters (wihout ":").
+In every memory place can be stored a sequence of characters (again, without
+":") of arbitrary length. Initial load command s_1:s_s is executed by writing the
+string s_2 into memory location s_1. Since s_1 and s_2 must not contain character
+":" load commands could not be nested. Since now every expression could be
+loaded into some address, and if needed used, there is no need for the operators
+/quote/ and /label/ in the lisp-like language.
+
+Gilmore considered the virtual machine as a useful tool which simplifies the
+language implementation, described in details in the article, and at the same time
+indicate some possible problems when implementing it on real computers. To
+simplify presentation, Gilmore assumes there are no "clashes of bound
+variables", in expressions like
+
+        (lambda, x, (lambda, x, x))
+
+where it is not clear if the last appereance of /x/ is bound to first or second
+lambda. That problem can be avoided, for example, if computation of lambda
+expression is preceded by variable renaming, or if it is left to programmers to
+take care of avoiding variable clashes.
+
+The advantage of the "lisp-like" language is the possibility to use not just
+symbols, but also symbolic expressions as variables, even if it is not easy to
+find an example where such generalisation would be useful. New syntax, even if
+it is not, as Gilmore writes, "drastically different", does not seem necessary.
+
+Gilmore's articles almost had no echo in the Lisp community. But, it was cited
+by Landin, 1965., in an important paper /A generalisation of jumps and labels/ as
+an early exmaple of introducing imperative elements into a "purely functional"
+or a "referencially transparent" language. Since Landin introduced several
+abstract machines, he was probably influenced by Gilmore. Overheu^275 developed
+an alternative abstract machine which keeps the advantages of Gilmore's
+machine - removal of /quote/, /label/ and more general /cond-expressions/.
+
+275 Overheu, /An abstract machine for symbolic computation/, 1966.

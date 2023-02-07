@@ -1,0 +1,77 @@
+* 13 Symbolic expressions as the language syntax
+
+Originally^204, Lisp syntax was similar to that of Algol and other higher level
+programming languages. In the first few months, that syntax gets the uniform
+shape of meta-expressions. Programmers translated programs into assembler
+personally, obtaining experiences necessary for writing a compiler. Unexpected
+consequence of definition and implementation of S-function /eval/ is appereance of
+useful interpreter for programs represented in the computer memory in form of
+list structures. Maling and Silver implemented function *READ* that reads symbolic
+expressions and converts them into a list structure which made it possible for
+programmers to start writing programs in form of symbolic expressions.
+
+The Lisp community didn't accepted easily symbolic expressions as the language
+syntax. Already McCarthy deemed them as "hard to read"^205, "somewhat
+readable"^206, and M-expressions as "easier to read".^207 Later he suggested
+marking parenthesis with arbitrary number of dots and commas, for example 
+(.. and ..), where closing such parenthesis would close all others that were
+left open.^208 Also some other members of the Lisp project considered Lisp not
+practical because of the big number of parenthesis.^209,210 Lisp programmers, as
+noted by McCarthy, if a problem requires more significant work with symblic
+expressions gladly choose other data representations and implement their own,
+/ad hoc/ translators. For that reason he considered that support for expressions
+in other forms should be
+
+built into Lisp.^211 Maling and Silver also tried, beside never finnished^212
+support for meta-expressions, to support "algebraic expressions" such as
+*a*b+c*d*.^213 There were thoughts about S-function /eval/ accepting arguments in
+"usual notation".^214 Programs in memoes and books were still long written in
+form of M-expressions. It is also less known that Lisp 1.5 also support
+expressions in form of
+
+        (IF (a THEN b ELSE c))^215
+
+and similar form for *FOR* expression. After McCarthy's leave from MIT some public
+criticism appears^216 as well as attempts to create alternative forms of syntax.^217,218
+
+Despite, the community kept symbolic expressions as the language syntax and
+gradually stopped using M-expressions. In Lisp 1.5 manual, prog-expression is
+introduced as meta-expression and equivalent S-expression, but without explicit
+rules for the translation.^219 The first bigger document in which there are no
+mentioning of M-expressions is /Handbook of LISP functions/ by a group of students
+from Baltimore, from August 1961.^220
+
+204 see chapter Imperative Lisp.
+205 “This notation is rather formidable for a human to read ...”
+    McCarthy, /Recursive functions .../, AIM-008, 1959., p. 14.
+206 “This notation is writable and somewhat readable.”
+    McCarthy, /Recursive functions .../, CAMC, 1960., p. 189.
+207 McCarthy et al., /LISP I programmer's manual/, 1960., p. 53.
+208 McCarthy, /New eval function/, AIM-034, 1962., p. 2.
+209 “I thought it was a marvelous sort of language, except that it was
+     somehow impractical. You can’t ask people to do that; you need a
+     translator. Such programs for LISP may exist now. I don’t know. A
+     program you could give simple statements to that would be automatically be
+     translated into the multiply-parenthesized code.”
+    Fox, /An interview with Phyllis/ A. Fox, 2005., p. 31.
+210 “The task of writing out S-expressions to define programs is a tedious one,
+     especially since the LISP notation seems to run counter
+     to the natural way that people think of mathematical expressions.”
+    Abrahams, /Application of LISP to checking mathematical proofs/, 1964., p.159.
+211 McCarthy, /LISP − notes on its past and future/, 1980., str. vi.
+212 McCarthy, /History of LISP/, 1981., str. 179.
+213 Maling, /The Maling-Silver read program/, AIM-013, 1959.
+214 McCarthy et al., /LISP programmer's manual/, 1959., str. 3/1.
+215 McCarthy et al., /LISP 1.5 programmers manual/, 1962., str. 98.
+216 “... it has become evident that the general list processing languages (such
+     as LISP) are not appropriate for processing complex mathematical data. This
+     is due not only to the extreme complexity of the coding that necessarily
+     ensues in the analysis of an intricate problem, but also to the fact that
+     the input-output procedures most ideally suited for these languages are
+     totally inadequate for the individual prlmarily interested in the analysis of a
+     problem and not the underlying mathematical and input-output structure involved.”
+    Morris, /Models for mathematical systems/, 1966., str. 1520.
+217 Henneman, /An auxiliary language for more natural expressions .../, 1964.
+218 Abrahams et al., /The LISP 2 programming language and system/, 1966.
+219 McCarthy et al., /LISP 1.5 programmer's manual/, 1962., str. 29.
+220 Conrad et al., /A handbook of LISP functions/, 1961.

@@ -1,0 +1,66 @@
+* 03 Dartmouth Project
+
+McCarthy, then employed at Dahrmounth College, his acquaintance from the studies
+and inventor of "neural nets" Marvin Minsky, Rochester, founder of the
+information theory Claude Shannon and unsigned Oliver Selfridge^17, wrote in
+August 1955. "A Proposal for the Dartmouth summer research project on artificial
+intelligence" and send it to a possible financier. Attractive and pretencious,
+previously almost unused fraze "artificial intelligence" which was coined by
+McCarthy^19 was soon accepted as a name for the entire field of computer technology.
+
+3.1 LANGUAGE OF THE INTELLIGENT COMPUTERS
+
+Proponents belived a computer can imitate every aspect of human intelligence and
+anounced attempts of solving many hard problems. They even anounced particular
+interests and plans. McCarthy belived it was necessary for the development of
+intelligent machines to apply standard methods of trial and error on "higher
+level of abstraction". Just like humans use language for solving complex
+problems by making propositions and trying them, so would intelligent machines
+do as well. He intended to develop a language suitable for such use.^30 Already
+developed languages were easy to describe with informal mathematic and informal
+mathematic was easily translated into those languages, and it was also easy to
+test for correctness of the proof. The language of intelligent machines should
+also have some advantages of natural languages: be concisive, universality (in a
+natural language it is possible to define and adequately use any language),
+selfreferencing and propositional expression.
+
+Probably from that period, there is a preserved short, undated McCarthy's
+manuscript /The programming problem/ which contains almost identical ideas, but
+also points out that language should be  explicit: there should not be
+possibility for different interpretations of a procedure's meaning.^21
+
+Lisp can be viewed as an attempt to realize McCarthy's ambition from 1955.
+
+3.2 IN-BETWEEN IPL AND FORTRAN
+
+The summer project was accepted and realized next, 1956. year. Despite
+participation of tenth of most famous researchers, expected breakthroughs were
+not achieved. Reasons of relative unsuccess were later explained by McCarthy
+with shortage of financial means, poor colaboration between researchers who hold
+to their own projects and difficultness of the problem which propponents
+underestimated. Minsky presented an idea for a geometry theorem solver. Ray
+Solomonoff started work on algorithmic complexity and Alex Bernstein presented a
+chess program. Instead of a work on the language, McCarthy presented "alfa-beta
+heuristic" for games like chess.^22
+
+Despite not developing the announced language, McCarthy acquainted himself with
+work of Allen Newell, Cliff Shaw and Herbert Simon who prestened program LOGIC
+THEORIST (LT) written in INFORMATION PROCESSING LANGUAGE (IPL).^33 IPL supported
+single linked lists and recursions. Commands were calls to subprograms and could
+not be directly composited. McCarthy felt back then a need, even a passion, for
+"algebraic language" in which expressions would be written as in mathematic or
+Fortran, but which, like IPL, would make lists processing and recursion
+possible. Such language would significantly simplify expression analysis and
+subexpression refactoring compared to IPL.^34
+
+17 McCarthy, /The logic and philosophy of artificial intelligence/, 1988. p3.
+18 "Do not develop your artificial intelligence, but develop that intelligence
+   which is from God. From the latter results virtue; from the former,
+   cunning."
+   Giles, /Cuhang Tzu - mystic, moralist and social reformer/, 1889. p232.
+19 Andresen, /John McCarthy: father of AI/, 2003, p84.
+20 McCarthy et al.,[[http://jmc.stanford.edu/articles/dartmouth/dartmouth.pdf][/A proposal .../]], 1955., p10.
+21 Stoyan, /Early LISP History (1956-59)/, 1984. p.300.
+22 McCarthy, /Dartmouth and beyond/, 2006
+23 Newell & Shaw, /Programing the Logic Theory Machine/, 1957
+24 McCarthy, /History of LISP/, 1981., p. 174

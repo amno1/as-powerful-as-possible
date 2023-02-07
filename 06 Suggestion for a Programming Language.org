@@ -1,0 +1,144 @@
+Within a framework of interntational initiative for creation of a "universal
+programming language" which later gave birth to programming language Algol,
+american /Association for Computing Machinery/ (ACM), founded 
+/Ad hoc comittee for programming languages/ in the beginning of 1958. The
+committee decided that the new language has to be higher, "algebraic programming
+language." Fortran already satisfied that requirement, but as intellectual
+property of IBM, it wasn't acceptable. A sub-comittee whose members, besides
+McCarthy, a MIT representant, were also authors of then current programming
+languages John Backus, Alen Perlis and William Turanski, put together a
+/Suggestion for a programming language/, the starting point for ACM delegation on
+meeting in Zürich, in summer 1958.^41 /A suggestion for programming language/
+was not remarkably ambitious as the year older /A suggestion for a compiler/, but
+it contained a few important ideas.
+
+6.1 CONDITIONAL STATEMENT
+
+Instead of clumpsy conditionall branch in Fortran, /conditional statement/ had
+form
+
+         p1 → e1, p2 → e2, ..., pn → en
+
+where /p1, ..., pn/ are logical expressions, and /e1, ..., en/ are any statements
+and it was executed so that  /p1, ..., pn/ are computed until first true-valued
+statement /pi/ was found. Then the corresponding /ei/ statement was executed.
+
+Here, for the difference from /Suggested compiler/, the conditional statement is
+not an expression.
+
+6.2 GO TO STATEMENT
+
+Statements could have names. Names where symbols, series of signs that starts
+with a letter. For example, *TR* is a name for statement
+
+        (TR) X = 2 + 2.
+        
+Very expressful statement was 
+
+        GO TO /e/
+
+"/Designation statement/" /e/ could have several forms. Most simply, it could be
+used as a label in a program. For example
+
+        GO TO TR.
+
+It could also have form /s(I)/, where /s/ is a symbol, and /I/ is an expression that
+computes a number. For example, if there is a "declarative statement" in a
+program
+
+        SWITCH Q(A, B, C, D, E)
+
+then after
+
+        GO TO Q(2+2)
+
+the program execution continues from the statement with name *D*. Finally, a
+statement /e/ could have form /(c)/ where /c/ is a kind of conditional branch, as an
+example,
+
+        GO TO (D<0 -> NOSOLUTIONS,
+               D=0 -> ONESOLUTION,
+               D>0 -> TWOSOLUTIONS).
+
+6.3 MACRO STATEMENT
+
+Suggested was also a kind of a /macro statement/. For example, executing statement
+
+        LABEL P(A, B)
+
+a part of program between statemetns marked with names *A* and *B* becomes value *P*.
+Then statement
+
+        P(L1 -> X, L2 -> Y)
+
+executes a part of program P, but with temporary substitution of symbols *X* and *Y*
+with symbols *L1* and *L2*.
+
+McCarthy wasn't present at meeting in Zürich, but in final language form, today
+known as Algol 58, were included some of viewed suggestions. Accepted was
+conditional *GO TO*, but functionality of *LABEL* statement was transfered to
+another statement. McCarthy's belowed^42 conditional statements were not
+accepted.
+
+During May 1958., McCarthy held a talk at MIT under the name /An algebraic coding
+system/ at which time, according to note by a student Jamer R. Slagle, he talked
+about augmenting Fortran with Churchs lambda statements, function compositions
+and multivalued funcionts^41.
+
+In summer 1958., in a letter to Perlis and Turanski, McCarthy suggests changes
+to the /Suggestion/. The changes were important and far-reaching. The biggest
+challenge in designing the new language should be "possibility to change the
+language from within the language itself"^43. An intermediate language should be
+introduced in prefix form. Entire program should be an expression of
+intermediate languages^44.
+
+6.4 HIGHER ORDER FUNCTIONS
+
+Name of functions should be variables, so that it is possible, for example, to
+write
+
+        f = sin
+        g = f + cos
+        a = g(3).
+
+Suggested is process of defining higher order functions; addition,
+substraction, multiplication and division of arithmetic functions,
+differenciation and integration as well as possibility to define other higher
+order functions. Especially, introduced was composition, so that for example,
+
+        (f ○ g)(x) = f(g(x)).
+
+6.5 LAMBDA-STATEMENTS
+
+McCarthy points out that expressions in elementary mathematics, for example /x +
+y/ sometimes denote a value, and sometimes a function. In a programming language
+such ambiguity has to be avoided, so McCarthy, maybe for the first time in the
+history of programming languages^45, suggests introduction of Churchs lambda
+notation. For example, statement
+
+        lamda(x, y)(x + y)
+
+denotes the function
+
+        (x,y) -> x + y.
+
+Such defined functions would be applied to numbers, but also to other "forms".
+For example, statement
+
+        lambda(x, y)(x + y)(3, 4)
+
+would be computed to number 7, and statement
+
+        lambda(x, y)(x + y)(a + 1, b)
+
+into expression *(a + 1) + b*. Basic operations on forms should also be supported.
+
+McCarthy has, in lesser grade, continued to participate in Algol development,
+suggesting some ideas which he already applied in Lisp^46.
+
+41 Perlis, /The American side of the development of ALGOL/, 1981., p. 77.
+42 Stoyan, /Early LISP history/ (1956-59), 1984., p. 300.
+43 McCarthy, /Some proposals for the Volume 2 (V2) language/, 1958., p. 1.
+44 Stoyan, /Early LISP history (1956-59)/, 1984., p. 303.
+45 Stoyan, /Early history of LISP (1956-59)/, 1984., sl. 22.
+46 McCarthy, /On conditional expressions and recursive functions/, 1959.

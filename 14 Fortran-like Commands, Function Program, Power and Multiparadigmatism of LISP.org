@@ -1,0 +1,215 @@
+* 14 Fortran-like commands, function /program/, power and multiparadigmatism of LISP
+
+McCarthy's Memo 11.^221 was still introducing "pure Lisp", but already Memo
+12.^222 again introduces commands for assignement, or as McCarthy calls them,
+"Fortran-like" commands. For example, if "state of the machine" is defined by /x/
+that has value *(A)* and by /y/ which has value *(B,B)*, then after executing
+fortran-like commands
+
+        x = /append/[x; x]
+         y = /cons/[x; y]
+
+variable x will have value *(A,A)*, and variable /y/ will have value *((A,A),B,B)*.
+According to McCarthy, there are two reasons why fortran-like commands are good.
+First, many programs and functions can be written more concisely, with higher
+indenpendency between parts than in "pure Lisp". Second, many programs and
+functions can be more efficient.
+
+14.1 CODING THE STATE OF THE MACHINE AND FORTRAN-LIKE COMMANDS
+
+At same time, fortran-like commands are, according to McCarthy, nothign more then
+just a convenience. Machine states can be /encoded/ in pair lists, just like those
+used in definition of S-function /eval/. For example, starting and ending state of
+the machine from the previous example can be encoded into S-expressions
+
+        ((X,(A)),(Y,(B,B))) and
+     ((X,(A,A)),(Y,((A,A),B,B))).
+
+Over encoded states of the machine, can be defined S-functions equivalent to the
+function of fortran-like commands on states of the machine.
+
+Further, sequences of fortran-like commands can also be encoded into lists of
+pairs. For example,
+
+        x = /append/[x; x]
+         y = /cons/[x; y]
+
+can be encoded into ((X,(APPEND,X,X)),(Y,(CONS,X,Y))).
+
+14.2 S-FUNCTION PROGRAM
+
+It is possible to define S-function /program/ that applies encoded sequence of
+fortran-like commands on encoded states of the machine. For example
+
+        /program/[((X,(APPEND,X,X)),(Y,(CONS,X,Y)));
+                ((X,(A)),(Y,(B,B)))        ] =
+                = ((X,(A,A)),(Y,((A,A),B,B))).
+
+Generally, if a sequence of fortran-like commands s_1, s_2, ..., s_n changes
+machine state a_1 into machine state a_2, then
+
+        /program/[(s1^*, s2^*, ..., sn^*); a1^*] = a2^*,
+
+where s_1^*, s_2^*, ..., s_n^*, a_1^* and a_2^* are respective codes. McCarthy defined
+S-function /program/ with meta-expression
+
+program[p; a] = [null[p] → a;
+                 T→ program[cdr[p];
+                            change[a;
+                                   caar[p];
+                                   eval[cadar[p]; a]]]].
+
+Help S-function /change/ defines or changes values of variables in represented
+state machine. For example,
+
+          change[(); Y; C]=((Y,C)),
+   change[((X,A),(Y,B)); Y; C]=((X,A),(Y,C)).
+
+Function /change/ is defined by meta-expression
+
+    change[a; var; val] =
+      [null[a] → list[list[var; val]];
+       caar[a] = var → cons[list[var; val];cdr[a]];
+       T → cons[car[a]; change[cdr[a];var; val]]]
+
+In very same memo, McCarthy briefly describes also some other interesting
+possibilities. Equivalent of the famous *GO TO* command can be implemented with
+special interpretation of the symbol *IL*. Thus, the program /program2/[((*IL*,e)...);
+a] could be computed as /program2/[eval[e; a]; a].
+
+14.3 SIMULTANEOUS EXECUTION OF FORTRAN-LIKE COMMANDS AND ORDERING BETWEEN SYMBOLS
+
+Further, McCarthy defines function /program3/ so that fortran-like commands can be
+executed simultaneously, for example,
+
+        /program3/[((X,Y),(Y,X)); ((X,A),(Y,B))] = ((X,B),(Y,A)).
+
+In the implementation of the last program, McCarthy used relation or ordering
+(<) between symbols and assumes that for every state vector in form
+
+        ((var_1, val_1),(var_2, val_2),...,(var_n, val_n))
+
+holds var_1 < var_2 < ... < var_n.
+
+14.4 MULTIPARADIGMATISM OF LISP
+
+Memo 12. reveals more about McCarthy's understanding of Lisp then what is
+visible at first sight. First Lisp version was pragmatic and imperative; the
+beauty of "pure Lisp" was accidental, and, even for the members of the AI
+group, a surprising result^223
+
+which didn't stimulate them on insisting on "pureness", and for which Lisp was
+later sometimes hard criticized.^224 Moreover, the argument in favor of
+fortranlike commands^225 can be applied also on other language constructs that
+could be added to Lisp. Since "pure Lisp" is Turing-complete, then for every
+possible augmentation of "pure Lisp" exists an equivalent function in "pure
+Lisp" that to the machine state - such as defined by McCarthy or maybe
+somewhat different - assigns a new machine state, and then even that
+augmentation can be added to Lisp. For any programming language PL, it is
+possible to define S-function /pl/  
+
+[OBS! I CAN'T TRANSLATE THE REST OF THAT SENTENCE]
+
+                x’ = pl(p,x).
+
+Such augmentation is, if we follow McCarthy's reasoning, just a convenience. On
+contrary to Stoyan's stance^226, it seems that McCarthy at the time of writing
+Memo 12. was very open towards augmentations of the language and thus closer to
+understanding of Lisp as expressed today in  “multiparadigm” dialect of Common
+Lisp then in the "more elegant" dialect of Scheme. That stance, it seems, was
+held by McCarthy even later, distanciating himself only from the augmenations
+that would disturb the syntax of the language.^227
+
+14.5 THE LANGUAGE POWER FROM A PROGRAMMERS POINT
+
+In Memo 12., McCarthy highlights, similar as in /Compiler suggestion/ that "power
+of a programming language" or "power of the system" from the /programmer's point
+of view/ is the most important goal in Lisp development.^228 Such enthusiastic
+standpoint of the langauge author, is surprisingly, rarely cited.
+
+As an example, Lisp is more powerful then the assembler because a programmer
+does not need to introduce help concepts in Lisp such as addresses at which
+variable values are stored or those of the /list of free storage/. Similary, a
+programming language in which matrices A and B could be multiplied directly, by
+an expression such as A*B, would be more powerful then the language in which
+programmer has to explicitly compute value of each element of the result
+matrix. Generally, a programming system is more /powerful/ then soem other
+programming system if functions that can be described directly in one system
+demands describing help calculations in the other system.^229 Help calculations
+are still done, but it is a compiler's or interprretter's responsibility.
+
+Looking from a time distance, we could ask ourselves how would a language where
+help computations are minimized look like. It is evident that such a language
+must have large library of standard functions, towards which, all language
+designers gravitate. Especially, it would support "declarative programming" in
+which is describaed what to compute, not how to compute. Also, much later,
+McCarthy also worked for including a support for logical expressions^220 and
+connecting Lisp and Prolog.^231 On the other side, the language must be kept
+"open", so that often repeated pattern compuations - regardless of how complex -
+could be described by simpler syntatic constructions. Already since Fortran,
+for such purpose were used functions. But, functions only, at least as defined
+in "pure Lisp" does not allow for avoiding of computing of all computing
+patterns.^232 Despite, the most ambitious later attempts to develop Lisp in that
+direction, for example, Carl Hewitt's Planner or Brian Smith's 3-Lisp did not
+make influence on the most popular language dialects.
+
+McCarthy also recognizes some inneficiencies of Lisp. Supporting S-functions,
+Lisp always computes new values, old values are never changed. That problem is
+solvable in few different ways.^233 Another inneficiency is the necessity to
+search the association lists in search for values assigned to a variable.
+
+221 McCarthy, /Recursive functions .../, AIM-011, 1959.
+222 McCarthy, /Programs in LISP/, AIM-012, 1959.
+223 “And then, two years later came John's paper ... That changed the
+     whole ball game, and it changed how people perceived LISP. Now
+     all of a sudden, LISP was not merely a language you used to do
+     things. It was now something you looked at: an object of beauty. It
+     was something to be studied as an object in and of itself.”
+    Abrahams, /Transcript of discutant's remarks in McCarthy, History/
+    /of LISP/, 1981., p. 193.
+224 “It needs to be said very firmly that LISP, at least as represented
+    by the dialects in common use, is not a functional language at all.
+    LISP does have a functional subset, but that is a rather inconvenient
+    programming language and there exists no significant body of programs
+    written in it. Almost all serious programming in LISP makes heavy use of
+    side effects and other referentially opaque language features. I think that
+    the historical importance of LISP is that it was the first language to
+    provide garbage-collected heap storage. This was a very important step
+    forward. For the development of functional programming, however, I feel that
+    the contribution of LISP has been a negative one. My suspicion is that the
+    success of LISP set back the development of a properly functional style of
+    programming by at least ten years.”
+    Turner, Functional programs as executable specifications, 1984., p. 387.
+225 “Since all computable functions can be expressed in LISP without
+    the program feature, this feature can only be regarded as a convenience.
+    However, it is a convenience at which we cannot afford to
+    sneer.”
+    McCarthy, /Programs in LISP/, AIM-012, 1959., p. 1.
+226 “As things stand, he must prefer SCHEME to Common LISP — a
+    clear, understandable small diamond, to a messy, incomprehensible clump.”
+    Stoyan, The Influence of the Designer on the Design..., 1991., p. 424.
+227 “Steele: Let's move up to the list to question no. 3. What would you
+     add to Lisp if you could goback in time? What would you delete and
+     what would you change?
+     McCarthy: People have added some Englishy stuff and at least the
+     syntax of that is not in the spirit of Lisp. I don't have any objection
+     to the content and generally I don't have any objection to things
+     being added to Lisp, because you can always not use them. I don't
+     have any particular ambitions to add anything in particular to Lisp
+     right now. I'd like to add some direct logic, but I don't know how to
+     do that in a good way.
+    Steele, /Interview with John McCarthy/, 2009.    
+228 “In developing LISP our first goal is to describe a language which is
+     as powerful as possible from the point ot view of the programmer.
+     More precisely, we wish to be able to describe the transformation
+     between the input of a program and the desired output as directly
+     as possible.”
+	McCarthy, /Programs in LISP/, AIM-012, 1959., p. 4.
+229 “We shall consider one programming system more powerful than
+     another if functions which can be described directly in the one require the
+     description of auxiliary computation in the other.”    
+    McCarthy, /Programs in LISP/, AIM-012, 1959., p. 5.
+230 McCarthy, /Beyond Lisp/, 2006., img. 4.
+231 McCarthy, /Guy Steele interviews John McCarthy, father of Lisp/, 2009.
+232 See chapter /Lisp 1.5, Special forms/.
+233 See chapter /Lisp 1. 5 and Memoization/.

@@ -1,0 +1,107 @@
+* 10. Linear Lisp
+
+In Memo 8.^197 and later documens^198,197 McCarthy states that there are several
+possible ways to define functions, "alternative formalisms" over symbolic
+expressions similar to "accepted system" and briefly describes two "Lisp
+variants": "linear" and "binary Lisp". "Linear Lisp" is described in all intern
+and published versions of the memo.
+
+10.1. L-EXPRESSIONS
+
+Symblic expressions, a basic kind of data in "pure Lisp", are intended for
+processing mathematical and logic epxressions. The difference between symbolic
+expressions and general mathematical expressions is not small. For example, the
+equality called "difference of two squares",
+
+        a^2 - b^2 = (a + b) · (a - b)
+
+would be written in most programming languages as
+
+        a^2 - b^2 = (a + b) * (a − b).
+
+The equivalent symblic expression has form
+
+        (= (− (^ A 2) (^ B 2)) (* (+ A B) (− A B))).
+
+We can ask why Lisp does not process arbitrary sequences of signs. Beside
+answering the standing complain on Lisp account, of S-expressions being hard to
+read, the language would win on generality. McCarthy devoted a paragraph in a
+memo^200 to discussion of exactly such, "linear Lisp", that process arbitrary
+sequences of characters, strings, or as he also calls them, L-expressions,
+defined by 
+
+1. Every individual character is an /L-expression/.
+
+
+2. Any sequence of signs, including an empty sequence (notated: Λ) is an
+   /L-expression/
+
+10.2. ELEMENTARY FUNCTIONS
+
+Defined are six elementary functions with L-expressions; three of which are
+predicates.
+
+1. Elementary function /first/. For example,
+
+        /first/[AB] = A.
+
+Generally, /first/[x] is the first sign in a string /x/. Specially, /first/[Λ] is not
+defined.
+
+2. Elementry function /rest/. For example,
+
+        /rest/[ABC] = BC.
+
+Generally, /rest/[x] is a sequence of signs obtained after eraisng the first sign.
+Specially, /rest/[Λ] is not defined.
+
+3. Elementary function /combine/. For example,
+
+       /combine/[A; BC] = ABC.
+
+Generally, /combine/[x; y] is a sequence of signs formed by concatening
+L-expressions /x/ i /y/.
+
+4. Elementary function /char/. For example,
+
+        /char/[A] = T,
+        /char/[AA] = F.
+
+Generally, if /x/ is a sequence of only one chaacter then /char/[x] has value T. If
+x is a sequence of more then one character, then /char/[x] has value F.
+
+5. Elementary function /null/. For example,
+
+        /null/[Λ] = T,
+        /null/[A] = F.
+
+Generally, vaue /null/[x] is *T* if and only if /x/ = Λ. Otherwise, value /null/[x] is
+*F*.
+
+6. Elementary function =. For example
+
+        value *A* = *A* is *T*,
+        value *A* = *B* is *F*.
+
+Generally, if /x/ and /y/ are same sequence of characters then /x/ = /y/ has value *T*. If /x/
+and /y/ are different, then /x/ = /y/ has value *F*.
+
+10.3 FACTORING OUT SUB-EXPRESSIONS
+
+"Linear Lisp" is more regular and more general than "pure Lisp". In "pure Lisp"
+parantheses and commas play special role. In "linear Lisp" there are no such,
+special signs. Every S-expression is an L-expression, but many L-epxressions are
+not S-expressions.
+
+On the other side, factoring out sub-expressions in "linear Lisp" is a complex
+operation. Programs should have special rules for factoring out expressions,
+depending on opeartors used. McCarthy believed that majority of programmers
+would in linear Lisp implement support for symbolic expressions and used "linear
+Lisp" as ordinary Lisp, so to avoid implementing special functions for factoring
+out sub-expressions. Then "linear Lisp" would not have advantages over "pure
+Lisp", and would be slower, because of more generality.
+
+197 McCarthy, /Recursive functions .../, AIM-008, 1959., p. 16.
+198 McCarthy, /Recursive functions .../, RLE QPR 053, 1959., p. 148.
+199 McCarthy, /Recursive functions .../, CAMC, 1960., p. 194.
+200 McCarthy, /Recursive functions .../, CAMC, 1960., p. 194.

@@ -1,0 +1,158 @@
+* 05 A Proposal for a Compiler
+
+After the Summer project, McCarthy took a job at MASSACHUSETTS INSTITUTE OF
+TECHNOLOGY (MIT). By the end of 1957., after initial experiences with FLPL, he
+send an about twenty pages long memorandum, /A proposal for a compiler/, to the
+head of the computer centre. Suggested compiler was very ambitious, interesting
+and full of possibilities. Still, it didn't posses the unique conceptuality nor
+elegance which Lisp, particularly "pure Lisp", will have.
+
+In some parts of the /Proposal/, McCarthy's reasoning is abstract and maybe not
+very precise. The development of the language was, seemengly, soon stopped.
+Announced continuations for /A Proposal for a compiler/ was never written.
+
+5.1 PROGRAMMING LANGUAGE AS A COORDINATE SYSTEM
+
+McCarthy again asks what is a good programming language. According to thoughts in
+/Proposal from Dartmouth project/, a programming language has to be a combination
+of a natural and a mathematical language. Natural language alone is not precise
+enough, and the existing mathematical language expresses declarative instead of
+necessary imperative expressions and does not make defining possible. Natural
+language is used for defining.
+
+Programming language can, according to McCarthy, be seen as a coordinating
+system. A program is defined by a combination of "variables", where variables
+are not symbols with values, as normally used in programming languages, but
+different "attributes" or "aspects" of a program, possibly so that desired
+changes in a program can be achieved by changing as few number of variables as
+possible. For example, for McCarthy are typographical conventions and language
+commands themselves variables. There are four kind of variables:
+
+1. /system variables/, whose values can't be changed by either the programmer or the
+   program, but are changed if the programming system is changed.
+
+2. /program variables/, whose values are defined by a programmer, but which can
+   not be changed during the computation
+
+3. /program segment variables/, whose values can be different in different parts
+   of a program and
+
+4. /computation variables/, which change their values during the execution of a
+   program.
+
+System becomes more powerful if variables become easier to change. For example,
+"typographical conventions" and even statements themselves should be
+"computation variables", i.e. can be changed during the program execution^37.
+
+5.2 PROGRAMMERS FREEDOM
+
+Most important property of suggested language is, according to McCarthy himself,
+programmers freedom to define new statements^38. Equivalence statements would
+make it possible to introduce abbreviations for any expression. The compiler
+could be changed and augmented by statements from the compiled program.
+Announced are also elements of declarative programming^39. Programs could
+generate and compile other programs and change the compiler code, written in
+same language. Especially, they could compile interpreters, and then generate
+code executed by those interpreters.
+
+5.3 LOGIC VALUES AND FUNCTIONS
+
+Suggested language would support logical values (in original called
+/propositional values/) 0 and 1 and usual propositional operators, including
+implication and exclusive disjunction. For example, expressions like following
+would be possible: 
+
+                 P = Q AND ((A = B) OR P).
+
+5.4 FUNCTION IF
+
+Important innovation is function *IF*, more comfortable to work with than the same
+named function in Fortran. For example, expression
+
+          A = IF(P, X+Y: Q, U+V: (A=B), A+B: OTHERWISE, B)
+
+is equivalent to a command in contemporary pseudocode
+
+        A = if /P/ then /X/ + /Y/
+                 else if /Q/ then /U/ + /V/
+                           else if /A/ = /B/ then /A/ + /B/
+                                         else /B/
+
+Also, it is equivalent to some later conditional expressions in Lisp.
+
+5.5 SYNTAX
+
+The syntax for the suggested language is unusual and interesting, despite being
+just roughly outlined. Characterizing is the porgram division in two to four
+columns. For example, progam
+
+         X | Y
+         Y | X
+
+represented "parallel" command for assignmenet and it would have changed values
+of variables X and Y without use of common, third, intermediate variable. The
+program in a modern pseudocode
+
+         for j in L do
+            if B[ j ] > 0 then A[B[ j ]+C[ j ]] := R[ j ] · S[ j ]
+         end.
+
+would be written in /the suggested language/ as
+
+Quantifier Quantity       Condition  Value
+----------------------------------------------
+j ∈ L    | A(B(J)+C(J)) | B(J)>0  | R(J)*S(J).
+
+5.6 LISTS
+
+The langue would also support algebraic expressions, logic values and
+operations, "short-curcuit" calculations and single-linked lists, as known in
+FLPL. In the document is also a first graphical representation of lists:
+
+#+ATTR_ORG: :width 800
+[[./images/5.png]]
+
+IMAGE 5. Graphical view of a list.^40
+
+Defined are also functions for extracting parts of words, like in FLPL, but with
+simplified names like CAR and CDR.
+
+5.7 MULTIVALUED FUNCTIONS AND FUNCTION COMPOSITION
+
+Beside unusual syntax, a special for the suggestion is support for multivalued
+functions. Division with rest is probably the simplest example of a need for
+such function. Defined was also functional composition, with same notation as in
+mathematics. Description of those possibilities in the suggestion is pretty
+brief, but examples are illustrative enough.
+
+Function PI reassigns it's own arguments. For example, values
+
+        (PI(1,2,2,3))(X,Y,Z)
+
+are values X,Y,Y and Z respective. Function *PI* is useful for writing expressions
+involving functions with multiple values. Same is true for function *I1*, an
+identity function of one variable and one value.
+
+For example, let *Q(A,B,C)* be a function with two values: solutions of the quadratic
+equality A·X^2 + B·X + C. Let *PLUS* be a function that adds arbitrary number of
+arguments. Expression that computes sum of both solutions for equality 
+A·x^2 + B·x + C and coeficients A and C could be
+
+        (PLUS ○ (Q,I1,I1) ○ PI(1,2,3,1,3))(A,B,C).
+
+McCarthy didn't try to explain how such function would be useful and he never
+returned to the idea of multivalued functions.
+
+37 “The statements themselves ... are computational variables here
+    since the program can generate source language program in the
+    course of operation and can call in the compiler to compile it.”
+   McCarthy, /A proposal for a compiler/, 1957., p. 4.
+38 “The most important feature of the source language of this system
+    is the freedom it gives the programmer to define new ways of expressing
+    himself.”
+   McCarthy, /A proposal for a compiler/, 1957., p. 4.
+39 “The ability to describe a computation by giving final state of the
+    machine in terms of the initial state without haying to worry about
+    intermediate changes to the variabless used in the computation.”
+   McCarthy, /A proposal for a compiler/, 1957., p. 5.
+40 After illustration from McCarthy, /A proposal for a compiler/, 1957., p. 15.

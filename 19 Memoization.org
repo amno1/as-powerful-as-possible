@@ -1,0 +1,110 @@
+* 19 Memoization
+
+Memoization discovery is usually described to Richard Bellman^276 and the idea
+was named and popularized by Donald Michie.^277 McCarthy's memo /On efficient ways
+of evaluating certain recursive functions/ from 1962.^278 is one early example of
+using memoization.
+
+Naive recursive implementation of some algorithms is innefficient because some
+functions are computed needlessly for same argument values. Most simple example
+is the example for computing Fibonacci numbers 
+
+        fibonacci[n] = [n ≤ 1 → 1;
+                        T → fibonacci[n − 1] + fibonacci[n − 2]].
+
+Computing function value of /fibonacci/ for big /n/ is slow, because the function
+call itself many times with same arguments and repetedly calculates the function
+value. For example, /fibonacci/[n − 2] is computed twice,  /fibonacci/[n − 4] four
+times,  /fibonacci/[n − 6] eight times etc.
+
+Similar example is computing number of partitions of natural number. For example
+partitions of number 5 are 5, 4+1, 3+1+1, 3+2, 2+2+1, 2+1+1+1 and 1+1+1+1+1.
+
+McCarthy defines function /q/[m;n] which computes number of partitions for number
+/m/, such that any of addends is not bigger then /n/. Function is defined by the
+expression
+
+        /q/[m; n] = [m = 1 ∨ n = 1 → 1;
+                   m ≤ n → /q/[m; m − 1] + 1;
+                    T → /q/[m − n; n] + q[m; n − 1]].
+
+Computing this function is innefficient because function /q/ is called many times
+with same arguments. To avoid that, McCarthy defines function so that results of
+computations are stored in a list of form ((m,n,q[m; n]), ...). If some of
+defined functions expects that list as an argument, corresponding parameter is
+called /known/.
+
+Help function /present/[m; n; known] is a predicate whose value is *T* if an element
+of the list in form of (m,n,qmn) is in the list known.
+
+        present[m; n; known] =
+           ~ null[known] ∧
+           [[eq[caar[known]; m] ∧ eq[cadar[known]; n]] ∨
+             present[m; n; cdr[known]]]
+             
+Help function /val/[m; n; known] is defined only for those values m, n and known
+for which is /present/[m; n;known] = T and has then value qmn.
+
+        val[m; n; known] =
+          [eq[caar[known]; m] ∧ eq[cadar[known]; n] →
+              caddar[known];
+          T → val[m; n; cdr[known]]]
+
+Help function /prob/[m; n; known] has as a value list /known/, if it needs it needs
+the augmented, so it includes (m,n,qmn).
+
+        prob[m; n; known] =
+          [present[m; n; known] → known
+           T → λ[[v];cons[list[m; n; v]; known]]
+               [[m = 1 ∨ n = 1 ∨ m = 0 → 1;
+                 m ≤ n → val[m; n − 1; prob[m; n − 1; known]] + 1;
+                 T → λ[[p]; val[m − n; n; p] + val[m; n − 1; p]]
+                     [prob[m; n − 1; prob
+        [m − n; n; known]]]]]]
+
+The tehnique which avoids multiple calls of function /s/ with same arguments is in
+the last two rows. If McCarthy wrote
+
+        T → val[m − n; n; prob[m − n; n; known] +
+            val[m; n − 1; prob[m; n − 1; known]
+            
+some calls of function /prob/, including /prob/[m; n; NIL], would call function
+/prob/ twice and would be equally inneffective as calls to function /q/[m; n].
+
+Generally, if we wish to avoid computing of expression /e/ twice in
+
+        /g/[..., /e/, ...] + /h/[..., /e/, ...]
+
+we can use
+
+        λ[[p]; g[..., p, ...] + h[..., p, ...]][e].
+
+Association lists obtained by computing
+
+        /prob/[m − n; n; known] and
+        /prob/[m; n − 1; known]
+
+are not equal. Despite, in this context both can be substituted with
+
+        /prob/[m; n − 1; /prob/[m − n; n; known]].
+
+While computing that expression function /prob/ is called twice, but the value
+obtained by computing the inner call to the function is used for computing the
+outer call to the function. Finally,
+
+        /q/[m; n] = /val/[m; n; /prob/[m; n; NIL]].
+
+Still, /q/ is computed relatively slowly becuase functions /present/ and /val/ search
+list /known/ lineary. McCarthy observes that it would be more effective to use
+hash tables.
+
+McCarthy gave assignement to students to write a function to transform any
+S-function into equivalent function which is not computed multiple times for the
+same argument and to proof by induction the corretness of the function.
+
+McCarthy's example was published 1968. by D.W. Barron.^279
+
+276 Bellman, /Dynamic programming/, 1957.
+277 Michie, /Memo functions and machine learning/, 1968.
+278 McCarthy, /On efficient ways of evaluating certain recursive functions/, AIM-032, 1962.
+279 Barron, /Recursive techniques in programming/, 1968., p. 18-19.

@@ -1,0 +1,136 @@
+* 21 First applications of Lisp
+
+In early period, Lisp development absorbed that much time and energi from
+members of AI project that they joked that Lisp is a language for writing
+Lisp.^{283} Soon, Lisp was though used. First programs used largely capability to
+represent mathematical and logical expressions as S-expressions.
+
+The earliest descrbied Lisp program - if we don't take into count examples put
+together to describe possibilities of Lisp in ealier memoes - is Rochester's
+program for deriving expressions of one variable.^{284} Program searches for
+derivations of S-expressions containing variable x, constants and operations
+*times*, *plus* and *minus*. First, instead of x in entire expression is substituted
+(plus, x, (Δ,x)). Such obtained expressions are converted after sequence of
+about tenth or so rules which Rochester derived, including symbolic division
+with (Δ,x), as well as symblic search for the limit. During the processing,
+expressions are simplified, for example (times, 0, x) is simplified to 0.
+Program was written in very early Lisp version. Similar program was soon also
+developed by Maling^{285} whose /diff/ function is similar to McCarthy's.^286
+
+Tim Hart implemented during 1961. function /simplify/, which simplified 45 cases
+of algebraic expressions.^287
+
+Rochester, Goldberg, Rubentein, Edwards and Markstein studied properties of
+electric circuits and nets and wrote several programs. They considered Lisp a
+good choice because of the purpose for which it was designed: to express
+mathematical and logical algorithms and processing symbolic expressions.^288
+McCarthy and others noticed^289 in April 1959. that there is a need to organize
+data in matrices and for effiecient matrix inversions in that project.
+
+MIT's first chess program, despite McCarthy and Abrahams taking part in the
+development, was written in FORTRAN.^290
+
+McCarthy described^291,292,293 a program which uses Wang's algorithm^294 to check
+if "sequent" is a tautologi in propositional calculus. Formulas were defined in
+a following way: Symbols /P, Q, R, M, N,/ etc are formulas. If  φ and ψ are
+formulas then are also ~φ, φ & ψ, φ ∨ ψ, ⊃ ψ, φ ≡ formulas. "Sequents" are
+expressions in form
+
+        φ_1, ..., φ_n → ψ_1, ..., ψ_m
+
+and they are true if for every value of propositional variables holds: if all
+formulas  φ_1, ..., φ_n are true, then at least one of formulas  ψ_1, ..., ψ_m is
+true. Propositional formulas are converted into S-expressions as usually.
+Sequent φ_1, ..., φ_n → ψ_1, ..., ψ_m is converted into symbolic expression
+
+        (ARROW,(φ_1^*,...,φ_n^*),(ψ_1^*,...,ψ_m^*)).
+
+During 1960. or 1961. S. R. Petrick wrote a program for simplification of
+propositional logic expressions in "pure Lisp".^295
+
+During 1960. Anthony Valiant Phillips wrote a program that answers on questions
+in english language on basis of a given text, in hope that program could
+understand text on a level of a six year old child. For example, based on text
+
+        ((AT SCHOOL JOHNNY MEETS THE TEACHER)
+        (THE TEACHER READS BOOKS IN THE CLASSROOM))
+
+the program answered the question
+
+        (WHERE DOES THE TEACHER READ BOOKS)
+
+with answer
+
+        (((IN THE CLASSROOM)
+        (THE TEACHER READS BOOKS IN THE CLASSROOM))).
+
+Despite the program not reaching the desired level, Phillips considered the goal
+as reachable, and he was also satisfied with Lisp and saw it as important for
+the success of the project.^296
+
+Slagle developed during his studies at MIT program SAINT for solving indefinite
+integrals. The subject was chosen, among other reasons, because it includes
+"manipulations with symbolic expressions" which will probably be fundament for
+future problem solutions.^297 He graded quality of program himself as on
+"approximately a level of a good college freshman."^298
+
+Student Louis Hodes wrote a simple program for "pattern recognition" under
+leadership of Minski.^299
+
+McCarthy used Lisp for solving simple problems in graph theory.^300
+
+Paul W. Abrahams developed program Proofchecker^301,302 with which he tested
+proofs in II. chapter of Russell's and Whitehead's book /Principia Mathematica/.
+All theorems from that chapter belongs to propositional logic. Conversion,
+even of exceptionally formal language into a form that computer understands
+posed a problem. Formulas from Principia Mathematica were translated into
+S-expressions, for example
+
+        p ∨ q → q ∨ p
+
+is converted to
+
+        (IMPLIES (OR P Q) (OR Q P)).
+
+Already while converting, there were some errors discovered in Principia
+Mathematica. Substitution operation showed to be especially demanding, for
+example  p → q for ~ p ∨ q and vice versa. Tests of steps in proofs often came
+down to constructing of a symbolic expression and applying function /eval/.
+Proofchecker created and maintained a list of previously proofed theorems, and
+in start, that list contained only axioms. Every theorem were a list of three
+elements: theorem name, a list of "substitutable" variables and the proposition
+of the theorem. For example, theorem
+
+        p ∧ q → q
+
+named CONJ was written in list of theorems in form
+
+        (CONJ (P Q) (IMPLIES (AND P Q) Q)).
+
+Steps in the proof were saved in a form of list of three elements: number of
+steps, text of proofed theorem and a list of numbers of formulas used in the
+proof. The program often needed new variables that were not used in previous
+formulas for which purpose Lisp function /gensym/ was used.
+
+283 Personal communication with Abrahams, 2014.
+284 Rochester, AIM-005, 1958.
+285 Maling, /The LISP differentiation demonstration program/, AIM-010, 1959.
+286 McCarthy, /Recursive functions.../, CACM, 1960.
+287 Hart, /Simplify/, AIM-027, 1961.
+288 Rochester et al., /Machine manipulation of algebraic expressions/, RLE QPR
+    055, 1959., p. 132.
+289 McCarthy et al., /Artificial intelligence/, RLE QPR 053, 1959., p.123.
+290 Norberg, Paul W. Abrahams interview, 2006., p. 10.
+291 McCarthy, /The Wang algorithm for propositional calculus .../, AIM-014, 1959.
+292 McCarthy et al., /LISP I. programmer's manual/, 1960., p. 25-36.
+293 McCarthy et al., /LISP 1.5 programmer's manual/, 1962., p. 44-55.
+294 Wang, /Toward mechanical mathematics/, 1960.
+295 Petrick, /Use of list processing language in programming simplification
+    procedures/, 1961. 
+296 Phillips, /A question-answering routine/, AIM-016, 1960.
+297 Slagle, /A heuristic program .../, 1961., p. 10.
+298 Slagle, /A heuristic program .../, 1961., p. 7.
+299 Hodes, /Some results from pattern recognition program using LISP/, AIM-018, 1960.
+300 McCarthy, /Puzzle solving program in LISP/, AIM-020, 1960.
+301 Abrahams, /The proofchecker/, AIM-021, 1961.
+302 Abrahams, /Application of LISP to checking mathematical proofs/, 1964.

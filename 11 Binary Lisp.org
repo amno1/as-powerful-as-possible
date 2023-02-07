@@ -1,0 +1,32 @@
+* 11. Binary Lisp
+
+Another "LISP variant", "binary Lisp", McCarthy descrbied only in Memo 8^201, but not
+in other documents. Description of "binary Lisp" is very brief.
+
+Assymetric definition of functions /car/ and /cdr/, according to McCarthy, can be
+"source of disscomfort". Thus, "binary Lisp" allows only for lists made of
+exactly two elements. On such lists are defined functions /first/, /rest/ and
+/combine/. For example,
+
+        /first/[(X,Y)] = X
+        /rest/[(X,Y)] = Y
+        /combine/[X; Y] = (X,Y).
+
+More general, for all S-expressions /e1/ and /e2/ holds
+
+        /first/[(e_1, e_2)] = e_1
+        /rest/[(e_1, e_2)] = e_2
+        /combine/[e_1; e_2] = (e_1, e_2).
+
+It is enough to define two predicates, symbol equality, /eq/ and /atom/. In such
+Lisp, empty lists are not needed. McCarthy's objection to such system is
+complexity of function representation.
+
+Despite Memo 8. having same title as later documents, described symbolic
+expressions in that memo are different: there are no "dotted pairs".^202 On the
+other side, functions /car/, /cdr/ and /cons/ in "pure Lisp" are identical to
+functions in "binary Lisp", but are defined over dotted pairs. Thus it seems
+that "binary Lisp" is an important link in development of "pure Lisp".
+
+201 McCarthy, /Recursive functions .../, AIM-008, 1959., p. 17.
+202 See discussion in chapter Pure Lisp.
